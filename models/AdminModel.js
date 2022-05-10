@@ -23,10 +23,9 @@ class AdminModel {
             ret['message'] = "Login successful!";
             ret['token'] = apiutils.genToken({
               id: res[0].id,
-              email: res[0].email,
-              username: res[0].username,
               validTill: moment().add(1, 'hours').unix()
             });
+            ret = {...ret, userData: _.omit(res[0],['password'])};
           }
         }
 
