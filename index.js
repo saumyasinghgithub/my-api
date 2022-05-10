@@ -29,7 +29,7 @@ const middlewares = [
 ];
 app.use(middlewares);
 
-
+app.use('/admin', require('./routes/admin')());
 app.use('/user', require('./routes/user')());
 app.use('/', require('./routes/api')());
 

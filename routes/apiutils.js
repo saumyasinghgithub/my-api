@@ -2,20 +2,24 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const _ = require('lodash');
-const DBObject = require('../models/DB');
 
 const canAccess = (req) => {
   return new Promise((resolve,reject) => {
-    let apikey = req.header('x-api-key');
-    const isApiValid = bcrypt.compareSync(process.env.JWTSECRET,apikey);
-    if(isApiValid){
-      DBObject.selectDB(req.headers.host)
-      .then(resolve)
-      .catch(reject);
-    }else{
-      reject("API Key Invalid!");
+    try{
+      if(!_.get(req,'headers.x-api-key',false)) throw("No API Key found!");
+
+      let apikey = req.header('x-api-key');
+      isValid = bcrypt.compareSync(process.env.JWTSECRET,apikey);
+      if(isValid){
+        resolve();
+      }else{
+        throw("Invalid API Key!");
+      }
+    }catch(e){
+      reject(e);
     }
-  });
+  })
+  
 }
 
 const genToken = (payload) => {  
@@ -54,8 +58,20 @@ const verifyToken = (req,return_token_as_object = false) => {
   }  
 };
 
+const routeWrapper = (func) => {
+  return (req,res) => {    
+    let ret = {success: false, message: "Invalid Access"};
+    canAccess(req)
+    .then(() => func(req))
+    .then(rec => ret = {...ret,...rec})
+    .catch(err => ret = {...ret, message: _.get(err,'message',err)})
+    .finally(() => res.json(ret))
+  };
+}
+
 module.exports = {
   canAccess,
   genToken,
-  verifyToken
+  verifyToken,
+  routeWrapper
 };
