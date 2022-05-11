@@ -16,7 +16,7 @@ module.exports = function() {
     res.send(bcrypt.hashSync(req.params.pwd, 8));
   });
 
-  router.get('/profile_fields',(req, res) => {
+  router.get('/profile_attributes',(req, res) => {
     routeWrapper(req,res, false, () => (new PAModel()).list(req.query))
   })
 
