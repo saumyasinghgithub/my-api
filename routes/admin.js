@@ -6,8 +6,10 @@ const _ = require('lodash');
 const res = require('express/lib/response');
 
 module.exports = () => {
-
-  router.post('/login', routeWrapper((req) => (new AdminModel()).checkLogin(req.body)));
+  router.post('/login',(req,res) => {    
+    routeWrapper(req,res, false, () => (new AdminModel()).checkLogin(req.body))
+  });
+  //router.post('/login', routeWrapper((req) => (new AdminModel()).checkLogin(req.body)));
   //router.post('/logout', routeWrapper((req) => (new AdminModel()).checkLogin(req.body)));
 
 return router;

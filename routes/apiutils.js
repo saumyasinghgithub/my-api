@@ -58,16 +58,27 @@ const verifyToken = (req,return_token_as_object = false) => {
   }  
 };
 
-const routeWrapper = (func) => {
-  return (req,res) => {    
-    let ret = {success: false, message: "Invalid Access"};
-    canAccess(req)
-    .then(() => func(req))
-    .then(rec => ret = {...ret,...rec})
-    .catch(err => ret = {...ret, message: _.get(err,'message',err)})
-    .finally(() => res.json(ret))
+const handleError = (err) => {
+  return {
+    success: false, 
+    error: err.message
   };
 }
+
+const routeWrapper = (req,res, mustVerify, primFunc) => {    
+  canAccess(req)
+  .then(() => {
+    if(mustVerify){
+      token = verifyToken(req);
+      if (!token['success']) {
+        throw (token['message']);
+      }
+    }
+    return primFunc();
+  })
+  .catch(handleError)
+  .then(obj => res.json(obj))
+};
 
 module.exports = {
   canAccess,
