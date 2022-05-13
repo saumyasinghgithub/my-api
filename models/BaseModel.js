@@ -69,7 +69,7 @@ class BaseModel{
     let sql = 'INSERT INTO ' + this.table;
     sql += '(' + _.keys(data).join(',') + ') VALUES ( ';
     sql += (new Array(_.keys(data).length)).fill('?').join(',') + ')';
-
+    console.log(data);
     return this.db.run(sql,_.values(data))
     .then(res => {
       console.log(res);
