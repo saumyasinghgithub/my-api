@@ -49,8 +49,8 @@ INSERT INTO `admins` (`id`, `username`, `password`, `email`, `rbac`, `role`, `ac
 CREATE TABLE `roles` (
   `id` bigint(20) NOT NULL,
   `title` varchar(75) NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` datetime NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP;,
   `updated_at` datetime DEFAULT NULL,
   `rbac` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
