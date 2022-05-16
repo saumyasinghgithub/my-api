@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const apiutils = require('../routes/apiutils');
-const BaseModel = require('../models/BaseModel');
+const BaseModel = require('./BaseModel');
 
 class PAModel extends BaseModel {
 

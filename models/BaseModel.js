@@ -17,8 +17,10 @@ class BaseModel{
 
   buildWhereClause(attrs){
     //== abstract function, need to be defined in calling classes
-    attrs.sql += ` WHERE ${this.pk} = ?`;
-    attrs.ary.push(attrs.params.id);
+    if(_.get(attrs,'params.id',false)){
+      attrs.sql += ` WHERE ${this.pk} = ?`;
+      attrs.ary.push(attrs.params.id);
+    }
     return attrs;
   }
 
@@ -27,11 +29,10 @@ class BaseModel{
     let sql = '';
     let ary = [];
 
-    if(_.get(params,'id',false)){
-      const attrs = this.buildWhereClause({params, sql, ary});
-      sql = attrs.sql;
-      ary = attrs.ary;  
-    }
+    const attrs = this.buildWhereClause({params, sql, ary});
+    sql = attrs.sql;
+    ary = attrs.ary;
+    
 
     let ret = { success: false };
     return this.db.run('SELECT COUNT(' + this.pk + ') as total FROM ' + this.table + sql,ary)
@@ -69,10 +70,8 @@ class BaseModel{
     let sql = 'INSERT INTO ' + this.table;
     sql += '(' + _.keys(data).join(',') + ') VALUES ( ';
     sql += (new Array(_.keys(data).length)).fill('?').join(',') + ')';
-    console.log(data);
     return this.db.run(sql,_.values(data))
     .then(res => {
-      console.log(res);
       let ret = { success: false };
       if (res) {
         ret['success'] = true;
@@ -98,7 +97,6 @@ class BaseModel{
     }
     return this.db.run(sql,ary)
     .then(res => {
-      console.log(res);
       let ret = { success: false };
       if (res) {
         ret['success'] = true;
@@ -115,7 +113,6 @@ class BaseModel{
   delete(pkval){
     return this.db.run(`DELETE FROM ${this.table} WHERE ${this.pk} = ?`,[pkval])
     .then(res => {
-      console.log(res);
       let ret = { success: false };
       if (res.affectedRows > 0) {
         ret['success'] = true;

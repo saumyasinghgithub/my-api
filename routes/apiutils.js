@@ -61,7 +61,7 @@ const verifyToken = (req,return_token_as_object = false) => {
 const handleError = (err) => {
   return {
     success: false, 
-    error: err.message
+    message: err.message
   };
 }
 

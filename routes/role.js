@@ -21,6 +21,6 @@ module.exports = () => {
     routeWrapper(req,res, true, () => (new RoleModel()).delete(req.params.id));  
   }); 
 
-
-return router;
+  return router;
+  
 };

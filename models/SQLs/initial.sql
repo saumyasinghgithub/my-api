@@ -136,3 +136,6 @@ ALTER TABLE `roles`
 ALTER TABLE `users`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 COMMIT;
+
+ALTER TABLE `admins` ADD UNIQUE( `username`);
+ALTER TABLE `admins` ADD UNIQUE( `email`);

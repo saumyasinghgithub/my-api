@@ -1,16 +1,14 @@
 const _ = require('lodash');
 const moment = require('moment');
 const bcrypt = require('bcryptjs');
-const DBObject = require('./DB');
 const apiutils = require('./../routes/apiutils');
+const BaseModel = require('./BaseModel');
+const Emailer = require('./EmailModel');
 
-class AdminModel {
+class AdminModel extends BaseModel {
 
-  db = null;
-
-  constructor() {
-    this.db = DBObject;
-  }
+  table = "admins";
+  pageLimit = 10;
 
   checkLogin(data) {
     let ret = { success: false, message: 'Login failed: Invalid User credentials entered!'};
@@ -33,91 +31,59 @@ class AdminModel {
       });
   }
 
-  listUsers(req) {
-    //Fetch users from DB
-    return this.db.run('SELECT * FROM users LIMIT 5', [])
-      .then(res => {
-        let ret = { success: false };
-        // console.log(res);
-        if (res) {
-          ret['success'] = true;
-          ret['data'] = res[0];
-        } else {
-          ret['error'] = 'No data found';
-        }
-        return ret;
+  buildWhereClause(attrs){
+    attrs.sql += ` WHERE ${this.pk} <> 1`;
+    return attrs;
+  }
+
+  add(data){
+    const origpass = data.password;
+    data.password = bcrypt.hashSync(data.password, 8); //== encrypt the password
+    data.rbac = "[]";
+    data.active = 1;
+    return this.checkUnique('username',data.username)
+    .then(() => this.checkUnique('email',data.email))
+    .then(() => super.add(data))
+    .then(res => {
+      if(res.success){
+        return Emailer.sendEmail({
+          to: data.email,
+          subject: "WELCOME ADMIN",
+          html: this.newAdminEmail({...data, origpass: origpass})
+        })
+        .then(() => {
+          return res;
+        })
+      }else{
+        return res;
       }
-      );
+    })
   }
 
-  addUser(data) {
-    //Add user to DB
-
-    return this.db.run('INSERT INTO `users` (`username`, `email`, `password`, `role`, `location`, `company`, `department`, `date_of_join`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [data.username,
-      data.email,
-      data.password,
-      data.role,
-      data.location,
-      data.company,
-      data.department,
-      data.date_of_join,
-      data.status
-      ])
-      .then(res => {
-        console.log(res);
-        let ret = { success: false };
-        if (res) {
-          ret['success'] = true;
-          ret['message'] = 'User added, ID =' + res.insertId;
-        } else {
-          ret['error'] = 'Failed to add user.';
-        }
-        return ret;
-      });
+  checkUnique(fld,val,id=0){
+    return this.db.run(`SELECT id FROM ${this.table} WHERE ${fld}=? AND ${this.pk}<>?`,[val,id])
+    .then(res => {
+      if(_.get(res,'length',0) > 0){
+        throw({message: `${fld} ${val} already exists.. Aborting..`});
+      }
+      return true;
+    });
   }
 
-  editUser(data) {
-    //Update user to DB
-    let sql = this.db.getUpdateQuery('users', data, 'id')
-    return this.db.run(sql,
-      Object.values(data)
-    )
-      .then(res => {
-        console.log(res);
-        let ret = { success: false };
-        if (res) {
-          ret['success'] = true;
-          ret['message'] = 'User Updated';
-        } else {
-          ret['error'] = 'Failed to Update user.';
-        }
-        return ret;
-      });
-  } 
+  newAdminEmail(data){
+    let html = `<p>Hi ${data.username},</p>
+    <p>Welcome to ${process.env.APP_NAME}.</p>
+    <p>You can use the following credetials to <a href="${process.env.APP_ADMIN_URL}/login">login to your admin area</a></p>
+    <p>Username: <b>${data.username}</b></p>
+    <p>Password: <b>${data.origpass}</b></p>
+    <p>Please do not share your credentials to avoid sensitive data breach.</p>
+    Good Luck.<br />
+    Administrator`;
 
-  deleteUser(data) {
-    //Delete user from DB
-    let sql = `DELETE t1.*, t2.*, t3.*, t4.*, t5 
-            FROM users t1 
-            LEFT JOIN scenario_attempt_tbl t2 ON t1.id = t2.userid 
-            LEFT JOIN score_tbl t3 ON t2.uid = t3.uid 
-            LEFT JOIN open_res_tbl t4 ON t2.uid = t4.uid 
-            LEFT JOIN multi_score_tbl t5 ON t2.uid = t5.uid 
-            WHERE t1.id IN ( ? )`;
-    return this.db.run('DELETE FROM users WHERE id = ?', [data.id])
-      .then(res => {
-        console.log(res);
-        let ret = { success: false };
-        if (res.affectedRows != 0) {
-          ret['success'] = true;
-          ret['message'] = 'User Deleted.';
-        } else {
-          ret['error'] = 'User does not exists to Delete.';
-        }
-        return ret;
-      });
+    return html;
   }
+
+  
   
 }
 

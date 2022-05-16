@@ -9,8 +9,23 @@ module.exports = () => {
   router.post('/login',(req,res) => {    
     routeWrapper(req,res, false, () => (new AdminModel()).checkLogin(req.body))
   });
-  //router.post('/login', routeWrapper((req) => (new AdminModel()).checkLogin(req.body)));
-  //router.post('/logout', routeWrapper((req) => (new AdminModel()).checkLogin(req.body)));
+  
+  router.get('/list', function (req, res) {
+    routeWrapper(req,res, true, () => (new AdminModel()).list(req.query))
+  });
 
-return router;
+  router.post('/add', function (req, res, next) {
+    routeWrapper(req,res, true, () => (new AdminModel()).add(_.pick(req.body,['username','email','password'])));
+  });
+
+  router.put('/edit/:id', function (req, res, next) {
+    routeWrapper(req,res, true, () => (new AdminModel()).edit(req.body,req.params.id));
+  });
+
+  router.delete('/:id', function (req, res, next) {
+    routeWrapper(req,res, true, () => (new AdminModel()).delete(req.params.id));  
+  }); 
+
+  return router;
+  
 };
