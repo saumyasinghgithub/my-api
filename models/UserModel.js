@@ -13,7 +13,7 @@ class UserModel extends BaseModel {
   checkLogin(data) {
     let ret = { success: false, message: 'Login failed: Invalid User credentials entered!'};
 
-    return this.db.run('SELECT * FROM users WHERE username=? LIMIT 1', [data.user])
+    return this.db.run('SELECT * FROM users WHERE email=? LIMIT 1', [data.user])
       .then(res => {
         if (res.length === 1) {
           if(bcrypt.compareSync(data.pass,res[0]['password'])){
@@ -39,10 +39,10 @@ class UserModel extends BaseModel {
   add(data){
     const origpass = data.password;
     data.password = bcrypt.hashSync(data.password, 8); //== encrypt the password
-    data.rbac = "[]";
+    // data.rbac = "[]";
     data.active = 1;
-    return this.checkUnique('username',data.username)
-    .then(() => this.checkUnique('email',data.email))
+    return this.checkUnique('email',data.email)
+    // .then(() => this.checkUnique('email',data.email))
     .then(() => super.add(data))
     .then(res => {
       if(res.success){
@@ -71,10 +71,10 @@ class UserModel extends BaseModel {
   }
 
   newAdminEmail(data){
-    let html = `<p>Hi ${data.username},</p>
+    let html = `<p>Hi ${data.firstname},</p>
     <p>Welcome to ${process.env.APP_NAME}.</p>
     <p>You can use the following credetials to <a href="${process.env.APP_ADMIN_URL}/login">login to your admin area</a></p>
-    <p>Username: <b>${data.username}</b></p>
+    <p>Username: <b>${data.email}</b></p>
     <p>Password: <b>${data.origpass}</b></p>
     <p>Please do not share your credentials to avoid sensitive data breach.</p>
     Good Luck.<br />
