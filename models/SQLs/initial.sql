@@ -113,10 +113,19 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_mobile` (`mobile`),
   ADD UNIQUE KEY `uq_email` (`email`);
+--
+-- set current datetime
+--
+ALTER TABLE `users` CHANGE `registered_at` `registered_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
+--
+-- Add columms
+--
+ALTER TABLE `users` ADD `country` VARCHAR(100) NULL DEFAULT NULL AFTER `lastname`, ADD `address` TEXT NULL DEFAULT NULL AFTER `country`, ADD `zipcode` VARCHAR(100) NULL DEFAULT NULL AFTER `address`, ADD `state` VARCHAR(100) NULL DEFAULT NULL AFTER `zipcode`;
 --
 -- AUTO_INCREMENT for dumped tables
 --
+ALTER TABLE `users` ADD `role_id` INT(11) NOT NULL AFTER `id`;
 
 --
 -- AUTO_INCREMENT for table `admins`
