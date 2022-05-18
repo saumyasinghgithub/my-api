@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const apiutils = require('./../routes/apiutils');
 const BaseModel = require('./BaseModel');
 const Emailer = require('./EmailModel');
+const RoleModel = require('./RoleModel');
 
 class UserModel extends BaseModel {
 
@@ -38,22 +39,30 @@ class UserModel extends BaseModel {
 
   add(data){
     const origpass = data.password;
+    let roleName = null;
     data.password = bcrypt.hashSync(data.password, 8); //== encrypt the password
     // data.rbac = "[]";
     data.active = 1;
+
     return this.checkUnique('email',data.email)
     // .then(() => this.checkUnique('email',data.email))
+    .then(() => (new RoleModel()).find(data.role))
+    .then(rec => {
+      roleName = rec.title;
+      data['role_id']=rec.id;
+      data = _.omit(data,['role']);
+    })
     .then(() => super.add(data))
     .then(res => {
       if(res.success){
         return Emailer.sendEmail({
           to: data.email,
-          subject: "WELCOME ADMIN",
-          html: this.newAdminEmail({...data, origpass: origpass})
+          subject: `WELCOME ${roleName}`,
+          html: "test"//this.newUserEmail({...data, origpass: origpass, role: roleName})
         })
-        .then(() => {
+        .then(res => {
           return res;
-        })
+        });
       }else{
         return res;
       }
@@ -70,10 +79,10 @@ class UserModel extends BaseModel {
     });
   }
 
-  newAdminEmail(data){
-    let html = `<p>Hi ${data.firstname},</p>
+  newUserEmail(data){
+    let html = `<p>Hi ${data.firstname} (${data.role}),</p>
     <p>Welcome to ${process.env.APP_NAME}.</p>
-    <p>You can use the following credetials to <a href="${process.env.APP_ADMIN_URL}/login">login to your admin area</a></p>
+    <p>You can use the following credetials to <a href="${process.env.APP_URL}/login">login to your ${data.role} area</a></p>
     <p>Username: <b>${data.email}</b></p>
     <p>Password: <b>${data.origpass}</b></p>
     <p>Please do not share your credentials to avoid sensitive data breach.</p>

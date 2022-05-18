@@ -24,6 +24,17 @@ class BaseModel{
     return attrs;
   }
 
+  find(pkval){
+    return this.db.run(`SELECT * FROM ${this.table} WHERE ${this.pk}=? LIMIT 1`,[pkval])
+    .then(res => {
+      if(res){
+        return {...res[0]};
+      }else{
+        throw({message: "No Record found!"});
+      }
+    })
+  }
+
   list(params) {
     //Fetch users from DB
     let sql = '';

@@ -15,7 +15,7 @@ module.exports = () => {
   });
 
   router.post('/add', function (req, res, next) {
-    routeWrapper(req,res, true, () => (new UserModel()).add(_.pick(req.body,["role_id","firstname","middlename","lastname","country","address","zipcode","state","mobile","email","password","active"])));
+    routeWrapper(req,res, false, () => (new UserModel()).add(_.pick(req.body,["role","firstname","middlename","lastname","country","address","zipcode","state","mobile","email","password","active"])));
   });
 
   router.put('/edit/:id', function (req, res, next) {
