@@ -58,7 +58,7 @@ class UserModel extends BaseModel {
         return Emailer.sendEmail({
           to: data.email,
           subject: `WELCOME ${roleName}`,
-          html: "test"//this.newUserEmail({...data, origpass: origpass, role: roleName})
+          html: this.newUserEmail({...data, origpass: origpass, role: roleName})
         })
         .then(res => {
           return res;
