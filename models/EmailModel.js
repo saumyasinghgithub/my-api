@@ -32,7 +32,7 @@ class Emailer{
         if (error) {
           reject(error);
         } else {
-          resolve(info.response);
+          resolve();
         }
       });
     

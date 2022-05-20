@@ -60,7 +60,7 @@ class UserModel extends BaseModel {
           subject: `WELCOME ${roleName}`,
           html: this.newUserEmail({...data, origpass: origpass, role: roleName})
         })
-        .then(res => {
+        .then(res1 => {
           return res;
         });
       }else{
