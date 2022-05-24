@@ -22,6 +22,7 @@ class UserModel extends BaseModel {
             ret['message'] = "Login successful!";
             ret['token'] = apiutils.genToken({
               id: res[0].id,
+              role_id: res[0].role_id,
               validTill: moment().add(1, 'hours').unix()
             });
             ret = {...ret, userData: _.omit(res[0],['password'])};

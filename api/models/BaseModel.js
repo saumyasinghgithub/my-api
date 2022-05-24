@@ -122,14 +122,23 @@ class BaseModel{
   }
 
   delete(pkval){
-    return this.db.run(`DELETE FROM ${this.table} WHERE ${this.pk} = ?`,[pkval])
+    let whereParams = {};
+    whereParams[this.pk] = pkval;
+    return this.deleteWhere(whereParams);
+  }
+
+  deleteWhere(whereParams){
+
+    let sql = `DELETE FROM ${this.table} WHERE ${_.keys(whereParams).join(`=? AND `)}=?`;
+    
+    return this.db.run(sql,_.values(whereParams))
     .then(res => {
       let ret = { success: false };
       if (res.affectedRows > 0) {
         ret['success'] = true;
-        ret['message'] = 'Record Deleted';
+        ret['message'] = `${res.affectedRows} Record(s) deleted`;
       } else {
-        ret['error'] = 'Failed to update Record.';
+        ret['error'] = 'Failed to delete Record.';
       }
       return ret;
     });

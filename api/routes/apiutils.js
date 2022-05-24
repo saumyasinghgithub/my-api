@@ -46,7 +46,7 @@ const verifyToken = (req,return_token_as_object = false) => {
           ret['message'] = 'Token expired, please login again to continue!'; 
          }else{
           ret['success'] = true;
-          ret['data'] = return_token_as_object ? userData : userData.id;
+          ret['data'] = return_token_as_object ? userData : userData.id;verifyToken
        }     
       }
     }
@@ -57,6 +57,10 @@ const verifyToken = (req,return_token_as_object = false) => {
     return ret;
   }  
 };
+
+const isStudent = (data) => data.role_id===parseInt(process.env.STUDENT_ROLE);
+
+const isTrainer = (data) => data.role_id===parseInt(process.env.TRAINER_ROLE);
 
 const handleError = (err) => {
   return {
@@ -69,12 +73,14 @@ const routeWrapper = (req,res, mustVerify, primFunc) => {
   canAccess(req)
   .then(() => {
     if(mustVerify){
-      token = verifyToken(req);
+      token = verifyToken(req, true);
       if (!token['success']) {
         throw (token['message']);
       }
+      return primFunc(token);
+    }else{
+      return primFunc();
     }
-    return primFunc();
   })
   .catch(handleError)
   .then(obj => res.json(obj))
@@ -84,5 +90,7 @@ module.exports = {
   canAccess,
   genToken,
   verifyToken,
-  routeWrapper
+  routeWrapper,
+  isStudent,
+  isTrainer
 };

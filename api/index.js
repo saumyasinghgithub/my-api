@@ -31,6 +31,7 @@ app.use(middlewares);
 
 app.use('/admin', require('./routes/admin')());
 app.use('/user', require('./routes/user')());
+app.use('/trainer', require('./routes/trainer')());
 app.use('/role', require('./routes/role')());
 app.use('/', require('./routes/api')());
 
