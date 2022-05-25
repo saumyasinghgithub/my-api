@@ -6,7 +6,39 @@ const BaseModel = require('./BaseModel');
 const Emailer = require('./EmailModel');
 const RoleModel = require('./RoleModel');
 
-class TrainerCalib extends BaseModel {
+class TrainerBase extends BaseModel {
+
+  addMulti(data){
+    return new Promise((resolve,reject) => {
+      let idx = 0;
+      const addMe = () => {
+        if(idx >= data.length){
+          resolve(idx);
+        }else{
+          this.add(data[idx++])
+          .then(res => {
+            if(res.success){
+              addMe();
+            }else{
+              reject(res);
+            }
+          })
+          .catch(reject);
+        }
+      }
+
+      if(data.length==0){
+        resolve(0);
+      }else{
+        addMe();
+      }
+
+    });
+  }
+
+}
+
+class TrainerCalib extends TrainerBase {
 
   table = "trainer_calibrations";
   pageLimit = 10;
@@ -42,36 +74,38 @@ class TrainerCalib extends BaseModel {
     
   }
 
-  addMulti(data){
-    return new Promise((resolve,reject) => {
-      let idx = 0;
-      const addMe = () => {
-        if(idx >= data.length){
-          resolve(idx);
-        }else{
-          this.add(data[idx++])
-          .then(res => {
-            if(res.success){
-              addMe();
-            }else{
-              reject(res);
-            }
-          })
-          .catch(reject);
-        }
-      }
+  
+}
 
-      if(data.length==0){
-        resolve(0);
-      }else{
-        addMe();
-      }
+class TrainerAcademic extends TrainerBase {
 
+  table = "trainer_academic";
+
+  edit(data,user_id){
+
+    let iData = [];
+
+    _.each(data.year, (v,k) => {
+      if(v!=='' && data.qualification[k]!=''){
+        iData.push({
+          'user_id': user_id,
+          'qualification': data.qualification[k],
+          'year': v
+        });
+      }
+      
     });
-  }
 
+    return this.deleteWhere({'user_id': user_id})
+    .then(res => this.addMulti(iData))
+    .then(data => ({
+      success: true,
+      message: 'Data saved!'
+    }));
+    
+  }
 }
 
 
 
-module.exports = {TrainerCalib};
+module.exports = {TrainerCalib, TrainerAcademic};
