@@ -35,6 +35,17 @@ class BaseModel{
     })
   }
 
+  findBy({fname,fvalue}){
+    return this.db.run(`SELECT * FROM ${this.table} WHERE ${fname}=?`,[fvalue])
+    .then(res => {
+      if(res){
+        return {...res};
+      }else{
+        throw({message: "No Record found!"});
+      }
+    })
+  }
+
   list(params) {
     //Fetch users from DB
     let sql = '';
@@ -87,6 +98,7 @@ class BaseModel{
       if (res) {
         ret['success'] = true;
         ret['message'] = 'Record added, ID = ' + res.insertId;
+        ret['insertId'] = res.insertId;
       } else {
         ret['error'] = 'Failed to add Record.';
       }

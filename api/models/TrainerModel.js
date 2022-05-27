@@ -1,10 +1,8 @@
 const _ = require('lodash');
-const moment = require('moment');
-const bcrypt = require('bcryptjs');
-const apiutils = require('./../routes/apiutils');
 const BaseModel = require('./BaseModel');
-const Emailer = require('./EmailModel');
-const RoleModel = require('./RoleModel');
+const fs = require('fs');
+const path = require('path');
+const e = require('cors');
 
 class TrainerBase extends BaseModel {
 
@@ -106,6 +104,83 @@ class TrainerAcademic extends TrainerBase {
   }
 }
 
+class TrainerExp extends TrainerBase {
+
+  table = "trainer_exp";
+
+  edit(data,user_id){
+    let iData = [];
+
+    _.each(data.location, (v,k) => {
+      if(v!=='' && data.company[k]!=''){
+        iData.push({
+          'user_id': user_id,
+          'company': data.company[k],
+          'location': v
+        });
+      }
+      
+    });
+
+    console.log(iData);
+
+    return this.deleteWhere({'user_id': user_id})
+    .then(res => this.addMulti(iData))
+    .then(data => ({
+      success: true,
+      message: 'Data saved!'
+    }));
+    
+  }
+}
+
+class TrainerAbout extends TrainerBase {
+
+  table = "trainer_about";
+
+  deleteImage(fname){
+    let fpath = path.resolve('uploads','profile',fname);
+    if(!_.isEmpty(fname) && fs.existsSync(fpath)){
+      fs.unlinkSync(fpath);
+    }
+  }
+
+  uploadImage(data, file,ftype){
+    return new Promise((resolve,reject) => {
+      if(_.get(file,'size',0) > 0){
+        let fname = ftype + '_' + data.id + '_' + file.name;
+        let fpath = path.resolve('uploads','profile',fname);
+        file.mv(fpath, err => {
+          if(err){
+            resolve(`data.old_${ftype}_image`);
+          }else{
+            this.deleteImage(`data.old_${ftype}_image`);
+            resolve(fname);
+          }
+        })
+      }else{
+        resolve(`data.old_${ftype}_image`);
+      }
+    })
+  }
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['firstname','middlename','lastname','biography','certificates','trainings']);
+    frmdata['user_id'] = user_id;
+    
+    return this.uploadImage(data, files.profile_image,'profile')
+    .then(fname => {
+      frmdata['profile_image'] = fname;
+      return this.uploadImage(data, files.award_image, 'award');
+    })
+    .then(fname => {
+      frmdata['award_image'] = fname;
+      return super.edit(frmdata, data.id);
+    });
+
+  }
+}
 
 
-module.exports = {TrainerCalib, TrainerAcademic};
+module.exports = {TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout};

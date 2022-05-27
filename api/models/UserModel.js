@@ -5,6 +5,7 @@ const apiutils = require('./../routes/apiutils');
 const BaseModel = require('./BaseModel');
 const Emailer = require('./EmailModel');
 const RoleModel = require('./RoleModel');
+const TModel = require('./TrainerModel');
 
 class UserModel extends BaseModel {
 
@@ -56,14 +57,25 @@ class UserModel extends BaseModel {
     .then(() => super.add(data))
     .then(res => {
       if(res.success){
-        return Emailer.sendEmail({
-          to: data.email,
-          subject: `WELCOME ${roleName}`,
-          html: this.newUserEmail({...data, origpass: origpass, role: roleName})
-        })
-        .then(res1 => {
-          return res;
-        });
+        
+        const finalEmail = () => {
+          return Emailer.sendEmail({
+            to: data.email,
+            subject: `WELCOME ${roleName}`,
+            html: this.newUserEmail({...data, origpass: origpass, role: roleName})
+          })
+          .then(res1 => {
+            return res;
+          });
+        }
+
+        if(parseInt(data.role_id)===parseInt(process.env.TRAINER_ROLE)){
+          return (new TModel.TrainerAbout()).add({..._.pick(data,['firstname','middlename','lastname']), user_id: res.insertId})
+          .then(finalEmail)
+        }else{
+          return finalEmail();
+        }
+        
       }else{
         return res;
       }
