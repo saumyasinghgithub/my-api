@@ -168,7 +168,7 @@ class TrainerAbout extends TrainerBase {
     
     let frmdata = _.pick(data,['firstname','middlename','lastname','biography','certificates','trainings']);
     frmdata['user_id'] = user_id;
-    
+    console.log(frmdata);
     return this.uploadImage(data, files.profile_image,'profile')
     .then(fname => {
       frmdata['profile_image'] = fname;
@@ -182,5 +182,48 @@ class TrainerAbout extends TrainerBase {
   }
 }
 
+class TrainerServices extends TrainerBase {
 
-module.exports = {TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout};
+  table = "trainer_services";
+
+  deleteImage(fname){
+    let fpath = path.resolve('uploads','services',fname);
+    if(!_.isEmpty(fname) && fs.existsSync(fpath)){
+      fs.unlinkSync(fpath);
+    }
+  }
+
+  uploadImage(data, file,ftype){
+    return new Promise((resolve,reject) => {
+      if(_.get(file,'size',0) > 0){
+        let fname = ftype + '_' + data.id + '_' + file.name;
+        let fpath = path.resolve('uploads','services',fname);
+        file.mv(fpath, err => {
+          if(err){
+            resolve(`data.old_${ftype}_image`);
+          }else{
+            this.deleteImage(`data.old_${ftype}_image`);
+            resolve(fname);
+          }
+        })
+      }else{
+        resolve(`data.old_${ftype}_image`);
+      }
+    })
+  }
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['service_offer','consultancy','coaching']);
+    frmdata['user_id'] = user_id;
+    console.log(frmdata);
+    return this.uploadImage(data, files.service_image,'service')
+    .then(fname => {
+      frmdata['service_image'] = fname;
+      return super.edit(frmdata, data.id);
+    });
+
+  }
+}
+
+module.exports = {TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices};
