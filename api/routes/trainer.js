@@ -32,7 +32,7 @@ module.exports = () => {
   router.get('/my-services', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerAbout()).findBy({"fname": 'user_id', "fvalue": token.data.id})
+        return (new TModel.TrainerServices()).findBy({"fname": 'user_id', "fvalue": token.data.id})
         .then(res => ({success: true, data: res[0]}));
       }else{
         throw({message: "Permission Denied!"});
@@ -43,7 +43,7 @@ module.exports = () => {
   router.put('/my-services', function (req, res, next) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerAbout()).edit(req.body, req.files, token.data.id);
+        return (new TModel.TrainerServices()).edit(req.body, req.files, token.data.id);
       }else{
         throw({message: "Permission Denied!"});
       }
