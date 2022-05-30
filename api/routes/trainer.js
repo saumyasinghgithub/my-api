@@ -29,27 +29,6 @@ module.exports = () => {
     });
   });
   
-  router.get('/my-services', function (req, res) {
-    routeWrapper(req,res, true, (token) => {
-      if(isTrainer(token.data)){
-        return (new TModel.TrainerServices()).findBy({"fname": 'user_id', "fvalue": token.data.id})
-        .then(res => ({success: true, data: res[0]}));
-      }else{
-        throw({message: "Permission Denied!"});
-      }
-    })
-  });
-
-  router.put('/my-services', function (req, res, next) {
-    routeWrapper(req,res, true, (token) => {
-      if(isTrainer(token.data)){
-        return (new TModel.TrainerServices()).edit(req.body, req.files, token.data.id);
-      }else{
-        throw({message: "Permission Denied!"});
-      }
-    });
-  });
-
   router.get('/my-calibs', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
@@ -105,6 +84,27 @@ module.exports = () => {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
         return (new TModel.TrainerExp()).edit(req.body,token.data.id);
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    });
+  });
+
+  router.get('/my-services', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerServices()).findBy({"fname": 'user_id', "fvalue": token.data.id})
+        .then(res => ({success: true, data: res[0]}));
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    })
+  });
+
+  router.put('/my-services', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerServices()).edit(req.body, req.files, token.data.id);
       }else{
         throw({message: "Permission Denied!"});
       }

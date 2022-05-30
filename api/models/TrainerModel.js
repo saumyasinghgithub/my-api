@@ -34,6 +34,32 @@ class TrainerBase extends BaseModel {
     });
   }
 
+  deleteImage(folder,fname){
+    let fpath = path.resolve('public','uploads',folder,fname);
+    if(!_.isEmpty(fname) && fs.existsSync(fpath)){
+      fs.unlinkSync(fpath);
+    }
+  }
+
+  uploadImage(data, file,ftype){
+    return new Promise((resolve,reject) => {
+      if(_.get(file,'size',0) > 0){
+        let fname = ftype + '_' + data.id + '_' + file.name;
+        let fpath = path.resolve('public','uploads',ftype,fname);
+        file.mv(fpath, err => {
+          if(err){
+            reject(err);
+          }else{
+            this.deleteImage(ftype,`data.old_${ftype}_image`);
+            resolve(fname);
+          }
+        })
+      }else{
+        resolve(`data.old_${ftype}_image`);
+      }
+    })
+  }
+
 }
 
 class TrainerCalib extends TrainerBase {
@@ -132,43 +158,19 @@ class TrainerExp extends TrainerBase {
     }));
     
   }
+
 }
 
 class TrainerAbout extends TrainerBase {
 
   table = "trainer_about";
 
-  deleteImage(fname){
-    let fpath = path.resolve('uploads','profile',fname);
-    if(!_.isEmpty(fname) && fs.existsSync(fpath)){
-      fs.unlinkSync(fpath);
-    }
-  }
-
-  uploadImage(data, file,ftype){
-    return new Promise((resolve,reject) => {
-      if(_.get(file,'size',0) > 0){
-        let fname = ftype + '_' + data.id + '_' + file.name;
-        let fpath = path.resolve('uploads','profile',fname);
-        file.mv(fpath, err => {
-          if(err){
-            resolve(`data.old_${ftype}_image`);
-          }else{
-            this.deleteImage(`data.old_${ftype}_image`);
-            resolve(fname);
-          }
-        })
-      }else{
-        resolve(`data.old_${ftype}_image`);
-      }
-    })
-  }
+  
 
   edit(data,files,user_id){
     
     let frmdata = _.pick(data,['firstname','middlename','lastname','biography','certificates','trainings']);
     frmdata['user_id'] = user_id;
-    console.log(frmdata);
     return this.uploadImage(data, files.profile_image,'profile')
     .then(fname => {
       frmdata['profile_image'] = fname;
@@ -176,7 +178,11 @@ class TrainerAbout extends TrainerBase {
     })
     .then(fname => {
       frmdata['award_image'] = fname;
-      return super.edit(frmdata, data.id);
+      if(data.id > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
     });
 
   }
@@ -186,41 +192,18 @@ class TrainerServices extends TrainerBase {
 
   table = "trainer_services";
 
-  deleteImage(fname){
-    let fpath = path.resolve('uploads','services',fname);
-    if(!_.isEmpty(fname) && fs.existsSync(fpath)){
-      fs.unlinkSync(fpath);
-    }
-  }
-
-  uploadImage(data, file,ftype){
-    return new Promise((resolve,reject) => {
-      if(_.get(file,'size',0) > 0){
-        let fname = ftype + '_' + data.id + '_' + file.name;
-        let fpath = path.resolve('uploads','services',fname);
-        file.mv(fpath, err => {
-          if(err){
-            resolve(`data.old_${ftype}_image`);
-          }else{
-            this.deleteImage(`data.old_${ftype}_image`);
-            resolve(fname);
-          }
-        })
-      }else{
-        resolve(`data.old_${ftype}_image`);
-      }
-    })
-  }
-
   edit(data,files,user_id){
     
     let frmdata = _.pick(data,['service_offer','consultancy','coaching']);
     frmdata['user_id'] = user_id;
-    console.log(frmdata);
     return this.uploadImage(data, files.service_image,'service')
     .then(fname => {
       frmdata['service_image'] = fname;
-      return super.edit(frmdata, data.id);
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
     });
 
   }
