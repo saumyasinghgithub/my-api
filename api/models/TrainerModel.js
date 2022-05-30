@@ -43,6 +43,9 @@ class TrainerBase extends BaseModel {
 
   uploadImage(data, file,ftype){
     return new Promise((resolve,reject) => {
+      if(!file){
+        resolve(_.get(data,`old_${ftype}_image`,'')); 
+      }
       if(_.get(file,'size',0) > 0){
         let fname = ftype + '_' + data.id + '_' + file.name;
         let fpath = path.resolve('public','uploads',ftype,fname);
@@ -50,12 +53,12 @@ class TrainerBase extends BaseModel {
           if(err){
             reject(err);
           }else{
-            this.deleteImage(ftype,`data.old_${ftype}_image`);
+            this.deleteImage(ftype,_.get(data,`old_${ftype}_image`,''));
             resolve(fname);
           }
         })
       }else{
-        resolve(`data.old_${ftype}_image`);
+        resolve(_.get(data,`old_${ftype}_image`,''));
       }
     })
   }
@@ -171,10 +174,10 @@ class TrainerAbout extends TrainerBase {
     
     let frmdata = _.pick(data,['firstname','middlename','lastname','biography','certificates','trainings']);
     frmdata['user_id'] = user_id;
-    return this.uploadImage(data, files.profile_image,'profile')
+    return this.uploadImage(data, _.get(files,'profile_image',false),'profile')
     .then(fname => {
       frmdata['profile_image'] = fname;
-      return this.uploadImage(data, files.award_image, 'award');
+      return this.uploadImage(data, _.get(files,'award_image',false), 'award');
     })
     .then(fname => {
       frmdata['award_image'] = fname;
@@ -196,7 +199,7 @@ class TrainerServices extends TrainerBase {
     
     let frmdata = _.pick(data,['service_offer','consultancy','coaching']);
     frmdata['user_id'] = user_id;
-    return this.uploadImage(data, files.service_image,'service')
+    return this.uploadImage(data, _.get(files,'service_image',false),'service')
     .then(fname => {
       frmdata['service_image'] = fname;
       if(parseInt(data.id) > 0){
