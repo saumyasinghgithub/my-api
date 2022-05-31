@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 const PAModel = require('./../models/PAModel');
+const CourseModel = require('./../models/CourseModel');
 
 const {canAccess, routeWrapper} = require('./apiutils');
 
@@ -19,6 +20,16 @@ module.exports = function() {
   router.get('/profile_attributes',(req, res) => {
     routeWrapper(req,res, false, () => (new PAModel()).list(req.query))
   })
+
+  router.get('/course/:slug',(req, res) => {
+    routeWrapper(req,res, false, () => (new CourseModel()).getBySlug(req.params.slug).then(res => ({success: true, data: res})))
+  })
+
+  router.get('/courses',(req, res) => {
+    routeWrapper(req,res, false, () => (new CourseModel()).list(req.query))
+  })
+
+  
 
   router.get('/', (req,res,next) => {
     if(canAccess(req)){
