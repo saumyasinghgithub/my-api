@@ -21,6 +21,8 @@ class CourseModel extends BaseModel {
 
   }
 
+
+
 }
 
 module.exports = CourseModel;

@@ -2,7 +2,7 @@ const _ = require('lodash');
 const BaseModel = require('./BaseModel');
 const fs = require('fs');
 const path = require('path');
-const e = require('cors');
+const slugify = require('slugify');
 
 class TrainerBase extends BaseModel {
 
@@ -212,4 +212,46 @@ class TrainerServices extends TrainerBase {
   }
 }
 
-module.exports = {TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices};
+class TrainerCourse extends TrainerBase {
+
+  table = "courses";
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['cat_id','user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lectures','media']);
+    frmdata['user_id'] = user_id;
+    frmdata['slug'] = slugify(frmdata.name,{remove: /[*#+~.()'"!:@]/g});
+    return this.uploadImage(data, _.get(files,'course_image',false),'service')
+    .then(fname => {
+      frmdata['course_image'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+
+  }
+}
+
+class TrainerCourseContent extends TrainerBase {
+
+  table = "course_content";
+
+  edit(data,files,course_id){
+    
+    let frmdata = _.pick(data,['course_id','title','description','embed_resource','video','duration','lectures']);
+    frmdata['course_id'] = course_id;
+    return this.uploadImage(data, _.get(files,'video',false),'content')
+    .then(fname => {
+      frmdata['video'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+  }
+}
+
+module.exports = {TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerCourse, TrainerCourseContent};
