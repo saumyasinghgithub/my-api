@@ -39,7 +39,8 @@ class BaseModel{
     return this.db.run(`SELECT * FROM ${this.table} WHERE ${fname}=?`,[fvalue])
     .then(res => {
       if(res){
-        return {...res};
+        
+        return res;
       }else{
         throw({message: "No Record found!"});
       }
