@@ -140,11 +140,11 @@ module.exports = () => {
     });
   });
 
-  router.get('/course-content', function (req, res) {
+  router.get('/course-content/:course_id', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerCourseContent()).findBy({"fname": 'user_id', "fvalue": token.data.id})
-        .then(res => ({success: true, data: res[0]}));
+        return (new TModel.TrainerCourseContent()).findBy({"fname": 'course_id', "fvalue": req.params.course_id})
+        .then(res => ({success: true, data: res}));
       }else{
         throw({message: "Permission Denied!"});
       }
@@ -165,7 +165,7 @@ module.exports = () => {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
         return (new TModel.TrainerCourseResource()).findBy({"fname": 'user_id', "fvalue": token.data.id})
-        .then(res => ({success: true, data: res[0]}));
+        .then(res => ({success: true, data: res}));
       }else{
         throw({message: "Permission Denied!"});
       }
