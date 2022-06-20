@@ -258,19 +258,15 @@ class TrainerCourseResource extends TrainerBase {
 
   table = "course_resources";
 
-  edit(data,files,course_id){
+  edit(data,course_id){
     
-    let frmdata = _.pick(data,['course_id','title','description','embed_resource','video','duration','lectures']);
+    let frmdata = _.pick(data,['course_id','type','name','price']);
     frmdata['course_id'] = course_id;
-    return this.uploadImage(data, _.get(files,'video',false),'content')
-    .then(fname => {
-      frmdata['video'] = fname;
       if(parseInt(data.id) > 0){
         return super.edit(frmdata, data.id);
       }else{
         return super.add(frmdata);
       }
-    });
   }
 }
 
