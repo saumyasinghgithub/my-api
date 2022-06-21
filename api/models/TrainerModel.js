@@ -258,10 +258,10 @@ class TrainerCourseResource extends TrainerBase {
 
   table = "course_resources";
 
-  edit(data,course_id){
+  edit(data){
     
     let frmdata = _.pick(data,['course_id','type','name','price']);
-    frmdata['course_id'] = course_id;
+    
       if(parseInt(data.id) > 0){
         return super.edit(frmdata, data.id);
       }else{
