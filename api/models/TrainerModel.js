@@ -218,7 +218,7 @@ class TrainerCourse extends TrainerBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['cat_id','user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lectures','media']);
+    let frmdata = _.pick(data,['cat_id','user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lecture','media']);
     frmdata['user_id'] = user_id;
     frmdata['slug'] = slugify(frmdata.name,{remove: /[*#+~.()'"!:@]/g},{lower: true});
     return this.uploadImage(data, _.get(files,'course_image',false),'courses')
@@ -238,13 +238,13 @@ class TrainerCourseContent extends TrainerBase {
 
   table = "course_content";
 
-  edit(data,files,course_id){
+  edit(data,files){
     
-    let frmdata = _.pick(data,['course_id','title','description','embed_resource','video','duration','lectures']);
-    frmdata['course_id'] = course_id;
+    let frmdata = _.pick(data,['course_id','title','description','embed_resource','video','duration','lecture']);
     return this.uploadImage(data, _.get(files,'video',false),'content')
     .then(fname => {
       frmdata['video'] = fname;
+      console.log(data);
       if(parseInt(data.id) > 0){
         return super.edit(frmdata, data.id);
       }else{

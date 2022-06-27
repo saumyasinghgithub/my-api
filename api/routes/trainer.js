@@ -140,10 +140,10 @@ module.exports = () => {
     });
   });
 
-  router.get('/course-content/:course_id', function (req, res) {
+  router.get('/course-content', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerCourseContent()).findBy({"fname": 'course_id', "fvalue": req.params.course_id})
+        return (new TModel.TrainerCourseContent()).findBy(_.pick(req.query,['fname','fvalue']))
         .then(res => ({success: true, data: res}));
       }else{
         throw({message: "Permission Denied!"});
