@@ -218,7 +218,7 @@ class TrainerCourse extends TrainerBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['cat_id','user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lecture','media']);
+    let frmdata = _.pick(data,['user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lecture','media']);
     frmdata['user_id'] = user_id;
     frmdata['slug'] = slugify(frmdata.name,{remove: /[*#+~.()'"!:@]/g},{lower: true});
     return this.uploadImage(data, _.get(files,'course_image',false),'courses')
@@ -230,9 +230,18 @@ class TrainerCourse extends TrainerBase {
         return super.add(frmdata);
       }
     });
-
   }
-}
+
+  delete(pkval){
+    return this.find(pkval)
+    .then(rec => { 
+      if(!_.isEmpty(_.get(rec, 'course_image', ''))) {
+        this.deleteImage('courses', rec.video);
+      }
+    })
+    .then(()=> super.delete(pkval));
+    }
+  }
 
 class TrainerCourseContent extends TrainerBase {
 
@@ -252,7 +261,17 @@ class TrainerCourseContent extends TrainerBase {
       }
     });
   }
-}
+
+  delete(pkval){
+    return this.find(pkval)
+    .then(rec => { 
+      if(!_.isEmpty(_.get(rec, 'video', ''))) {
+        this.deleteImage('content', rec.video);
+      }
+    })
+    .then(()=> super.delete(pkval));
+    }
+  }
 
 class TrainerCourseResource extends TrainerBase {
 
@@ -267,6 +286,15 @@ class TrainerCourseResource extends TrainerBase {
       }else{
         return super.add(frmdata);
       }
+  }
+
+  delete(pkval){
+    return this.find(pkval)
+    .then(rec => { 
+      if(rec){
+        return super.delete(pkval);
+      }
+    })
   }
 }
 
