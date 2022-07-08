@@ -104,6 +104,36 @@ class TrainerCalib extends TrainerBase {
   
 }
 
+class TrainerAward extends TrainerBase {
+
+  table = "trainer_awards";
+
+  edit(data,user_id){
+
+    let iData = [];
+
+    _.each(data.year, (v,k) => {
+      if(v!=='' && data.award[k]!=''){
+        iData.push({
+          'user_id': user_id,
+          'award': data.award[k],
+          'year': v,
+          'url': data.url[k]
+        });
+      }
+      
+    });
+
+    return this.deleteWhere({'user_id': user_id})
+    .then(res => this.addMulti(iData))
+    .then(data => ({
+      success: true,
+      message: 'Data saved!'
+    }));
+    
+  }
+}
+
 class TrainerAcademic extends TrainerBase {
 
   table = "trainer_academic";
@@ -298,4 +328,4 @@ class TrainerCourseResource extends TrainerBase {
   }
 }
 
-module.exports = {TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerCourse, TrainerCourseContent, TrainerCourseResource};
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerCourse, TrainerCourseContent, TrainerCourseResource};

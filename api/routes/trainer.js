@@ -28,6 +28,27 @@ module.exports = () => {
       }
     });
   });
+
+  router.get('/my-awards', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerAward()).list({'user_id': token.data.id});
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    })
+  });
+
+  router.put('/my-awards', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerAward()).edit(req.body,token.data.id);
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    });
+  });
+
   
   router.get('/my-calibs', function (req, res) {
     routeWrapper(req,res, true, (token) => {
