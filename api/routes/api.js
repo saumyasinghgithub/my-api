@@ -30,7 +30,6 @@ module.exports = function() {
   })
 
   
-
   router.get('/', (req,res,next) => {
     if(canAccess(req)){
       res.send("Welcome to API");

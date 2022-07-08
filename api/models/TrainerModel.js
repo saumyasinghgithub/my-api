@@ -218,7 +218,7 @@ class TrainerCourse extends TrainerBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lecture','media']);
+    let frmdata = _.pick(data,['user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lectures','media']);
     frmdata['user_id'] = user_id;
     frmdata['slug'] = slugify(frmdata.name,{remove: /[*#+~.()'"!:@]/g},{lower: true});
     return this.uploadImage(data, _.get(files,'course_image',false),'courses')
@@ -236,7 +236,7 @@ class TrainerCourse extends TrainerBase {
     return this.find(pkval)
     .then(rec => { 
       if(!_.isEmpty(_.get(rec, 'course_image', ''))) {
-        this.deleteImage('courses', rec.video);
+        this.deleteImage('courses', rec.course_image);
       }
     })
     .then(()=> super.delete(pkval));
