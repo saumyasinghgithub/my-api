@@ -234,12 +234,16 @@ module.exports = () => {
   });
 
   router.get('/profile/:tid', function (req, res) {
-    routeWrapper(req,res, true, (token) => {
+    routeWrapper(req,res, false, () => {
       let tData = {};
       return (new TModel.TrainerAbout()).list({'where' : {'user_id': req.params.tid}})
       .then(({data}) => {
         tData.about=_.get(data,'0',{});
-        return (new TModel.TrainerAward()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+        if(_.get(tData,'about.id',false)){
+          return (new TModel.TrainerAward()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+        }else{
+          throw {message: "No such trainer found"};
+        }
       })
       .then(({data}) => {
         tData.awards = data;
