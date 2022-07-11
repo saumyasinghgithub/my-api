@@ -16,10 +16,16 @@ class BaseModel{
   }
 
   buildWhereClause(attrs){
-    //== abstract function, need to be defined in calling classes
-    if(_.get(attrs,'params.id',false)){
-      attrs.sql += ` WHERE ${this.pk} = ?`;
-      attrs.ary.push(attrs.params.id);
+    
+    if(_.get(attrs,'where',false)){
+      let refine = [];
+      _.each(attrs.where , (fldVal,fldName) => {
+        refine.push(`${fldName} = ?`);
+        attrs.ary.push(fldVal);
+      })
+      if(refine.length > 0){
+        attrs.refine += ` WHERE ${refine.join(' AND ')}`;
+      }
     }
     return attrs;
   }
@@ -49,16 +55,18 @@ class BaseModel{
 
   list(params) {
     //Fetch users from DB
-    let sql = '';
+    let refine = '';
     let ary = [];
 
-    const attrs = this.buildWhereClause({params, sql, ary});
-    sql = attrs.sql;
-    ary = attrs.ary;
+    if(_.get(params,'where',false)){
+      const attrs = this.buildWhereClause({where: params.where, refine, ary});
+      refine = attrs.refine;
+      ary = attrs.ary;
+    }
     
 
     let ret = { success: false };
-    return this.db.run('SELECT COUNT(' + this.pk + ') as total FROM ' + this.table + sql,ary)
+    return this.db.run('SELECT COUNT(' + this.pk + ') as total FROM ' + this.table + refine,ary)
     .then(res => {
       if(res){
         ret['pageInfo'] = {
@@ -70,12 +78,12 @@ class BaseModel{
       }
     })
     .then(() => {
-      sql += ' ORDER BY ? ? LIMIT ?,?';
+      refine += ' ORDER BY ? ? LIMIT ?,?';
       ary.push(_.get(params,'sortBy',this.sortBy)); 
       ary.push(_.get(params,'sortDir',this.sortDir));
       ary.push(parseInt(_.get(params,'start',0)));
       ary.push(parseInt(_.get(params,'limit',this.pageLimit)));
-      return this.db.run('SELECT * FROM ' + this.table + sql, ary);
+      return this.db.run('SELECT * FROM ' + this.table + refine, ary);
     })
     .then(res => {
       // console.log(res);

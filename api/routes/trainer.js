@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {routeWrapper, isTrainer} = require('./apiutils');
+const {routeWrapper, isTrainer, isStudent} = require('./apiutils');
 const TModel = require('../models/TrainerModel');
 const _ = require('lodash');
 const res = require('express/lib/response');
@@ -231,6 +231,29 @@ module.exports = () => {
         throw({message: "Permission Denied!"});
       }
     }); 
+  });
+
+  router.get('/profile/:tid', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      let tData = {};
+      return (new TModel.TrainerAbout()).list({'where' : {'user_id': req.params.tid}})
+      .then(({data}) => {
+        tData.about=_.get(data,'0',{});
+        return (new TModel.TrainerAward()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+      })
+      .then(({data}) => {
+        tData.awards = data;
+        return (new TModel.TrainerCalib()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+      })
+      .then(({data}) => {
+        tData.calibs = data;
+        return (new TModel.TrainerAcademic()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+      })
+      .then(({data}) => {
+        tData.academics = data;
+        return tData;
+      });
+    })
   });
 
 
