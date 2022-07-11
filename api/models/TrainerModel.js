@@ -117,6 +117,7 @@ class TrainerAward extends TrainerBase {
         iData.push({
           'user_id': user_id,
           'award': data.award[k],
+          'organisation': data.award[k],
           'year': v,
           'url': data.url[k]
         });
@@ -202,7 +203,7 @@ class TrainerAbout extends TrainerBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['firstname','middlename','lastname','biography','certificates','trainings']);
+    let frmdata = _.pick(data,['firstname','middlename','lastname','biography','trainings']);
     frmdata['user_id'] = user_id;
     return this.uploadImage(data, _.get(files,'profile_image',false),'profile')
     .then(fname => {
@@ -211,6 +212,10 @@ class TrainerAbout extends TrainerBase {
     })
     .then(fname => {
       frmdata['award_image'] = fname;
+      return this.uploadImage(data, _.get(files,'base_image',false), 'base');
+    })
+    .then(fname => {
+      frmdata['base_image'] = fname;
       if(data.id > 0){
         return super.edit(frmdata, data.id);
       }else{
