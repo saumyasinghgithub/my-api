@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {routeWrapper, isTrainer, isStudent} = require('./apiutils');
+const {routeWrapper, isTrainer} = require('./apiutils');
 const TModel = require('../models/TrainerModel');
 const _ = require('lodash');
 const res = require('express/lib/response');
@@ -236,22 +236,23 @@ module.exports = () => {
   router.get('/profile/:tid', function (req, res) {
     routeWrapper(req,res, false, () => {
       let tData = {};
-      return (new TModel.TrainerAbout()).list({'where' : {'user_id': req.params.tid}})
+      let whereParams = {'where' : {'user_id': req.params.tid},'limit': 99999};
+      return (new TModel.TrainerAbout()).list(whereParams)
       .then(({data}) => {
         tData.about=_.get(data,'0',{});
         if(_.get(tData,'about.id',false)){
-          return (new TModel.TrainerAward()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+          return (new TModel.TrainerAward()).list(whereParams);
         }else{
           throw {message: "No such trainer found"};
         }
       })
       .then(({data}) => {
         tData.awards = data;
-        return (new TModel.TrainerCalib()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+        return (new TModel.TrainerCalib()).list(whereParams);
       })
       .then(({data}) => {
         tData.calibs = data;
-        return (new TModel.TrainerAcademic()).list({'where' : {'user_id': req.params.tid},'limit': 99999});
+        return (new TModel.TrainerAcademic()).list(whereParams);
       })
       .then(({data}) => {
         tData.academics = data;
