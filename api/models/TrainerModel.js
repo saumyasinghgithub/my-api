@@ -182,8 +182,6 @@ class TrainerExp extends TrainerBase {
       
     });
 
-    console.log(iData);
-
     return this.deleteWhere({'user_id': user_id})
     .then(res => this.addMulti(iData))
     .then(data => ({
@@ -288,7 +286,6 @@ class TrainerCourseContent extends TrainerBase {
     return this.uploadImage(data, _.get(files,'video',false),'content')
     .then(fname => {
       frmdata['video'] = fname;
-      console.log(data);
       if(parseInt(data.id) > 0){
         return super.edit(frmdata, data.id);
       }else{

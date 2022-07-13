@@ -30,9 +30,11 @@ module.exports = () => {
   });
 
   router.get('/my-awards', function (req, res) {
+    
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerAward()).list({'user_id': token.data.id});
+        let whereParams = {'where' : {'user_id': token.data.id},'limit': 99999};
+        return (new TModel.TrainerAward()).list(whereParams);
       }else{
         throw({message: "Permission Denied!"});
       }
@@ -73,7 +75,8 @@ module.exports = () => {
   router.get('/my-academic', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerAcademic()).list({'user_id': token.data.id});
+        let whereParams = {'where' : {'user_id': token.data.id},'limit': 99999};
+        return (new TModel.TrainerAcademic()).list(whereParams);
       }else{
         throw({message: "Permission Denied!"});
       }
@@ -91,10 +94,11 @@ module.exports = () => {
   });
 
 
-  router.get('/my-exp', function (req, res) {
+  router.get('/my-exp', function (req, res) { 
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerExp()).list({'user_id': token.data.id});
+        let whereParams = {'where' : {'user_id': token.data.id},'limit': 99999};
+        return (new TModel.TrainerExp()).list(whereParams);
       }else{
         throw({message: "Permission Denied!"});
       }
@@ -135,15 +139,10 @@ module.exports = () => {
   router.get('/my-courses', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        
-        let where = {"fname": 'user_id', "fvalue": token.data.id};
-
-        if(_.get(req,'query.id',null)){
-          where['fname'] = 'id';
-          where['fvalue'] = req.query.id;
-        }
-        return (new TModel.TrainerCourse()).findBy(where)
-          .then(res => ({success: true, data: _.get(req,'query.id',null) ? res[0] : res }));
+       let params = req.query;
+       _.set(params, 'where.user_id',token.data.id);
+        return (new TModel.TrainerCourse()).list(params)
+          .then(res => ({...res, data: _.get(req,'query.where.id',null) ? res.data[0] : res.data }));
         
       }else{
         throw({message: "Permission Denied!"});
@@ -173,6 +172,7 @@ module.exports = () => {
 
   router.get('/course-content', function (req, res) {
     routeWrapper(req,res, true, (token) => {
+      
       if(isTrainer(token.data)){
         return (new TModel.TrainerCourseContent()).findBy(_.pick(req.query,['fname','fvalue']))
         .then(res => ({success: true, data: res}));

@@ -1,0 +1,1042 @@
+
+@media(max-width:767px){
+    .bannerText {
+        font-size: 24px;
+        min-height: 00px;
+        padding-top: 80px;
+        padding-left: 0px;
+        line-height: 30px
+    }
+    form.searchBOx{
+        display: none;
+    }
+    ul.navList {
+        list-style: none;
+        margin: 0px;
+    }
+    ul.navList li {
+        font-size: 20px;
+    }
+    .bannerBottomtext {
+        left: 15px;
+        bottom: 7px;
+    }
+    .bannerBottomtext ul {
+        margin-top: 5px;
+    }
+    .whyAD {        
+        margin-right: 10px;        
+    }
+    .whyAD img {
+        width: 50px;
+    }
+    .findBox h2 {
+        font-size: 26px;
+        margin-bottom: 0px;
+    }
+    ul.footerRight {
+        float: none;
+        position: absolute;
+        right: 15px;
+        bottom: 0;
+    }
+    .owl-carousel {
+        padding-top: 30px;
+    }
+    ul.navList li a span {
+        display: none;
+    }
+    .filterbox {
+        margin-bottom: 30px;
+        padding-left: 0;
+    }
+    .filterbox .form-group input.form-control {
+        display: block;
+        width: 100%;
+        margin: 0;
+    }
+    footer.footer ul li {
+        display: inline-block;
+        padding: 0px 3px;
+    }
+    .filterbox label {
+        font-size: 16px;
+        display: block;
+    }
+    button.searchBtn {
+        top: unset;
+        right: 0;
+        bottom: 0;
+    }
+    .flexWrapper {
+        display: block;
+        flex: unset;
+        box-shadow: none;
+    }
+    .flex20 {
+        width: 100%;
+        padding-bottom: 50px;
+    }
+    .flexWrapper .nav {
+        display: block;
+        text-align: center;
+    }
+    .flexWrapper .nav li {
+        display: inline-block;
+        padding: 10px 8px;
+        text-align: center;
+    }
+    .flexItem.flex80 {
+        width: 100%;
+    }
+    .tab-pane{
+        background-size: cover !important;
+        padding: 20px;
+    }
+    .tab-text-box {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    .progileImg {
+        right: 0;
+        top: 10px;
+        left: 0;
+        margin: 0px auto;
+    }
+    .bio-data-header {
+        width: auto;
+        padding-top: 135px;
+        padding-left: unset;
+        text-align: center;
+    }
+    .bio-data-body {
+        margin-top: 40px;
+        padding: 20px 10px;
+        background: #fff;
+    }
+    .bioBodyInfolist {
+        margin-bottom: 30px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 30px;
+    }
+    .bioBodyInfolist ul li:first-child {
+        text-align: center;
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
+    .bioBodyInfolist ul {
+        text-align: center;
+    }
+    .flex20 .alltrainers {
+        right: 20px;
+    }
+    .flex80 .alltrainers {
+        bottom: 30px;
+    }
+    ul.resultlist li {
+        padding: 10px 10px;
+    }
+    .home-wrapper {
+        min-height: 250px;
+    }
+    footer.footer {
+        background: #000;
+        position: fixed;
+        bottom: 0px;
+        width: 100%;
+        z-index: 99;
+        padding: 2px 0;
+    }
+    .loginWrapper h3 {
+        font-size: 26px;
+    }
+    .loginwrapper {
+        height: auto;
+        padding: 80px 0 40px;
+    }
+    .loginWrapper {
+        padding: 20px;
+        position: relative;
+        left: unset;
+        top: unset;
+        transform: unset;
+    }
+    .close {
+        margin: 10px 0 30px;
+        right: 10px;
+        top: 0px
+    }
+    .findBox {
+        margin: 30px 0 20px;
+    }
+    .modal-full .modal-content{
+        padding: 0px;
+    }
+    .loginWrapper.signupWrapper ul li {
+        padding-right: 7px;
+    }
+    .loginWrapper.signupWrapper ul li img {
+        width: 35px;
+    }
+    #loginModal .modal-content {
+        padding: 60px 20px 30px;
+    }
+    .home-result-wrapper {
+        min-height: 240px;
+        background: url(../images/results-2.jpg) center right no-repeat;
+        position: relative;
+        background-size: cover;
+    }
+    .bannerBottomtext ul li {
+        display: inline-block;
+        font-size: 12px;
+    }
+    .header.fixed-top {
+        z-index: 99;
+        padding: 0px 0;}
+    .mobileView{
+        display: block;
+    }
+    .sidenav form.searchBOx {
+        display: block;
+        margin: 0;
+        width: 90%;
+        margin-bottom: 30px;
+        float: none;
+        margin-top: 10px;
+    }
+    .sidenav form.searchBOx .form-control {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        border-bottom: 1px solid #495057;
+        padding-left: 0;
+        color: #495057;
+        position: relative;
+    }
+    .sidenav .searchBOx .form-control::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: #495057;
+        opacity: 1; /* Firefox */
+      }
+      
+      .sidenav  .searchBOx .form-control:-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: #495057;
+      }
+      
+      .sidenav  .searchBOx .form-control::-ms-input-placeholder { /* Microsoft Edge */
+        color: #495057;
+      }
+      .resultDisplay {
+        padding-top: 70px;
+        padding: 0 15px;
+    }
+    footer.footer ul.footerRight li {
+        padding: 5px 0px 5px 7px;
+    }
+    .congrateBoxinner h2 {
+        font-size: 24px;
+    }
+    .congrateBoxinner h4 {
+        font-size: 16px; margin-bottom: 20px;
+    }
+    .congrateBox {
+        height: auto;
+        padding-bottom: 40px;
+        min-height: 100vh;
+        margin-bottom: 0;
+    }
+    .cardWrapper {
+        padding-top: 40px;    padding-bottom: 100px;
+    }
+    ol.breadcrumb {
+        padding: 0.75rem 0 0;
+    }
+    .cartRightBox {
+        margin: 15px 0px;
+    }
+    .secuitytext {
+        margin-top: 15px;
+    }
+    ul.iconList .circleBox {
+        width: 45px;
+        height: 45px;
+        font-size: 10px;
+        padding-top: 1px;
+    }
+    ul.iconList li {
+        padding: 4px;
+    }
+    ul.iconList .circleBox img {
+        width: 15px;
+    }
+    ul.iconList {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    .imgWrapper .circleBox {
+        position: absolute;
+        left: 19px;
+        top: -40px;
+        height: 85px;
+        width: 85px;
+        font-size: 13px;
+        padding-top: 10px;
+    }
+    .imgWrapper .circleBox img {
+        width: 40px;
+    }
+    .coursePrice {
+        font-size: 30px;
+        top: 0;
+        text-align: center
+    }
+    .coursePrice span {
+        position: relative;
+    }
+    .courseOverview h3 {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .courseWrapper {
+        box-shadow: 1px 0px 4px #ccc;
+    }
+    .courseOverview {
+        margin-top: 30px;
+    }
+    .bioBodyInfolist ul li {
+        padding: 0px 3px;    color: #58595b;
+    }
+    ul.navbar-nav img {
+        width: 20px;
+    }
+    ul.navbar-nav li {
+        padding-left: 10px;
+    }
+    input.enterCoupon {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+    .libraryInfobox {
+        display: block;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 20px;
+    }
+    .LTextBox {
+        padding: 0;
+    }
+    .LImgBox {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .LPriceInfoBox {
+        width: 100%;
+    }
+    .LImgBox img {
+        margin: 0px auto;
+    }
+    .librarybuttonList ul li {
+        padding: 12px 10px;
+    }
+
+   
+    .notifactionTextBox .col-sm-10 {
+        padding: 0px 40px;
+    }
+    .profile_width100 {
+        width: 100%;
+    }
+    .awardTextInner {
+        padding: 25px 0 0;
+        width: 700px;
+        max-width: 100%;
+        padding-left: 0;
+    }
+    .container100 {
+        padding: 0 15px;
+    }
+    .studyBox.clearfix {
+        width: 900px;
+        display: block;
+        -ms-display: block;
+        max-width: 100%;
+    }
+    .studyImgBox {
+        width: auto;
+    }
+    .study30 {
+        width: 100px;
+        max-width: 100%;
+    }
+    .headingtext {
+        font-size: 30px;
+        line-height: 32px;
+    }
+    .container60 {
+        padding: 0 30px;
+    }
+    .studyDetailwrapper {
+        MARGIN: 25PX 0;
+    }
+    .studyTextBox {
+        margin-top: 10px;
+    }
+    .studySubTitle {
+        margin-bottom: 10px;
+    }
+    .studyTime {
+        margin-bottom: 10px;
+    }
+    .studyTextBox {
+        margin-left: 0px;
+    }
+  
+    .account_table {
+        white-space: nowrap;
+    }
+    .container30 {
+        padding: 0px 15px;
+    }
+    .headingtext {
+        font-size: 25px;
+    }
+    ul.profile_menu_list {
+        margin-top: 0px;
+    }
+    .awardTextInner:before{
+        display: none;
+    }
+    .filterMenu {
+        margin: 0px 0;
+    }
+    span.subText {
+        display: block;
+    }
+    span.performaneresult {
+        position: relative;
+        display: block;
+        margin-top: 10px;
+    }
+    .my-performance-wrapper .studyImgBox {
+        width: auto;
+        max-width: 100%;
+    }
+    .notifactionHeading {
+        padding: 0px 0px;
+    }
+    .notifactionTextBox {
+        margin-bottom: 40px;
+        padding: 0;
+        padding-bottom: 20px;
+        border-bottom: 1px solid;
+    }
+    ul.profile_menu_list li {
+        font-size: 16px;
+        line-height: 16px;
+    }
+    .slide-in-content {
+        width: unset;
+        /* height: 100vh; */
+        overflow: auto;
+    }
+    .slide-in-content {
+        padding-left: 30px;
+    }
+    .profiletabBox ul.profileTab li {
+        font-size: 18px;
+    }
+    .profileHeading {
+        padding-left: 214px;
+    }
+
+    ul.profile-socail-icon {
+        right: 0px;
+        top: 0px;
+    }
+    .profiletabBox ul.profileTab {
+        position: relative; 
+    }
+    .profileHeading {
+        padding-left: 0px;
+    }
+    .headingtext br {
+        display: none;
+    }
+    .proflextext {
+        position: relative;
+    }
+    .profileLeftFlex-item {
+        width: unset;
+    }
+    .aboutMe-pr0fle {
+        padding: 0px 0;
+    }
+    .profileTabQu .nav li {
+        font-size: 20px;
+        margin-right: 25px;
+        line-height: 20px;
+    }
+    .tab-pane {
+        padding: 0px;
+    }
+    .resultDisplay .tab-pane {
+        padding: 0;
+       padding-top:10px;
+        background: #fff;
+        /* border: 1px solid #ccc;
+        box-shadow: 0px 0px 4px #ccc; */
+    }
+    .profileTabQu .nav {
+        margin-bottom: 40px;
+    }
+    .profile-wrapper {
+        padding: 40px 0;
+    }
+    .profileFollowList {
+        margin-top: 40px;
+    }
+    .profileRightFlex-item {
+        width: 100%;
+        margin-top: 40px;
+    }
+    .profileFollowList ul li {
+        padding-right: 3px;
+    }
+    .profileFollowList ul a {
+        font-size: 14px;
+    }
+    .moveimgbox {
+        height: 250px !important;
+        background-attachment: unset  !important;
+        overflow: hidden;
+    }
+    
+    .notifactionHeading {
+        margin-bottom: 40px;
+    }
+    .profile-wrapper {
+        margin-bottom: 40px;
+        
+    }
+    .moveimgbox#my-performance {
+        height: 90px !important;
+    }
+    .studyBody {
+        display: block;
+    }
+    .study30 {
+        width: unset;
+        margin-bottom: 10px;
+        display: flex;
+    }
+    .studytype {
+        height: unset;
+    }
+    .studyBody a {
+        margin-top: unset;
+        padding-left: 15px;
+    }
+    .CompleteStudy .studytype span {
+        display: inline-block;
+        padding-left: 15px;
+    }
+    .CompleteStudy .studytype {
+        padding-left: unset;
+    }
+    .CompleteStudy .studytype img.awardIocn {
+        position: relative;
+        left:0;
+        margin-right: 5px;
+    }   
+    .studyBox.clearfix {
+        margin-top: 25px;
+        width: auto;
+    } 
+    .moveimgbox#my-certificate{
+        height: 160px !important;
+    }
+    .knowledgeWrapper {
+        margin-left: unset;
+    }
+    .subHeading:before{
+        display: none;
+    }
+    .subHeading {
+        padding-left: unset;
+    }
+    .navbar-collapse ul.navbar-nav li {
+        display: block;
+    }
+    .navbar-collapse ul.navbar-nav {
+        float: none;
+    }
+    .navbar-collapse {
+        background: #dddada;
+    }
+    .filterMenu .nav-item:first-child .nav-link {
+        padding-left: 20px;
+    }
+    .serviceBody .awardTextInner {
+        margin-bottom: 40px;
+    }
+    .knowledgBody {
+        margin: 40px 0;
+    }
+    .knowledgeBox {
+        margin-bottom: 40px;
+    }
+    .profileHeading img {
+        margin-top: unset;
+    }
+    .headingtext {
+        margin-top: 30px !important;
+    }
+    div#my-notification {
+        height: auto !important;
+    }
+    .profiletabBox {
+        position: relative;
+        padding-bottom: unset;
+        min-height: unset;
+    }
+    .profile-wrapper.profile-wrapperStudent {
+        padding-top: 46px;
+        margin-top: 0;
+    }
+    .sendMsg {
+        position: relative;
+        float: right;
+        margin-top: 10px;
+        right: unset;
+    }
+    .profile-Flex {
+        margin-top: 40px;
+    }
+    .profileTabQu .nav li:first-child a:before {
+        right: 0px;
+        top: -7px;
+    }
+    .profileLeftBox h1 {
+        margin-top: 40px;
+    }
+    .sidebarInner {
+        padding-left: 20px;
+    }
+
+    .profile-Flex {
+        display: block;
+    }
+    .serviceWrapper.container .profileHeading {
+        margin-top: 40px;
+    }
+    .slide-in-content .col-sm-6:last-child ul.profile_menu_list li:nth-child(3) {
+        margin-top: unset;
+    }
+    .libraryHeading {
+        position: relative;
+    }
+
+    .awardTextWrapper {
+        position: relative;
+    }
+    
+    .awardTextWrapper button.navbar-toggler {
+        position: absolute;
+        right: 0;
+        bottom: 50px;
+    }
+    .proTextTtile {
+        position: relative;
+        bottom: unset;    padding-bottom: 15px;
+    }
+    ul.iconList .circleBox {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .usdheading {
+        font-size: 14px;
+    }
+    .usdtext {
+        font-size: 12px;
+    }
+    .knowledgHeading {
+        margin-top: 30px;
+    }
+    .salesbanner {
+        background-size: cover;
+        height: 190px;
+        background-attachment: unset;
+    }
+    h3.myStudenttitle {
+        margin-top: 40px;
+    }
+    .studentInnerWrapper div#navbarTogglerDemo03 {
+        margin-left: 0;
+    }
+    .studentInnerWrapper .table {
+        margin-top: 0;
+    }
+    .desktopview{
+        display: none;
+    }
+    .circleBox {
+            font-size: 14px;
+    }
+    ul.resultlist {
+        bottom: 10px;
+    }
+    .notiWrapper,
+    .termsBg{
+        height: 200px
+    }
+    .parallax-window{
+        min-height: 200px
+    }
+    .textWrapper h1 {
+        font-size: 30px;
+        margin: 25px 0;
+    }
+    .textWrapper h4 {
+        font-size: 18px;
+    }
+}
+
+@media(min-width:768px) and (max-width:1024px){
+    ul.navList {
+        margin: 50px;
+    }
+    ul.navList li {
+        font-size: 30px;
+    }
+    ul.navList li a span{
+        display:none;
+    }
+    ul.navList li a {
+        padding: 25px 0;
+    }
+    .owl-carousel {
+        padding-top: 80px;
+    }
+    .bio-data-body {
+        padding: 30px 0 30px 0;
+    }
+    .coursePrice {
+        font-size: 40px;
+    }
+    .courseOverview {
+        padding: 0px 10px;
+    }
+    .imgWrapper .circleBox {
+        padding-top: 0px;
+    }
+    .imgWrapper {
+        height: 240px;
+    }
+    .courseOverview h3 {
+        font-size: 24px;
+    }
+    footer.footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: #fff;
+    }
+    .filterMenu .nav-item .nav-link {
+        padding: 10px 15px;
+    }
+    .profile_width100 {
+        width: 60%;
+    }
+    ul.profile_menu_list li {
+        font-size: 18px;
+    }
+    .container60 {
+        padding: 0 15px;
+    }
+    .container100 {
+        padding: 0 30px;
+    }
+    .boldAmount {
+        font-size: 25px;
+    }
+    .btn.btnBlue {
+        font-size: 12px;
+    }
+    .notif_text {
+        padding-left: 50px;
+    }
+    .headingtext {
+        font-size: 50px;
+        line-height: 50px;
+        margin-top: 0
+    }
+    .awardTextWrapper {
+        padding: 30px 0;
+    }
+    span.performaneresult {
+        position: relative;
+        display: block;
+        margin-top: 10px;
+    }
+    .studyBox.clearfix {
+        margin-bottom: 50px;
+        margin-top: unset;
+    }
+    .filterMenu {
+        padding: 0px;
+        margin: 0px 0px 30px 0px;
+    }
+    .profileTabQu .nav li {
+        font-size: 40px;
+        margin-right: 60px;
+        line-height: 45px;
+    }
+    #trainMotion {
+        height: 350px;
+    }
+    .awardTextInner:before {
+        top: 52px;
+    }
+    .awardTextInner {
+        padding: 40px 0 0;
+    }
+    h3.headingSubtitle {
+        font-size: 20px;
+    }
+	.studyBox.clearfix {
+        width: auto; 
+    }
+    .awardTextInner:before{
+        display: none;
+    }
+    .profile_width100 {
+        width: 70%;
+    }
+    .proTextTtile {
+        position: absolute;
+        bottom: 0;
+    }
+    
+    .proTextTtile h1 br {
+        display: none;
+    }
+    
+    .proTextTtile .headingtext {
+        margin-top: 0;
+        display: block;
+        padding-right: 0;
+    }
+    #account {
+        background: url(../images/account_img.jpg) center no-repeat;
+        height: 290px;
+        background-attachment: unset;
+    }
+    
+}
+@media(min-width:768px) and (max-width:991px){
+    .bioBodyInfolist ul li:first-child {
+        width: 230px;
+    }
+    .bio-data-body {
+        padding: 30px 0 30px 55px;
+    }
+    .owl-carousel {
+        padding-top: 20px;
+    }
+    .bioBodyInfolist br{
+        display: none;
+    }
+    .bioBodyInfolist ul li:first-child {
+        font-size: 14px;}
+    #resultDisplay {
+        padding: 0 20px;
+    }
+    .bioBodyInfolist ul li {
+        padding: 0px 5px;
+    }
+    span.boldAmount {
+        font-size: 25px;
+        font-weight: bold;
+    }
+    .processpay {
+        font-size: 12px;
+    }
+    .secuitytext {
+        margin-top: 10px;
+    }
+    .coursePrice {
+        font-size: 40px;
+        top: unset;
+        text-align: center;
+    }
+    .coursePrice span {
+        position: relative;
+    }
+    ul.iconList li {
+        display: inline-block;
+        padding: 15px;
+    }
+    ul.iconList li {
+        display: inline-block;
+        padding: 20px 5px;
+    }
+    ul.iconList .circleBox {
+        width: 80px;
+        height: 80px;
+        font-size: 14px;
+        padding-top: 5px;
+    }
+    ul.iconList .circleBox img {
+        width: 20px;
+    }
+    .imgWrapper .circleBox {
+        top: -40px;
+        height: 80px;
+        width: 80px;
+        padding-top: 10px;
+    }
+    input.enterCoupon {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+    button.applyBtn.btn {
+        margin: unset;
+        width: auto;
+    }
+    img.img-fluid.itemImg {
+        width: 40px;
+    }
+    .courseOverview h3 {
+        font-size: 20px;
+    }
+    .imgWrapper {
+        height: 180px;
+    }
+    .imgWrapper .circleBox img {
+        width: 30px;
+    }
+    .notiWrapper,
+    .termsBg{
+        height: 300px
+    }
+    .parallax-window{
+        min-height: 300px
+    }
+    .textWrapper h1 {
+        font-size: 40px;
+        margin: 35px 0;
+    }
+    .textWrapper h4 {
+        font-size: 18px;
+    }
+    .comming-TBanner h1 {
+        margin: 5px 0px !important;
+    }
+}
+
+
+@media(max-width: 480px){
+    .flexWrapper .nav li span {
+        display: none;
+    }
+    .flexWrapper .nav li img {
+        width: 56px;
+    }
+    .flexWrapper .nav li{
+        padding: 10px 4px;
+    }
+    ul.footerLeft li:first-child {
+        display: block;
+    }
+    .loginWrapper.signupWrapper ul li {
+        display: inline-block;
+        padding-right: 0px;
+    }
+    .loginWrapper h3 {
+        font-size: 20px;
+    }
+    button.applyBtn.btn {
+        width: auto;
+        max-width: 100%;
+    }
+    span.boldAmount {
+        font-size: 17px;
+    }
+    .processpay {
+        color: #444648;
+        font-size: 12px;
+    }
+    .cartLeftBox table {
+        font-size: 13px;
+    }
+    .cartLeftBox h5 {
+        font-size: 13px;
+    }
+    .breadcrumb-item + .breadcrumb-item {
+        padding-left: 4px;
+    }
+    .breadcrumb a, .breadcrumb li {
+        color: #58585a;
+        font-size: 12px;
+    }
+    
+}
+@media(max-width:575px){
+    .form-group.width50 {
+        width: 100%;
+        float: none;
+    }
+    .form-group.width50.width50R{
+        width: 100%;
+        float: none;
+    }
+    .loginWrapper.signupWrapper ul li:first-child {
+        font-size: 14px;
+    }
+    button.btn.btnSubmit.btnSubmitRed {
+        background: #e41616;
+        margin-top: 20px;
+    }
+    ul.resultlist li img{
+        width: 35px;
+    }
+    .notifactionTextBox img {
+        margin: 0 auto 20px;
+        text-align: center;
+        display: block;
+    }
+    .filterResultBox .col-sm-4 {
+        width: 50%;
+    }
+    .filtertypeBox h4 {
+        margin-bottom: 0;
+        font-size: 16px;
+    }
+    .filterCloseBtn {
+        width: 18px;
+    }
+    .filterResultBox {
+        padding: 60px 15px;
+    }
+}
+
+@media(min-width:768px){
+    .navbar-toggler{
+        display: none;
+    }
+    .desktopview{
+        display: block;
+    }
+    .mobileview{
+        display: none;
+    }
+}
+@media(min-width:1200px){
+    .serviceWrapper {
+        margin-top: -240px;
+    }
+    .profile-Flex {
+        margin-top: -255px;
+    }
+}
+
