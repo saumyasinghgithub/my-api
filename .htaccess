@@ -1,5 +1,6 @@
 RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/(api|admin/.*)$
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(admin|api|assets|static)($|/) - [L]
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [QSA,L]
 ErrorDocument 404 /404.html
