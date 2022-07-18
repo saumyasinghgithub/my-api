@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "http://autodidact.knowledgesynonyms.com/admin/static/css/main.073c9b0a.css",
-    "main.js": "http://autodidact.knowledgesynonyms.com/admin/static/js/main.67bd7ac6.js",
+    "main.js": "http://autodidact.knowledgesynonyms.com/admin/static/js/main.cc6f542f.js",
     "static/js/787.256341b5.chunk.js": "http://autodidact.knowledgesynonyms.com/admin/static/js/787.256341b5.chunk.js",
     "index.html": "http://autodidact.knowledgesynonyms.com/admin/index.html",
     "main.073c9b0a.css.map": "http://autodidact.knowledgesynonyms.com/admin/static/css/main.073c9b0a.css.map",
-    "main.67bd7ac6.js.map": "http://autodidact.knowledgesynonyms.com/admin/static/js/main.67bd7ac6.js.map",
+    "main.cc6f542f.js.map": "http://autodidact.knowledgesynonyms.com/admin/static/js/main.cc6f542f.js.map",
     "787.256341b5.chunk.js.map": "http://autodidact.knowledgesynonyms.com/admin/static/js/787.256341b5.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.67bd7ac6.js"
+    "static/js/main.cc6f542f.js"
   ]
 }
