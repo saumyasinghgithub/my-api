@@ -261,6 +261,11 @@ module.exports = () => {
     })
   });
 
+router.get('/search', function (req, res){
+  routeWrapper(req,res, false, () => {
+
+  })
+});
 
   return router;
   
