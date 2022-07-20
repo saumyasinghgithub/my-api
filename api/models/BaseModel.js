@@ -1,4 +1,3 @@
-const { ary } = require('lodash');
 const _ = require('lodash');
 const DBObject = require('./DB');
 
@@ -63,7 +62,10 @@ class BaseModel{
       refine = attrs.refine;
       ary = attrs.ary;
     }
-    
+
+    if(_.get(params,'whereStr',false)){
+      refine += (refine!='' ? ' AND (' : ' WHERE (') + params.whereStr + ')';
+    }
 
     let ret = { success: false };
     return this.db.run('SELECT COUNT(' + this.pk + ') as total FROM ' + this.table + refine,ary)
@@ -83,7 +85,7 @@ class BaseModel{
       ary.push(_.get(params,'sortDir',this.sortDir));
       ary.push(parseInt(_.get(params,'start',0)));
       ary.push(parseInt(_.get(params,'limit',this.pageLimit)));
-      return this.db.run('SELECT * FROM ' + this.table + refine, ary);
+      return this.db.run('SELECT ' + _.get(params,'fields','*') + ' FROM ' + this.table + refine, ary);
     })
     .then(res => {
       // console.log(res);

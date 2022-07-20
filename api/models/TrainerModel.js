@@ -330,4 +330,24 @@ class TrainerCourseResource extends TrainerBase {
   }
 }
 
-module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerCourse, TrainerCourseContent, TrainerCourseResource};
+class TrainerSearch extends TrainerBase{
+
+  table = "trainer_calibrations";
+
+  search(params){
+    if(_.get(params,'calibs',false)){
+
+      let calibs = JSON.parse(params.calibs);
+      params.whereStr = _.join(_.map(calibs, (pval,pk) => `(pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)})`),' OR ');
+
+    }    
+    this.list({...params,pageLimit: 999999999, fields: 'DISTINCT(user_id) as user_id'})
+    .then(res => {
+      let user_ids = res.data.map(d => d.user_id);
+      return (new TrainerAbout()).list({...params,whereStr: `user_id IN (${user_ids.join(',')})`})
+    })
+  }
+
+}
+
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch};
