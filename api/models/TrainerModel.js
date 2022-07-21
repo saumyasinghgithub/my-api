@@ -3,6 +3,7 @@ const BaseModel = require('./BaseModel');
 const fs = require('fs');
 const path = require('path');
 const slugify = require('slugify');
+const PAModel = require('./PAModel');
 
 class TrainerBase extends BaseModel {
 
@@ -335,17 +336,101 @@ class TrainerSearch extends TrainerBase{
   table = "trainer_calibrations";
 
   search(params){
+    let ret = {success: false, message: "Invalid Search Criteria"};
+    let user_ids = [];
     if(_.get(params,'calibs',false)){
 
       let calibs = JSON.parse(params.calibs);
       params.whereStr = _.join(_.map(calibs, (pval,pk) => `(pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)})`),' OR ');
 
     }    
-    this.list({...params,pageLimit: 999999999, fields: 'DISTINCT(user_id) as user_id'})
+    return this.list({...params,limit: 999999999, fields: 'DISTINCT(user_id) as user_id'})
     .then(res => {
-      let user_ids = res.data.map(d => d.user_id);
-      return (new TrainerAbout()).list({...params,whereStr: `user_id IN (${user_ids.join(',')})`})
+      user_ids = res.data.map(d => d.user_id);
+      return this.fetchAbout(params, user_ids);
+    }).then(about => {
+      ret = {success: about.success, data: about.data, pageInfo: about.pageInfo};
+      return this.fetchCalibs(user_ids,params.paCalibs);
+    }).then(calibs => {
+      ret.data = ret.data.map(ud => ({...ud, calibs: _.filter(calibs,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
+      return this.fetchCourses(user_ids);
+    }).then(courses => {
+      ret.data = ret.data.map(ud => ({...ud, courses: _.filter(courses,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
+      return ret;
     })
+  }
+
+  fetchAbout(params, user_ids){
+    return (new TrainerAbout()).list({
+      ...params,
+      whereStr: `user_id IN (${user_ids.join(',')})`, 
+      fields: 'firstname,lastname,base_image,profile_image,user_id'
+    });
+  }
+
+  fetchCalibs(user_ids,calibs){
+    return (new TrainerCalib()).list({
+      limit: 99999, 
+      whereStr: `user_id IN (${user_ids.join(',')}) AND pa_id IN (${calibs})`, 
+      fields: 'user_id,pa_id,pa_value'
+    })
+    .then(res => {
+      let userCalibs = (res.data.map(r => ({user_id: r.user_id,pa_id: r.pa_id})));
+      return (new PAModel()).list({
+        limit: 99999, 
+        whereStr: `id IN (${res.data.map(d => d.pa_value).join(',')}) AND active=1`, 
+        fields: 'id,title'
+      })
+      .then(res1 => {
+        userCalibs = userCalibs.map(uc => ({...uc, "pa_value": _.find(res1.data,{id: uc.pa_id}).children.map(c => c.title)}));
+        let t = [];
+        userCalibs = _.compact(userCalibs.map(uc => {
+          let k = `${uc.user_id}#${uc.pa_id}`;
+          if(t.indexOf(k) == -1){
+            t.push(k);
+            return uc;
+          }
+          return undefined;
+        }));
+        return userCalibs;
+      })
+      
+    })
+  }
+
+  fetchCourses(user_ids){
+    let uidx= 0;
+    let userCourses = user_ids.map(uid => ({user_id: uid, courses: [], total: 0}));
+    return new Promise((resolve,reject) => {
+      const iterate = () => {
+        if(uidx >= user_ids.length){
+          resolve(userCourses);
+        }else{
+          let user_id = user_ids[uidx++];
+          this.fetchUserCourses(user_id)
+          .then(uc => {
+            let idx = _.findIndex(userCourses,{user_id: user_id});
+            userCourses[idx].courses = uc.data.map(d => _.omit(d,'user_id'));
+            userCourses[idx].total = uc.pageInfo.total;
+          })
+          .finally(iterate);
+        }
+      };
+
+      iterate();
+
+    });
+  }
+
+  fetchUserCourses(user_id){
+    return (new TrainerCourse()).list({
+      start: 0,
+      limit: 4,
+      sortBy: 'created_at',
+      sortDir: 'DESC',
+      whereStr: `user_id=${parseInt(user_id)}`, 
+      fields: 'id as course_id,user_id,name,course_image,slug,price'
+    });
   }
 
 }
