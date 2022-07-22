@@ -355,9 +355,13 @@ class TrainerSearch extends TrainerBase{
       ret.data = ret.data.map(ud => ({...ud, calibs: _.filter(calibs,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
       return this.fetchCourses(user_ids);
     }).then(courses => {
-      ret.data = ret.data.map(ud => ({...ud, courses: _.filter(courses,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
-      return ret;
-    })
+      ret.data = ret.data.map(ud => ({...ud, courses: _.omit(_.filter(courses,{user_id: ud.user_id})[0],'user_id')}))
+      return this.fetchCourseResources(_.flattenDeep(courses.map(uc => uc.courses.map(c => c.course_id))))
+      .then(cres => {
+        ret.data = ret.data.map(ud => ({...ud, courses: {...ud.courses, courses: ud.courses.courses.map(udc => ({...udc, resources: _.filter(cres.data,{course_id: udc.course_id})}))}}))
+        return ret;
+      })
+    });
   }
 
   fetchAbout(params, user_ids){
@@ -430,6 +434,15 @@ class TrainerSearch extends TrainerBase{
       sortDir: 'DESC',
       whereStr: `user_id=${parseInt(user_id)}`, 
       fields: 'id as course_id,user_id,name,course_image,slug,price'
+    });
+  }
+
+  fetchCourseResources(course_ids){
+    return (new TrainerCourseResource()).list({
+      start: 0,
+      limit: 9999999,
+      whereStr: `course_id IN (${course_ids.join(',')})`,
+      fields: 'id as resource_id,course_id,name,type,price'
     });
   }
 
