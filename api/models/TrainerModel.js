@@ -379,23 +379,14 @@ class TrainerSearch extends TrainerBase{
       fields: 'user_id,pa_id,pa_value'
     })
     .then(res => {
-      let userCalibs = (res.data.map(r => ({user_id: r.user_id,pa_id: r.pa_id})));
+      let userCalibs = [...res.data];
       return (new PAModel()).list({
         limit: 99999, 
         whereStr: `id IN (${res.data.map(d => d.pa_value).join(',')}) AND active=1`, 
         fields: 'id,title'
       })
       .then(res1 => {
-        userCalibs = userCalibs.map(uc => ({...uc, "pa_value": _.find(res1.data,{id: uc.pa_id}).children.map(c => c.title)}));
-        let t = [];
-        userCalibs = _.compact(userCalibs.map(uc => {
-          let k = `${uc.user_id}#${uc.pa_id}`;
-          if(t.indexOf(k) == -1){
-            t.push(k);
-            return uc;
-          }
-          return undefined;
-        }));
+        userCalibs = userCalibs.map(uc => ({...uc, "pa_value": _.find(_.find(res1.data,{id: uc.pa_id}).children,{id: uc.pa_value}).title}));
         return userCalibs;
       })
       

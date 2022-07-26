@@ -55,7 +55,7 @@ module.exports = () => {
   router.get('/my-calibs', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
-        return (new TModel.TrainerCalib()).list({...req.query,'user_id': token.data.id});
+        return (new TModel.TrainerCalib()).list({...req.query,where:{'user_id': token.data.id}});
       }else{
         throw({message: "Permission Denied!"});
       }
