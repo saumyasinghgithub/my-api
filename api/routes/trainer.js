@@ -233,35 +233,11 @@ module.exports = () => {
     }); 
   });
 
-  router.get('/profile/:tid', function (req, res) {
+  router.get('/profile/:slug', function (req, res) {
     routeWrapper(req,res, false, () => {
-      let tData = {};
-      let whereParams = {'where' : {'user_id': req.params.tid},'limit': 99999};
-      return (new TModel.TrainerAbout()).list(whereParams)
-      .then(({data}) => {
-        tData.about=_.get(data,'0',{});
-        if(_.get(tData,'about.id',false)){
-          return (new TModel.TrainerAward()).list(whereParams);
-        }else{
-          throw {message: "No such trainer found"};
-        }
-      })
-      .then(({data}) => {
-        tData.service = data;
-        return (new TModel.TrainerServices()).list(whereParams);
-      })
-      .then(({data}) => {
-        tData.awards = data;
-        return (new TModel.TrainerCalib()).list(whereParams);
-      })
-      .then(({data}) => {
-        tData.calibs = data;
-        return (new TModel.TrainerAcademic()).list(whereParams);
-      })
-      .then(({data}) => {
-        tData.academics = data;
-        return tData;
-      });
+      return (new TModel.TrainerSearch()).profile(req.params)
+      .then(tData => ({...tData, success: true}))
+      .catch(e => ({success: false, message: e.message}))
     })
   });
 

@@ -337,6 +337,38 @@ class TrainerSearch extends TrainerBase{
 
   table = "trainer_calibrations";
 
+  profile({slug}){
+    
+    let tData = {};
+    let whereParams = {'where' : {'slug': slug}};
+    return (new TrainerAbout()).list(whereParams)
+    .then(({data}) => {
+      tData.about=_.get(data,'0',{});
+      if(_.get(tData,'about.id',false)){
+        whereParams = {'where' : {'user_id': tData.about.user_id}};
+        return (new TrainerAward()).list(whereParams);
+      }else{
+        throw {message: "No such trainer found"};
+      }
+    })
+    .then(({data}) => {
+      tData.service = data;
+      return (new TrainerServices()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.awards = data;
+      return (new TrainerCalib()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.calibs = data;
+      return (new TrainerAcademic()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.academics = data;
+      return tData;
+    });
+  }
+
   search(params){
     let ret = {success: false, message: "Invalid Search Criteria"};
     let user_ids = [];
@@ -370,7 +402,7 @@ class TrainerSearch extends TrainerBase{
     return (new TrainerAbout()).list({
       ...params,
       whereStr: `user_id IN (${user_ids.join(',')})`, 
-      fields: 'firstname,lastname,base_image,profile_image,user_id'
+      fields: 'firstname,lastname,base_image,profile_image,user_id,slug'
     });
   }
 
