@@ -247,6 +247,10 @@ module.exports = () => {
         }
       })
       .then(({data}) => {
+        tData.service = data;
+        return (new TModel.TrainerServices()).list(whereParams);
+      })
+      .then(({data}) => {
         tData.awards = data;
         return (new TModel.TrainerCalib()).list(whereParams);
       })
