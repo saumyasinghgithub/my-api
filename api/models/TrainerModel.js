@@ -202,8 +202,11 @@ class TrainerAbout extends TrainerBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['firstname','middlename','lastname','biography','trainings']);
+    let frmdata = _.pick(data,['firstname','middlename','lastname','slug','biography','trainings']);
     frmdata['user_id'] = user_id;
+    const spath = _.lowerCase(frmdata.firstname + ' ' + frmdata.lastname + ' ' + user_id);
+    console.log(spath);
+    frmdata['slug'] = slugify(spath,{remove: /[*#+~.()'"!:@]/g},{lower: true});
     return this.uploadImage(data, _.get(files,'profile_image',false),'profile')
     .then(fname => {
       frmdata['profile_image'] = fname;
