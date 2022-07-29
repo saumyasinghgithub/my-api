@@ -352,11 +352,11 @@ class TrainerSearch extends TrainerBase{
       }
     })
     .then(({data}) => {
-      tData.service = data;
+      tData.awards = data;
       return (new TrainerServices()).list(whereParams);
     })
     .then(({data}) => {
-      tData.awards = data;
+      tData.services = data;
       return (new TrainerCalib()).list(whereParams);
     })
     .then(({data}) => {
@@ -365,6 +365,10 @@ class TrainerSearch extends TrainerBase{
     })
     .then(({data}) => {
       tData.academics = data;
+      return (new TrainerExp()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.experiences = data;
       return tData;
     });
   }
