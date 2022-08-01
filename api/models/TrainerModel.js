@@ -248,6 +248,28 @@ class TrainerServices extends TrainerBase {
   }
 }
 
+class TrainerKnowledge extends TrainerBase {
+
+  table = "trainer_knowledge";
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['about_knowledge']);
+    frmdata['user_id'] = user_id;
+    return this.uploadImage(data, _.get(files,'knowledge_image',false),'knowledge')
+    .then(fname => {
+      frmdata['knowledge_image'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+
+  }
+}
+
+
 class TrainerCourse extends TrainerBase {
 
   table = "courses";
@@ -369,6 +391,10 @@ class TrainerSearch extends TrainerBase{
     })
     .then(({data}) => {
       tData.experiences = data;
+      return (new TrainerKnowledge()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.knowledge = data;
       return tData;
     });
   }
@@ -477,4 +503,4 @@ class TrainerSearch extends TrainerBase{
 
 }
 
-module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch};
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch};

@@ -136,6 +136,27 @@ module.exports = () => {
     });
   });
 
+  router.get('/my-knowledge', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerKnowledge()).findBy({"fname": 'user_id', "fvalue": token.data.id})
+        .then(res => ({success: true, data: res[0]}));
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    })
+  });
+
+  router.put('/my-knowledge', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerKnowledge()).edit(req.body, req.files, token.data.id);
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    });
+  });
+
   router.get('/my-courses', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
