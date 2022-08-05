@@ -552,4 +552,36 @@ class TrainerSearch extends TrainerBase{
 
 }
 
-module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch};
+class CourseDetail extends TrainerBase{
+
+  table = "courses";
+
+  course({slug}){
+    
+    let tData = {};
+    let whereParams = {'where' : {'slug': slug}};
+    console.log(whereParams);
+    return (new TrainerCourse()).list(whereParams)
+    .then(({data}) => {
+      console.log(data);
+      tData.course=_.get(data,'0',{});
+      if(_.get(tData,'course.id',false)){
+        whereParams = {'where' : {'user_id': tData.course.user_id}};
+        return (new TrainerCourseResource()).list(whereParams);
+      }else{
+        throw {message: "No such course found"};
+      }
+    })
+    .then(({data}) => {
+      tData.resource = data;
+      return (new TrainerCourseContent()).list(whereParams);
+    })
+ 
+    .then(({data}) => {
+      tData.coursecontent = data;
+      return tData;
+    });
+  }
+}
+
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch, CourseDetail};

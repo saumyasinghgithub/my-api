@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const BaseModel = require('./BaseModel');
+const TModel = require('./TrainerModel');
 const fs = require('fs');
 const path = require('path');
 const e = require('cors');
@@ -7,22 +8,35 @@ const e = require('cors');
 class CourseModel extends BaseModel {
 
   table = "courses";
-
-  getBySlug(slug){
-
-    return new Promise((resolve,reject) => {
-      resolve({title: "Test Course " + slug});
+  getBySlug({slug}){
+   let whereParams = {where: {slug: slug}, limit: 1}
+    let cData = {};
+    return (new TModel.TrainerCourse()).list(whereParams)
+    .then(({data}) => {
+      //console.log(data)
+      cData.course=_.get(data,'0',{});
+        console.log("custom data"+ cData.course)
+      if(_.get(cData,'course.id',false)){
+        console.log(data.course.id)
+        whereParams = {'where' : {'id': data[0].id}};
+        console.log(whereParams)
+        return (new TModel.TrainerCourseResource()).list(whereParams);
+      }else{
+        console.log(data.course.id)
+        throw {message: "No such course found"};
+      }
+    })
+    .then(({data}) => {
+      cData.resouce = data;
+      return (new TModel.TrainerCourseContent()).list(whereParams);
+    })
+    .then(({data}) => {
+      cData.coursecontent = data;
+      return cData;
     });
-    
-    /*this.db.run(`SELECT * FROM ${this.table} WHERE slug=? LIMIT 1`,[slug])
-    .then((res,err) => {
-      console.log(res);
-    })*/
-
   }
 
-
-
 }
+
 
 module.exports = CourseModel;

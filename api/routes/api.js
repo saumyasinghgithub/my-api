@@ -20,10 +20,18 @@ module.exports = function() {
   router.get('/profile_attributes',(req, res) => {
     routeWrapper(req,res, false, () => (new PAModel()).list(req.query))
   })
-
+/*
   router.get('/course/:slug',(req, res) => {
     routeWrapper(req,res, false, () => (new CourseModel()).getBySlug(req.params.slug).then(res => ({success: true, data: res})))
   })
+*/
+  router.get('/course/:slug', function (req, res) {
+    routeWrapper(req,res, false, () => {
+      return (new CourseModel()).getBySlug(req.params)
+      .then(cData => ({...cData, success: true}))
+      .catch(e => ({success: false, message: e.message}))
+    })
+  });
 
   router.get('/courses',(req, res) => {
     routeWrapper(req,res, false, () => (new CourseModel()).list(req.query))
