@@ -15,10 +15,10 @@ class CourseModel extends BaseModel {
     .then(({data}) => {
       //console.log(data)
       cData.course=_.get(data,'0',{});
-        console.log("custom data"+ cData.course)
+        console.log("custom data", cData.course)
       if(_.get(cData,'course.id',false)){
-        console.log(data.course.id)
-        whereParams = {'where' : {'id': data[0].id}};
+        console.log(cData.course.id)
+        whereParams = {'where' : {'course_id': cData.course.id}};
         console.log(whereParams)
         return (new TModel.TrainerCourseResource()).list(whereParams);
       }else{
