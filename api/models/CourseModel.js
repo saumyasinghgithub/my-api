@@ -15,23 +15,19 @@ class CourseModel extends BaseModel {
     .then(({data}) => {
       //console.log(data)
       cData.course=_.get(data,'0',{});
-        console.log("custom data", cData.course)
       if(_.get(cData,'course.id',false)){
-        console.log(cData.course.id)
         whereParams = {'where' : {'course_id': cData.course.id}};
-        console.log(whereParams)
         return (new TModel.TrainerCourseResource()).list(whereParams);
       }else{
-        console.log(data.course.id)
         throw {message: "No such course found"};
       }
     })
     .then(({data}) => {
-      cData.resouce = data;
+      cData.resources = data;
       return (new TModel.TrainerCourseContent()).list(whereParams);
     })
     .then(({data}) => {
-      cData.coursecontent = data;
+      cData.contents = data;
       return cData;
     });
   }

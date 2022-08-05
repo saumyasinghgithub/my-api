@@ -304,14 +304,6 @@ module.exports = () => {
     })
   });
 
-  router.get('/course/:slug', function (req, res) {
-    routeWrapper(req,res, false, () => {
-      return (new TModel.CourseDetail()).course(req.params)
-      .then(tData => ({...tData, success: true}))
-      .catch(e => ({success: false, message: e.message}))
-    })
-  });
-
 router.get('/search', function (req, res){
   routeWrapper(req,res, false, () => {
       return (new TModel.TrainerSearch()).search(req.query);
