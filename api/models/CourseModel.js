@@ -13,7 +13,6 @@ class CourseModel extends BaseModel {
     let cData = {};
     return (new TModel.TrainerCourse()).list(whereParams)
     .then(({data}) => {
-      //console.log(data)
       cData.course=_.get(data,'0',{});
       if(_.get(cData,'course.id',false)){
         whereParams = {'where' : {'course_id': cData.course.id}};
@@ -28,6 +27,10 @@ class CourseModel extends BaseModel {
     })
     .then(({data}) => {
       cData.contents = data;
+      return (new TModel.TrainerAbout()).list({'where' : {'user_id': cData.course.user_id}});
+    })
+    .then(({data}) => {
+      cData.about = data;
       return cData;
     });
   }
