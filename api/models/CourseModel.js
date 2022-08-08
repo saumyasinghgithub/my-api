@@ -1,9 +1,6 @@
 const _ = require('lodash');
 const BaseModel = require('./BaseModel');
 const TModel = require('./TrainerModel');
-const fs = require('fs');
-const path = require('path');
-const e = require('cors');
 
 class CourseModel extends BaseModel {
 

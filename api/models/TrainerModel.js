@@ -229,7 +229,7 @@ class TrainerAbout extends TrainerBase {
   
   bySlug(slug) {
     return this.list({where:{slug:slug}, limit: 1})
-    .then(res => _.get(res, '0', false));
+    .then(res => _.get(res, 'data.0', false));
   }
 
 
@@ -354,7 +354,10 @@ class TrainerCourse extends TrainerBase {
     return (new TrainerAbout()).bySlug(slug)
     .then(about => {
       if(about){
-        return (new CourseModel()).getByTrainer(about.user_id);
+        return (new CourseModel()).getByTrainer(about.user_id)
+        .then(courses => ({trainer: about, courses: courses}));
+      }else{
+        return {trainer: false, courses: []}
       }
     });
   }
@@ -437,7 +440,7 @@ class TrainerSearch extends TrainerBase{
       return (new TrainerServices()).list(whereParams);
     })
     .then(({data}) => {
-      tData.services = data;
+      tData.service = _.get(data,'0',{});
       return (new TrainerCalib()).list(whereParams);
     })
     .then(({data}) => {
@@ -453,7 +456,7 @@ class TrainerSearch extends TrainerBase{
       return (new TrainerKnowledge()).list(whereParams);
     })
     .then(({data}) => {
-      tData.knowledge = data;
+      tData.knowledge = _.get(data,'0',{});
       return (new TrainerCommunity()).list(whereParams);
     })
     .then(({data}) => {
@@ -461,7 +464,7 @@ class TrainerSearch extends TrainerBase{
       return (new TrainerLibrary()).list(whereParams);
     })
     .then(({data}) => {
-      tData.library = data;
+      tData.library = _.get(data,'0',{});
       return tData;
     });
   }

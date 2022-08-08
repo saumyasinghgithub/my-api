@@ -310,6 +310,16 @@ router.get('/search', function (req, res){
   })
 });
 
+router.get('/:slug/courses', function (req, res) {
+  routeWrapper(req,res, false, () => {
+    return (new TModel.TrainerCourse()).bySlug(req.params.slug)
+    .then(tData => {
+      return ({...tData, success: true});
+    })
+    .catch(e => ({success: false, message: e.message}))
+  })
+});
+
   return router;
   
 };
