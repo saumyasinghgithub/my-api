@@ -35,7 +35,12 @@ class CourseModel extends BaseModel {
     });
   }
 
+  getByTrainer(tid){
+    return this.list({where: {user_id:tid}, limit:9999999})
+  }
+
 }
+
 
 
 module.exports = CourseModel;

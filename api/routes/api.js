@@ -33,11 +33,14 @@ module.exports = function() {
     })
   });
 
-  router.get('/courses',(req, res) => {
-    routeWrapper(req,res, false, () => (new CourseModel()).list(req.query))
-  })
+  router.get('/course-list/:slug', function (req, res) {
+    routeWrapper(req,res, false, () => {
+      return (new CourseList()).slug(req.params)
+      .then(cData => ({...cData, success: true}))
+      .catch(e => ({success: false, message: e.message}))
+    })
+  });
 
-  
   router.get('/', (req,res,next) => {
     if(canAccess(req)){
       res.send("Welcome to API");

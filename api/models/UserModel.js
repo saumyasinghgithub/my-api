@@ -14,8 +14,12 @@ class UserModel extends BaseModel {
 
   checkLogin(data) {
     let ret = { success: false, message: 'Login failed: Invalid User credentials entered!'};
+    let sqlQuery = `SELECT IF(u.role_id = ?, ta.slug, sa.slug) slug, u.* FROM users u
+    LEFT JOIN trainer_about ta ON u.id = ta.user_id  
+    LEFT JOIN student_about sa ON u.id = sa.user_id
+    WHERE u.email = ? LIMIT 1` 
 
-    return this.db.run('SELECT * FROM users WHERE email=? LIMIT 1', [data.user])
+    return this.db.run(sqlQuery, [process.env.TRAINER_ROLE,data.user])
       .then(res => {
         if (res.length === 1) {
           if(bcrypt.compareSync(data.pass,res[0]['password'])){

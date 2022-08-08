@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const slugify = require('slugify');
 const PAModel = require('./PAModel');
+const CourseModel  = require('./CourseModel');
 
 class TrainerBase extends BaseModel {
 
@@ -225,6 +226,13 @@ class TrainerAbout extends TrainerBase {
     });
 
   }
+  
+  bySlug(slug) {
+    return this.list({where:{slug:slug}, limit: 1})
+    .then(res => _.get(res, '0', false));
+  }
+
+
 }
 
 class TrainerServices extends TrainerBase {
@@ -329,6 +337,7 @@ class TrainerCourse extends TrainerBase {
         return super.add(frmdata);
       }
     });
+
   }
 
   delete(pkval){
@@ -339,8 +348,17 @@ class TrainerCourse extends TrainerBase {
       }
     })
     .then(()=> super.delete(pkval));
-    }
   }
+
+  bySlug(slug){
+    return (new TrainerAbout()).bySlug(slug)
+    .then(about => {
+      if(about){
+        return (new CourseModel()).getByTrainer(about.user_id);
+      }
+    });
+  }
+}
 
 class TrainerCourseContent extends TrainerBase {
 
