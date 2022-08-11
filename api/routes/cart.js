@@ -11,7 +11,7 @@ module.exports = () => {
   });
   
   router.get('/', function (req, res) {
-    routeWrapper(req,res, true, () => (new CartModel()).list(req.query))
+    routeWrapper(req,res, true, (token) => (new CartModel()).getCartData({...req.query, user_id: token.data.id}).then(data => ({success: true, data: data})));
   });
 
   return router;

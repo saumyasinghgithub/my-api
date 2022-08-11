@@ -12,15 +12,12 @@ class CartModel extends BaseModel {
     return this.deleteWhere({user_id: data.user_id, course_id: data.course_id, status: 'queue'}).then(() => super.add(data));
   }
 
-  getCartData(data){
-    console.log(data);
-    SqlQuery = `SELECT IF(ca.user_id = ?, c.name, c.slug)slug, c.name, ca.* FROM cart ca
-    LEFT JOIN courses c ON ca.course_id = c.id  
-    WHERE ca.user_id = ?`
-    return this.list(SqlQuery)
-    .then(res =>{
-      console.log(res);
-    })
+  getCartData({user_id}){
+    let sql = `SELECT c.slug, c.name, c.price as baseprice, c.course_image, ca.* FROM cart ca
+    INNER JOIN courses c ON ca.course_id = c.id  
+    WHERE ca.user_id = ? AND ca.status=? 
+    ORDER BY ca.id DESC`
+    return this.db.run(sql,[user_id,'queue']);
   }
 
 }
