@@ -20,13 +20,19 @@ class CartModel extends BaseModel {
     return this.db.run(sql,[user_id,'queue']);
   }
 
-  delete(pkval){
+  delete(pkval,user_id){
     return this.find(pkval)
-    .then(rec => { 
-      if(rec){
+    .then(rec => {
+      if(rec.user_id==user_id && rec.status=='queue'){
         return super.delete(pkval);
+      }else{
+        throw "Invalid data access!";
       }
     })
+  }
+
+  clearCart(user_id){
+    return this.deleteWhere({user_id: user_id, status: 'queue'});
   }
 
 }

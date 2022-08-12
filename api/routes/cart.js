@@ -14,6 +14,16 @@ module.exports = () => {
     routeWrapper(req,res, true, (token) => (new CartModel()).getCartData({...req.query, user_id: token.data.id}).then(data => ({success: true, data: data})));
   });
 
+  router.delete('/empty', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new CartModel()).clearCart(token.data.id));  
+  });
+
+  router.delete('/:id', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new CartModel()).delete(req.params.id, token.data.id));  
+  });
+  
+ 
+
   return router;
   
 };
