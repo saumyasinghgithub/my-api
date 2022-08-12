@@ -20,6 +20,15 @@ class CartModel extends BaseModel {
     return this.db.run(sql,[user_id,'queue']);
   }
 
+  delete(pkval){
+    return this.find(pkval)
+    .then(rec => { 
+      if(rec){
+        return super.delete(pkval);
+      }
+    })
+  }
+
 }
 
 
