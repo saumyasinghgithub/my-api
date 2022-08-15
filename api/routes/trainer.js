@@ -320,6 +320,40 @@ router.get('/:slug/courses', function (req, res) {
   })
 });
 
+router.get('/my-blogs', function (req, res) {
+  routeWrapper(req,res, true, (token) => {
+    if(isTrainer(token.data)){
+     let params = req.query;
+     _.set(params, 'where.user_id',token.data.id);
+      return (new TModel.TrainerBlog()).list(params)
+        .then(res => ({...res, data: _.get(req,'query.where.id',null) ? res.data[0] : res.data }));
+      
+    }else{
+      throw({message: "Permission Denied!"});
+    }
+  })
+});
+
+router.put('/my-blogs', function (req, res, next) {
+  routeWrapper(req,res, true, (token) => {
+    if(isTrainer(token.data)){
+      return (new TModel.TrainerBlog()).edit(req.body, req.files, token.data.id);
+    }else{
+      throw({message: "Permission Denied!"});
+    }
+  });
+});
+
+router.delete('/my-blogs/:id', function (req, res, next) {
+  routeWrapper(req,res, true, (token) => {
+    if(isTrainer(token.data)){
+      return (new TModel.TrainerBlog()).delete(req.params.id);  
+    }else{
+      throw({message: "Permission Denied!"});
+    }
+  }); 
+});
+
   return router;
   
 };

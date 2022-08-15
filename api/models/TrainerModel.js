@@ -573,5 +573,42 @@ class TrainerSearch extends TrainerBase{
 
 }
 
+class TrainerBlog extends TrainerBase {
 
-module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch};
+  table = "blogs";
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['user_id','name','slug','short_description','description','blog_image', 'blog_banner']);
+    frmdata['user_id'] = user_id;
+    frmdata['slug'] = slugify(frmdata.name,{remove: /[*#+~.()'"!:@]/g, lower: true});
+    return this.uploadImage(data, _.get(files,'blog_image',false),'blog')
+    .then(fname => {
+      frmdata['blog_image'] = fname;
+      return this.uploadImage(data, _.get(files,'banner_image',false), 'banner');
+    })
+    .then(fname => {
+      frmdata['banner_image'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+
+  }
+
+  delete(pkval){
+    return this.find(pkval)
+    .then(rec => { 
+      if(!_.isEmpty(_.get(rec, 'blog_image', ''))) {
+        this.deleteImage('blogs', rec.blog_image);
+      }
+    })
+    .then(()=> super.delete(pkval));
+  }
+
+}
+
+
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch, TrainerBlog};
