@@ -456,7 +456,11 @@ class TrainerSearch extends TrainerBase{
       return (new TrainerKnowledge()).list(whereParams);
     })
     .then(({data}) => {
-      tData.knowledge = _.get(data,'0',{});
+      tData.knowledge = data;
+      return (new TrainerBlog()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.blogs = _.get(data,'0',{});
       return (new TrainerCommunity()).list(whereParams);
     })
     .then(({data}) => {
