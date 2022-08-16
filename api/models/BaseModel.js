@@ -9,6 +9,7 @@ class BaseModel{
   sortBy = 'id';
   sortDir = 'ASC';
   pageLimit = 10;
+  updated_at = false;
   
   constructor() {
     this.db = DBObject;
@@ -125,6 +126,10 @@ class BaseModel{
     sql += _.keys(data).map( k => ` ${k} = ?`).join(',');
 
     let ary = _.values(data);
+
+    if(this.updated_at){
+      sql += ',updated_at = NOW()';
+    }
 
     if(pkval!=''){
       sql += ` WHERE ${this.pk} = ?`;

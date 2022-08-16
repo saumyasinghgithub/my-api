@@ -457,10 +457,10 @@ class TrainerSearch extends TrainerBase{
     })
     .then(({data}) => {
       tData.knowledge = data;
-      return (new TrainerBlog()).list(whereParams);
+      return (new TrainerBlog()).list({...whereParams,sortBy: 'updated_at', sortDir: 'DESC'});
     })
     .then(({data}) => {
-      tData.blogs = _.get(data,'0',{});
+      tData.blogs = parseInt(_.get(data,'length',0)) > 0 ? data : [];
       return (new TrainerCommunity()).list(whereParams);
     })
     .then(({data}) => {
@@ -580,6 +580,7 @@ class TrainerSearch extends TrainerBase{
 class TrainerBlog extends TrainerBase {
 
   table = "blogs";
+  updated_at = true;
 
   edit(data,files,user_id){
     

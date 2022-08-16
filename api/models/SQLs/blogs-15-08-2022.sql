@@ -37,7 +37,8 @@ CREATE TABLE `blogs` (
   `description` text,
   `blog_image` varchar(200) DEFAULT NULL,
   `banner_image` varchar(200) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
