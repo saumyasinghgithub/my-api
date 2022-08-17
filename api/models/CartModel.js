@@ -3,6 +3,8 @@ const moment = require('moment');
 const apiutils = require('./../routes/apiutils');
 const BaseModel = require('./BaseModel');
 
+const Razorpay = require('razorpay');
+
 class CartModel extends BaseModel {
 
   table = "cart";
@@ -33,6 +35,46 @@ class CartModel extends BaseModel {
 
   clearCart(user_id){
     return this.deleteWhere({user_id: user_id, status: 'queue'});
+  }
+
+  generateOrder({action,user_id}){
+
+    let rPay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY,
+      key_secret: process.env.RAZORPAY_SECRET,
+    });
+
+    return this.getCartData({user_id: user_id})
+    .then(data => {
+
+      let order = {
+        "amount": parseInt(_.sum(data.map(d => d.price))),
+        "currency": process.env.RAZORPAY_CURRENCY,
+        "receipt": `AD#${user_id}-${moment().format('YYYYMMDDHHmmss')}`,
+        "notes": {}
+      };
+
+      data.forEach(d => {
+        let cres = JSON.parse(d.course_resources);
+        order.notes[`course_${d.course_id}_${d.id}`] = d.name + '||' + cres.map(cr => cr.type).join('||');
+      });
+
+      return rPay.orders.create(order);
+    })
+    .then(orderData => {
+      return {
+        success: true, 
+        data: {
+          'key': process.env.RAZORPAY_KEY,
+          'currency': orderData.currency,
+          'amount': orderData.amount,
+          'name': `Bundle Course - ${Object.values(orderData.notes).length}`,
+          'description': Object.values(orderData.notes).join(' AND '),
+          'notes': orderData.notes,
+          'order_id': orderData.id
+        }
+      };
+    })
   }
 
 }

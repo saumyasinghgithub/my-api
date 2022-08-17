@@ -21,6 +21,10 @@ module.exports = () => {
   router.delete('/:id', function (req, res, next) {
     routeWrapper(req,res, true, (token) => (new CartModel()).delete(req.params.id, token.data.id));  
   });
+
+  router.post('/generateOrder',(req,res) => {    
+    routeWrapper(req,res, true, (token) => (new CartModel()).generateOrder({...req.body,user_id: token.data.id}))
+  });
   
  
 
