@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {routeWrapper} = require('./apiutils');
 const CartModel = require('../models/CartModel');
+const PaymentModel = require('../models/PaymentModel');
 const _ = require('lodash');
 const res = require('express/lib/response');
 
@@ -24,6 +25,10 @@ module.exports = () => {
 
   router.post('/generateOrder',(req,res) => {    
     routeWrapper(req,res, true, (token) => (new CartModel()).generateOrder({...req.body,user_id: token.data.id}))
+  });
+
+  router.post('/orderSuccess',(req,res) => {    
+    routeWrapper(req,res, true, (token) => (new PaymentModel()).orderSuccess({...req.body,user_id: token.data.id}))
   });
   
  

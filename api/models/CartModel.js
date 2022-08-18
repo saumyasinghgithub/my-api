@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const moment = require('moment');
-const apiutils = require('./../routes/apiutils');
 const BaseModel = require('./BaseModel');
 
 const Razorpay = require('razorpay');
@@ -9,6 +8,7 @@ class CartModel extends BaseModel {
 
   table = "cart";
   pageLimit = 10;
+  updated_at = true;
 
   add(data){
     return this.deleteWhere({user_id: data.user_id, course_id: data.course_id, status: 'queue'}).then(() => super.add(data));
@@ -48,16 +48,21 @@ class CartModel extends BaseModel {
     .then(data => {
 
       let order = {
-        "amount": parseInt(_.sum(data.map(d => d.price))),
+        "amount": parseInt(_.sum(data.map(d => d.price))) * 100, // cents to USD 
         "currency": process.env.RAZORPAY_CURRENCY,
         "receipt": `AD#${user_id}-${moment().format('YYYYMMDDHHmmss')}`,
         "notes": {}
       };
 
+      let cartItems = [];
+
       data.forEach(d => {
         let cres = JSON.parse(d.course_resources);
-        order.notes[`course_${d.course_id}_${d.id}`] = d.name + '||' + cres.map(cr => cr.type).join('||');
+        cartItems.push({id: d.id, course: parseInt(d.course_id), resources: cres.map(cr => cr.id)});
+        order.notes[`cart_${d.id}`] = d.name + '||' + cres.map(cr => cr.type).join('||');
       });
+
+      order.notes['cartItems'] = JSON.stringify(cartItems);
 
       return rPay.orders.create(order);
     })
@@ -69,13 +74,14 @@ class CartModel extends BaseModel {
           'currency': orderData.currency,
           'amount': orderData.amount,
           'name': `Bundle Course - ${Object.values(orderData.notes).length}`,
-          'description': Object.values(orderData.notes).join(' AND '),
+          'description': Object.values(_.omit(orderData.notes,['cartItems'])).join(' AND '),
           'notes': orderData.notes,
           'order_id': orderData.id
         }
       };
     })
   }
+
 
 }
 
