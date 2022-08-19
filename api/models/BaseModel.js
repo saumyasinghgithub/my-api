@@ -159,7 +159,6 @@ class BaseModel{
   deleteWhere(whereParams){
 
     let sql = `DELETE FROM ${this.table} WHERE ${_.keys(whereParams).join(`=? AND `)}=?`;
-    console.log(sql,_.values(whereParams));
     return this.db.run(sql,_.values(whereParams))
     .then(res => {
       let ret = { success: false };

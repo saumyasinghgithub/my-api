@@ -64,6 +64,10 @@ class PaymentModel extends BaseModel {
     });
   }
 
+  getOrdertData({id,user_id}) {
+    return this.find(id)
+    .then(res => res['user_id']===user_id ? res : false)
+  };
 
   updateCartItems(cartItems){
     const cartObj = new CartModel();
@@ -105,19 +109,30 @@ class PaymentModel extends BaseModel {
     });
   }
 
-
   notifyPayment2User(orderData){
-
-    /*return Emailer.sendEmail({
-      to: data.email,
-      subject: `WELCOME ${roleName}`,
-      html: this.paymentEmail({...data, origpass: origpass, role: roleName})
-    })*/
+    var data = {};
+     return Emailer.sendEmail({
+      //to: data.email,
+      to: "rajeshs@knowledgesynonyms.com",
+      subject: `WELCOME `,
+      html: this.paymentEmail({...data, user_id: orderData.user_id, payment_id: orderData.razorpayPaymentId, items:orderData.notes.cartItems, currency:orderData.currency, amount: orderData.amount/100, dump:JSON.stringify(_.pick(orderData,['name','description','razorpayOrderId'])) })
+    })
+    .then(data => {
+      return data;
+    });
 
   }
-
+  
   paymentEmail(data){
-
+    let html = `<p>Hi Umesh,</p>
+    <p>Welcome to ${process.env.APP_NAME}.</p>
+    <p>You can use the following credetials to <a href="${process.env.APP_URL}/login">login to your ${data.role} area</a></p>
+    <p>Username: <b>email address</b></p>
+    <p>Password: <b>${data.payment_id}</b></p>
+    <p>Please do not share your credentials to avoid sensitive data breach.</p>
+    Good Luck.<br />
+    Administrator`;
+    return html;
 
   }
 

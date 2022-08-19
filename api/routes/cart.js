@@ -31,7 +31,17 @@ module.exports = () => {
     routeWrapper(req,res, true, (token) => (new PaymentModel()).orderSuccess({...req.body,user_id: token.data.id}))
   });
   
- 
+   
+  router.get('/orderSuccess/:id', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      return (new PaymentModel()).getOrdertData({id:req.params.id, user_id: token.data.id})
+      .then(data => {
+        return ({data, success: true});
+      })
+      .catch(e => ({success: false, message: e.message}))
+  })
+
+  });
 
   return router;
   
