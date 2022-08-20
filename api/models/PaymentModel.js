@@ -114,7 +114,7 @@ class PaymentModel extends BaseModel {
      return Emailer.sendEmail({
       //to: data.email,
       to: "rajeshs@knowledgesynonyms.com",
-      subject: `WELCOME `,
+      subject: `${process.env.APP_NAME} Order Confirmation Email  `,
       html: this.paymentEmail({...data, user_id: orderData.user_id, payment_id: orderData.razorpayPaymentId, items:orderData.notes.cartItems, currency:orderData.currency, amount: orderData.amount/100, dump:JSON.stringify(_.pick(orderData,['name','description','razorpayOrderId'])) })
     })
     .then(data => {
@@ -124,18 +124,72 @@ class PaymentModel extends BaseModel {
   }
   
   paymentEmail(data){
-    let html = `<p>Hi Umesh,</p>
-    <p>Welcome to ${process.env.APP_NAME}.</p>
-    <p>You can use the following credetials to <a href="${process.env.APP_URL}/login">login to your ${data.role} area</a></p>
-    <p>Username: <b>email address</b></p>
-    <p>Password: <b>${data.payment_id}</b></p>
-    <p>Please do not share your credentials to avoid sensitive data breach.</p>
-    Good Luck.<br />
-    Administrator`;
+    let dData = JSON.parse(data.dump);
+    let html = `<table width="600px" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border:1px solid #d6dbdf;">
+    <tr><td>
+    <table width="100%" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center">
+    <tr>
+    <td><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/logo/stores/1/AD-logo.png" title="AD logo" alt="AD logo" width="200" ></td>
+    <td></td>
+    </tr>
+    </table>
+    <table width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center">
+    <tr>
+    <td colspan="2"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/Help_for_trainers.jpg" alt="" width="100%" height="200"></td>
+    </tr>
+    </table>
+    <table width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center">
+    <tr>
+    <td colspan="2">
+    <p style="padding:30px 10px">Autodidact makes the search for a trainer easier for students. So, by coming on this platform you will be able to maximize your reach to professional who need guidance and other skill enhancement programs. It also helps Companies find you. It makes it easier for them to look for professionals with expertise.</p></td>
+    </tr>
+    <tr><td colspan="2" align="center"><h1>Thank you for your order!</h1></td></tr>
+    <tr><td colspan="2"><h2 style="color:#0f79aa;">Transaction Details:</h2></td></tr>
+    <tr><td colspan="2">
+    <p>Transaction ID: <b>${data.payment_id}</b></p>
+    <p>Order Amount: <b>${data.currency} ${data.amount}</b></p>
+    <p>Order ID: <b>${_.get(dData, 'razorpayOrderId')}</b></p>
+    </td></tr>
+    </table>
+    <table width="600" cellspacing="" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border: 1px solid black;border-collapse: collapse; margin:30px 10px;">
+    <tr>
+    <th align="center" style="border: 1px solid black;border-collapse: collapse;">Items Description</th>
+    <th align="center" style="border: 1px solid black;border-collapse: collapse;">Price</th>
+    </tr>
+    <tr>
+    <td align="center" style="border: 1px solid black;border-collapse: collapse;">
+    <p>${_.get(dData, 'description')}<p>
+    </td>
+    <td align="center" style="border: 1px solid black;border-collapse: collapse;">${data.currency} ${data.amount}</td>
+    </tr>
+    </table>
+    
+    <table width="600" cellspacing="0" cellpadding="0" border="0" style="background-color:#dc3016 !important; color:#fff;" align="center">
+    <tr>
+    <td><ul style="list-style: none;float: left;margin:0 10px;padding:0;">
+    <li style="display: inline-block;padding: 15px 5px ;">Copyright © 2022 AD</li>
+    <li style="display: inline-block;padding: 15px 5px;"><a href="http://demo.knowledgesynonyms.com/adnew/terms" style="color:#fff;">Terms</a></li>
+    <li style="display: inline-block;padding:15px 5px;"><a href="http://demo.knowledgesynonyms.com/adnew/privacy-policy" style="color:#fff;">Privacy Policy</a></li>
+    
+    </ul></td>
+    <td>
+    <ul style="list-style: none;float: right;margin:0 10px;padding:0;">
+    <li style="display: inline-block;padding: 15px 5px;"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/fb.png" alt=""></li>
+    <li style="display: inline-block;padding: 15px 5px;"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/in.png" alt=""></li>
+    <li style="display: inline-block;padding: 15px 5px;"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/twitter.png" alt=""></li>
+    </ul>
+    </td>
+    </tr>
+    </table>
+    
+    </td>
+    </tr>
+    </table>`;
+
     return html;
 
   }
-
+  
 }
 
 module.exports = PaymentModel;
