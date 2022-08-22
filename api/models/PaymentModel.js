@@ -4,6 +4,7 @@ const BaseModel = require('./BaseModel');
 const CartModel = require('./CartModel');
 const StudentEnrollmentModel = require('./StudentEnrollmentModel');
 const Emailer = require('./EmailModel');
+const UserModel = require('./UserModel');
 
 class PaymentModel extends BaseModel {
 
@@ -110,21 +111,23 @@ class PaymentModel extends BaseModel {
   }
 
   notifyPayment2User(orderData){
-    var data = {};
-     return Emailer.sendEmail({
-      //to: data.email,
-      to: "rajeshs@knowledgesynonyms.com",
-      subject: `${process.env.APP_NAME} Order Confirmation Email  `,
-      html: this.paymentEmail({...data, user_id: orderData.user_id, payment_id: orderData.razorpayPaymentId, items:orderData.notes.cartItems, currency:orderData.currency, amount: orderData.amount/100, dump:JSON.stringify(_.pick(orderData,['name','description','razorpayOrderId'])) })
+    (new UserModel()).find(orderData.user_id)
+    .then(udata =>{
+      //console.log(udata);
+      return Emailer.sendEmail({
+        to: udata.email,
+        cc: "rajeshs@knowledgesynonyms.com, surojitb@knowledgesynonyms.com",
+        subject: `${process.env.APP_NAME} Order Confirmation Email  `,
+        html: this.paymentEmail({...orderData, ...udata})
+      })
     })
-    .then(data => {
-      return data;
-    });
+  
 
   }
   
   paymentEmail(data){
-    let dData = JSON.parse(data.dump);
+    let dData = data.dump;
+    console.log(data);
     let html = `<table width="600px" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border:1px solid #d6dbdf;">
     <tr><td>
     <table width="100%" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center">
@@ -143,12 +146,12 @@ class PaymentModel extends BaseModel {
     <td colspan="2">
     <p style="padding:30px 10px">Autodidact makes the search for a trainer easier for students. So, by coming on this platform you will be able to maximize your reach to professional who need guidance and other skill enhancement programs. It also helps Companies find you. It makes it easier for them to look for professionals with expertise.</p></td>
     </tr>
-    <tr><td colspan="2" align="center"><h1>Thank you for your order!</h1></td></tr>
+    <tr><td colspan="2" align="center"><h1>Hello ${data.firstname}, Thank you for your order!</h1></td></tr>
     <tr><td colspan="2"><h2 style="color:#0f79aa;">Transaction Details:</h2></td></tr>
     <tr><td colspan="2">
-    <p>Transaction ID: <b>${data.payment_id}</b></p>
-    <p>Order Amount: <b>${data.currency} ${data.amount}</b></p>
-    <p>Order ID: <b>${_.get(dData, 'razorpayOrderId')}</b></p>
+    <p>Transaction ID: <b>${data.razorpayPaymentId}</b></p>
+    <p>Order Amount: <b>${data.currency} ${data.amount/100}</b></p>
+    <p>Order ID: <b>${_.get(data, 'razorpayOrderId')}</b></p>
     </td></tr>
     </table>
     <table width="600" cellspacing="" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border: 1px solid black;border-collapse: collapse; margin:30px 10px;">
@@ -158,9 +161,9 @@ class PaymentModel extends BaseModel {
     </tr>
     <tr>
     <td align="center" style="border: 1px solid black;border-collapse: collapse;">
-    <p>${_.get(dData, 'description')}<p>
+    <p>${_.get(data, 'description')}<p>
     </td>
-    <td align="center" style="border: 1px solid black;border-collapse: collapse;">${data.currency} ${data.amount}</td>
+    <td align="center" style="border: 1px solid black;border-collapse: collapse;">${data.currency} ${data.amount/100}</td>
     </tr>
     </table>
     
