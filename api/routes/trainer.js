@@ -354,6 +354,16 @@ router.delete('/my-blogs/:id', function (req, res, next) {
   }); 
 });
 
+router.get('/my-sales-stats', function (req, res, next) {
+  routeWrapper(req,res, true, (token) => {
+    if(isTrainer(token.data)){
+      return (new TModel.TrainerCourse()).loadStats(token.data.id);  
+    }else{
+      throw({message: "Permission Denied!"});
+    }
+  }); 
+});
+
   return router;
   
 };

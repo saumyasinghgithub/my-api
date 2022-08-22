@@ -361,6 +361,31 @@ class TrainerCourse extends TrainerBase {
       }
     });
   }
+
+
+  loadStats(trainer_id){
+    let stats = [];
+    return new Promise((resolve,reject) => {
+      return this.db.run(`SELECT SUM(price) total FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`,[trainer_id])
+      .then(res => {
+        stats.push(parseInt(_.get(res,'0.total',0)));
+        return this.db.run(`select SUM(1) as total, SUM(IF(exists(SELECT course_id FROM student_enrollments WHERE course_id=c.id),1,0)) sold FROM courses as c WHERE c.user_id=?`,[trainer_id])
+      })
+      .then(res => {
+        stats.push(parseInt(_.get(res,'0.sold',0))/parseInt(_.get(res,'0.total',0))*100);
+        return this.db.run(`SELECT COUNT(DISTINCT user_id) as students FROM student_enrollments WHERE course_id IN (SELECT id FROM courses where user_id=?)`,[trainer_id])
+      })
+      .then(res => {
+        stats.push(parseInt(_.get(res,'0.students',0)));
+        return this.db.run(`SELECT COUNT(id) orders FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`,[trainer_id])
+      }).then(res => {
+        stats.push(parseInt(_.get(res,'0.orders',0)));
+        resolve({success: true, stats: stats});
+      });
+
+    });
+  }
+
 }
 
 class TrainerCourseContent extends TrainerBase {
