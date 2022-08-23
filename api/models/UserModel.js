@@ -6,6 +6,8 @@ const BaseModel = require('./BaseModel');
 const Emailer = require('./EmailModel');
 const RoleModel = require('./RoleModel');
 const TModel = require('./TrainerModel');
+const MoodleAPI = require('./MoodleAPI');
+
 
 class UserModel extends BaseModel {
 
@@ -43,6 +45,32 @@ class UserModel extends BaseModel {
     return attrs;
   }
 
+  createMoodleUser(data){
+    const mobj = new MoodleAPI();
+    return mobj.createUser({
+        "username": data.email,
+        "password": data.origpass,
+        "firstname": data.firstname,
+        "lastname": data.lastname,
+        "email": data.email,
+        "auth": "manual"
+    }).then(res => {
+      console.log(res);
+      let mid = parseInt(_.get(res,'[0].id',0));
+      if(mid > 0){
+        return mobj.assignUserRole({
+          "userid": mid,
+          "roleid": parseInt(parseInt(data.role_id) === parseInt(process.env.TRAINER_ROLE) ? process.env.MOODLE_TEACHER_ROLE : process.env.MOODLE_STUDENT_ROLE)
+        })
+        .then(() => super.edit({moodle_id: mid}, data.id))
+        .then(() => {
+          return res;
+        });
+      }
+      return res;
+    });
+  }
+
   add(data){
     const origpass = data.password;
     let roleName = null;
@@ -73,12 +101,16 @@ class UserModel extends BaseModel {
           });
         }
 
-        if(parseInt(data.role_id)===parseInt(process.env.TRAINER_ROLE)){
-          return (new TModel.TrainerAbout()).add({..._.pick(data,['firstname','middlename','lastname']), user_id: res.insertId})
-          .then(finalEmail)
-        }else{
-          return finalEmail();
-        }
+        return this.createMoodleUser({...data, origpass: origpass, id: res.insertId})
+        .then(() => {
+
+          if(parseInt(data.role_id)===parseInt(process.env.TRAINER_ROLE)){
+            return (new TModel.TrainerAbout()).add({..._.pick(data,['firstname','middlename','lastname']), user_id: res.insertId})
+            .then(finalEmail)
+          }else{
+            return finalEmail();
+          }
+        });
         
       }else{
         return res;

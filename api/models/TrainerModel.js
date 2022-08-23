@@ -5,6 +5,8 @@ const path = require('path');
 const slugify = require('slugify');
 const PAModel = require('./PAModel');
 const CourseModel  = require('./CourseModel');
+const MoodleAPI = require('./MoodleAPI');
+
 
 class TrainerBase extends BaseModel {
 
@@ -332,12 +334,49 @@ class TrainerCourse extends TrainerBase {
     .then(fname => {
       frmdata['course_image'] = fname;
       if(parseInt(data.id) > 0){
-        return super.edit(frmdata, data.id);
+        return super.edit(frmdata, data.id).then(editRes => {
+          if(editRes.success){
+            return this.updateCourseInMoodle(data).then(() => editRes);
+          }else{
+            return editRes;
+          }
+        });
       }else{
         return super.add(frmdata);
       }
     });
 
+  }
+
+
+  createCourseInMoodle(data){
+    return (new MoodleAPI()).createCourse({
+      fullname: data.name, 
+      shortname: data.sku, 
+      summary: data.short_description
+    }).then(res => {
+      let mid = parseInt(_.get(res,'[0].id',0));
+      if(mid > 0){
+        return super.edit({moodle_id: mid}, data.id).then(() => {
+          return res;
+        });
+      }
+      return res;
+    });
+  }
+
+
+  updateCourseInMoodle(data){
+    if(parseInt(_.get(data,'mid',0)) > 0){
+      return (new MoodleAPI()).updateCourse({
+        id: data.mid, 
+        fullname: data.name, 
+        shortname: data.sku, 
+        summary: data.short_description
+      });
+    }else{
+      return this.createCourseInMoodle(data);
+    }
   }
 
   delete(pkval){
