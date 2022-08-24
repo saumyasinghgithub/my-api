@@ -667,6 +667,11 @@ class TrainerBlog extends TrainerBase {
 
   }
 
+  bySlug(slug) {
+    return this.list({where:{slug:slug}, limit: 1})
+    .then(res => _.get(res, 'data.0', false));
+  }
+
   delete(pkval){
     return this.find(pkval)
     .then(rec => { 

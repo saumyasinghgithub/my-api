@@ -320,6 +320,15 @@ router.get('/:slug/courses', function (req, res) {
   })
 });
 
+router.get('/blogs/:slug', function (req, res) {
+  routeWrapper(req,res, false, () => {
+    return (new TModel.TrainerBlog()).bySlug(req.params.slug)
+    .then(Data => {
+      return ({...Data, success: true});
+    })
+    .catch(e => ({success: false, message: e.message}))
+  })
+});
 router.get('/my-blogs', function (req, res) {
   routeWrapper(req,res, true, (token) => {
     if(isTrainer(token.data)){
