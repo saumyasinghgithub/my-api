@@ -7,6 +7,7 @@ const Emailer = require('./EmailModel');
 const RoleModel = require('./RoleModel');
 const TModel = require('./TrainerModel');
 const MoodleAPI = require('./MoodleAPI');
+const { response } = require('express');
 
 
 class UserModel extends BaseModel {
@@ -21,23 +22,45 @@ class UserModel extends BaseModel {
     LEFT JOIN student_about sa ON u.id = sa.user_id
     WHERE u.email = ? LIMIT 1` 
 
-    return this.db.run(sqlQuery, [process.env.TRAINER_ROLE,data.user])
+    return new Promise((resolve,reject) => {
+      this.db.run(sqlQuery, [process.env.TRAINER_ROLE,data.user])
       .then(res => {
         if (res.length === 1) {
           if(bcrypt.compareSync(data.pass,res[0]['password'])){
-            ret['success'] = true;
-            ret['message'] = "Login successful!";
-            ret['token'] = apiutils.genToken({
-              id: res[0].id,
-              role_id: res[0].role_id,
-              validTill: moment().add(1, 'hours').unix()
-            });
-            ret = {...ret, userData: _.omit(res[0],['password'])};
-          }
-        }
 
-        return ret;
+            const finallyResolve = () => {
+              ret['success'] = true;
+              ret['message'] = "Login successful!";
+              ret['token'] = apiutils.genToken({
+                id: res[0].id,
+                role_id: res[0].role_id,
+                validTill: moment().add(1, 'hours').unix()
+              });
+              ret = {...ret, userData: _.omit(res[0],['password'])};
+              resolve(ret);
+            }
+            
+            if(parseInt(res[0]['moodle_id']) > 0){
+              finallyResolve();
+            }else{
+              this.createMoodleUser({
+                "username": data.user,
+                "password": data.pass,
+                "firstname": res[0].firstname,
+                "lastname": res[0].lastname,
+                "email": data.user,
+                "id": res[0].id,
+                "role_id": res[0].role_id
+              }).finally(finallyResolve);
+            }
+          }else{
+            resolve(ret);
+          }
+        }else{
+          resolve(ret);
+        }
       });
+    });
   }
 
   buildWhereClause(attrs){
@@ -48,8 +71,8 @@ class UserModel extends BaseModel {
   createMoodleUser(data){
     const mobj = new MoodleAPI();
     return mobj.createUser({
-        "username": data.email,
-        "password": data.origpass,
+        "username": data.username,
+        "password": data.password,
         "firstname": data.firstname,
         "lastname": data.lastname,
         "email": data.email,
@@ -101,7 +124,7 @@ class UserModel extends BaseModel {
           });
         }
 
-        return this.createMoodleUser({...data, origpass: origpass, id: res.insertId})
+        return this.createMoodleUser({...data, username: data.email,password: origpass, id: res.insertId})
         .then(() => {
 
           if(parseInt(data.role_id)===parseInt(process.env.TRAINER_ROLE)){
