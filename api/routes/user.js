@@ -3,7 +3,7 @@ const router = express.Router();
 const {routeWrapper} = require('./apiutils');
 const UserModel = require('../models/UserModel');
 const _ = require('lodash');
-const res = require('express/lib/response');
+const MoodleAPI = require('../models/MoodleAPI');
 
 module.exports = () => {
   router.post('/login',(req,res) => {    
@@ -25,6 +25,10 @@ module.exports = () => {
   router.delete('/:id', function (req, res, next) {
     routeWrapper(req,res, true, () => (new UserModel()).delete(req.params.id));  
   }); 
+
+  router.post('/moodle/createuser',function(req,res){
+    routeWrapper(req,res, false, () => (new MoodleAPI()).createUser({...req.body}));
+  })
 
   return router;
   

@@ -29,9 +29,11 @@ const middlewares = [
 ];
 app.use(middlewares);
 
+app.use('/cart', require('./routes/cart')());
 app.use('/admin', require('./routes/admin')());
 app.use('/user', require('./routes/user')());
 app.use('/trainer', require('./routes/trainer')());
+app.use('/student', require('./routes/student')());
 app.use('/role', require('./routes/role')());
 app.use('/', require('./routes/api')());
 

@@ -3,6 +3,10 @@ const BaseModel = require('./BaseModel');
 const fs = require('fs');
 const path = require('path');
 const slugify = require('slugify');
+const PAModel = require('./PAModel');
+const CourseModel  = require('./CourseModel');
+const MoodleAPI = require('./MoodleAPI');
+
 
 class TrainerBase extends BaseModel {
 
@@ -201,8 +205,10 @@ class TrainerAbout extends TrainerBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['firstname','middlename','lastname','biography','trainings']);
+    let frmdata = _.pick(data,['firstname','middlename','lastname','slug','biography','trainings']);
     frmdata['user_id'] = user_id;
+    const spath = frmdata.firstname + ' ' + frmdata.lastname + ' ' + user_id;
+    frmdata['slug'] = slugify(spath,{remove: /[*#+~.()'"!:@]/g, lower: true});
     return this.uploadImage(data, _.get(files,'profile_image',false),'profile')
     .then(fname => {
       frmdata['profile_image'] = fname;
@@ -222,6 +228,13 @@ class TrainerAbout extends TrainerBase {
     });
 
   }
+  
+  bySlug(slug) {
+    return this.list({where:{slug:slug}, limit: 1})
+    .then(res => _.get(res, 'data.0', false));
+  }
+
+
 }
 
 class TrainerServices extends TrainerBase {
@@ -245,6 +258,69 @@ class TrainerServices extends TrainerBase {
   }
 }
 
+class TrainerKnowledge extends TrainerBase {
+
+  table = "trainer_knowledge";
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['about_knowledge']);
+    frmdata['user_id'] = user_id;
+    return this.uploadImage(data, _.get(files,'knowledge_image',false),'knowledge')
+    .then(fname => {
+      frmdata['knowledge_image'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+
+  }
+}
+
+class TrainerCommunity extends TrainerBase {
+
+  table = "trainer_community";
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['about_community', 'youtube_community']);
+    frmdata['user_id'] = user_id;
+    return this.uploadImage(data, _.get(files,'community_image',false),'community')
+    .then(fname => {
+      frmdata['community_image'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+
+  }
+}
+
+class TrainerLibrary extends TrainerBase {
+
+  table = "trainer_library";
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['about_library']);
+    frmdata['user_id'] = user_id;
+    return this.uploadImage(data, _.get(files,'library_image',false),'library')
+    .then(fname => {
+      frmdata['library_image'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+
+  }
+}
+
 class TrainerCourse extends TrainerBase {
 
   table = "courses";
@@ -258,11 +334,49 @@ class TrainerCourse extends TrainerBase {
     .then(fname => {
       frmdata['course_image'] = fname;
       if(parseInt(data.id) > 0){
-        return super.edit(frmdata, data.id);
+        return super.edit(frmdata, data.id).then(editRes => {
+          if(editRes.success){
+            return this.updateCourseInMoodle(data).then(() => editRes);
+          }else{
+            return editRes;
+          }
+        });
       }else{
         return super.add(frmdata);
       }
     });
+
+  }
+
+
+  createCourseInMoodle(data){
+    return (new MoodleAPI()).createCourse({
+      fullname: data.name, 
+      shortname: data.sku, 
+      summary: data.short_description
+    }).then(res => {
+      let mid = parseInt(_.get(res,'[0].id',0));
+      if(mid > 0){
+        return super.edit({moodle_id: mid}, data.id).then(() => {
+          return res;
+        });
+      }
+      return res;
+    });
+  }
+
+
+  updateCourseInMoodle(data){
+    if(parseInt(_.get(data,'mid',0)) > 0){
+      return (new MoodleAPI()).updateCourse({
+        id: data.mid, 
+        fullname: data.name, 
+        shortname: data.sku, 
+        summary: data.short_description
+      });
+    }else{
+      return this.createCourseInMoodle(data);
+    }
   }
 
   delete(pkval){
@@ -273,8 +387,45 @@ class TrainerCourse extends TrainerBase {
       }
     })
     .then(()=> super.delete(pkval));
-    }
   }
+
+  bySlug(slug){
+    return (new TrainerAbout()).bySlug(slug)
+    .then(about => {
+      if(about){
+        return (new CourseModel()).getByTrainer(about.user_id)
+        .then(courses => ({trainer: about, courses: courses}));
+      }else{
+        return {trainer: false, courses: []}
+      }
+    });
+  }
+
+
+  loadStats(trainer_id){
+    let stats = [];
+    return new Promise((resolve,reject) => {
+      return this.db.run(`SELECT SUM(price) total FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`,[trainer_id])
+      .then(res => {
+        stats.push(parseInt(_.get(res,'0.total',0)));
+        return this.db.run(`select SUM(1) as total, SUM(IF(exists(SELECT course_id FROM student_enrollments WHERE course_id=c.id),1,0)) sold FROM courses as c WHERE c.user_id=?`,[trainer_id])
+      })
+      .then(res => {
+        stats.push(parseInt(_.get(res,'0.sold',0))/parseInt(_.get(res,'0.total',0))*100);
+        return this.db.run(`SELECT COUNT(DISTINCT user_id) as students FROM student_enrollments WHERE course_id IN (SELECT id FROM courses where user_id=?)`,[trainer_id])
+      })
+      .then(res => {
+        stats.push(parseInt(_.get(res,'0.students',0)));
+        return this.db.run(`SELECT COUNT(id) orders FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`,[trainer_id])
+      }).then(res => {
+        stats.push(parseInt(_.get(res,'0.orders',0)));
+        resolve({success: true, stats: stats});
+      });
+
+    });
+  }
+
+}
 
 class TrainerCourseContent extends TrainerBase {
 
@@ -330,4 +481,208 @@ class TrainerCourseResource extends TrainerBase {
   }
 }
 
-module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerCourse, TrainerCourseContent, TrainerCourseResource};
+class TrainerSearch extends TrainerBase{
+
+  table = "trainer_calibrations";
+
+  profile({slug}){
+    
+    let tData = {};
+    let whereParams = {'where' : {'slug': slug}};
+    return (new TrainerAbout()).list(whereParams)
+    .then(({data}) => {
+      tData.about=_.get(data,'0',{});
+      if(_.get(tData,'about.id',false)){
+        whereParams = {'where' : {'user_id': tData.about.user_id}};
+        return (new TrainerAward()).list(whereParams);
+      }else{
+        throw {message: "No such trainer found"};
+      }
+    })
+    .then(({data}) => {
+      tData.awards = data;
+      return (new TrainerServices()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.service = _.get(data,'0',{});
+      return (new TrainerCalib()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.calibs = data;
+      return (new TrainerAcademic()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.academics = data;
+      return (new TrainerExp()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.experiences = data;
+      return (new TrainerKnowledge()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.knowledge = data;
+      return (new TrainerBlog()).list({...whereParams,sortBy: 'updated_at', sortDir: 'DESC'});
+    })
+    .then(({data}) => {
+      tData.blogs = parseInt(_.get(data,'length',0)) > 0 ? data : [];
+      return (new TrainerCommunity()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.community = data;
+      return (new TrainerLibrary()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.library = _.get(data,'0',{});
+      return tData;
+    });
+  }
+
+  search(params){
+    let ret = {success: false, message: "Invalid Search Criteria"};
+    let user_ids = [];
+    if(_.get(params,'calibs',false)){
+
+      let calibs = JSON.parse(params.calibs);
+      params.whereStr = _.join(_.map(calibs, (pval,pk) => `(pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)})`),' OR ');
+
+    }    
+    return this.list({...params,limit: 999999999, fields: 'DISTINCT(user_id) as user_id'})
+    .then(res => {
+      user_ids = res.data.map(d => d.user_id);
+      return this.fetchAbout(params, user_ids);
+    }).then(about => {
+      ret = {success: about.success, data: about.data, pageInfo: about.pageInfo};
+      return this.fetchCalibs(user_ids,params.paCalibs);
+    }).then(calibs => {
+      ret.data = ret.data.map(ud => ({...ud, calibs: _.filter(calibs,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
+      return this.fetchCourses(user_ids);
+    }).then(courses => {
+      ret.data = ret.data.map(ud => ({...ud, courses: _.omit(_.filter(courses,{user_id: ud.user_id})[0],'user_id')}))
+      return this.fetchCourseResources(_.flattenDeep(courses.map(uc => uc.courses.map(c => c.course_id))))
+      .then(cres => {
+        ret.data = ret.data.map(ud => ({...ud, courses: {...ud.courses, courses: ud.courses.courses.map(udc => ({...udc, resources: _.filter(cres.data,{course_id: udc.course_id})}))}}))
+        return ret;
+      })
+    });
+  }
+
+  fetchAbout(params, user_ids){
+    return (new TrainerAbout()).list({
+      ...params,
+      whereStr: `user_id IN (${user_ids.join(',')})`, 
+      fields: 'firstname,lastname,base_image,profile_image,user_id,slug'
+    });
+  }
+
+  fetchCalibs(user_ids,calibs){
+    return (new TrainerCalib()).list({
+      limit: 99999, 
+      whereStr: `user_id IN (${user_ids.join(',')}) AND pa_id IN (${calibs})`, 
+      fields: 'user_id,pa_id,pa_value'
+    })
+    .then(res => {
+      let userCalibs = [...res.data];
+      return (new PAModel()).list({
+        limit: 99999, 
+        whereStr: `id IN (${res.data.map(d => d.pa_value).join(',')}) AND active=1`, 
+        fields: 'id,title'
+      })
+      .then(res1 => {
+        userCalibs = userCalibs.map(uc => ({...uc, "pa_value": _.find(_.find(res1.data,{id: uc.pa_id}).children,{id: uc.pa_value}).title}));
+        return userCalibs;
+      })
+      
+    })
+  }
+
+  fetchCourses(user_ids){
+    let uidx= 0;
+    let userCourses = user_ids.map(uid => ({user_id: uid, courses: [], total: 0}));
+    return new Promise((resolve,reject) => {
+      const iterate = () => {
+        if(uidx >= user_ids.length){
+          resolve(userCourses);
+        }else{
+          let user_id = user_ids[uidx++];
+          this.fetchUserCourses(user_id)
+          .then(uc => {
+            let idx = _.findIndex(userCourses,{user_id: user_id});
+            userCourses[idx].courses = uc.data.map(d => _.omit(d,'user_id'));
+            userCourses[idx].total = uc.pageInfo.total;
+          })
+          .finally(iterate);
+        }
+      };
+
+      iterate();
+
+    });
+  }
+
+  fetchUserCourses(user_id){
+    return (new TrainerCourse()).list({
+      start: 0,
+      limit: 4,
+      sortBy: 'created_at',
+      sortDir: 'DESC',
+      whereStr: `user_id=${parseInt(user_id)}`, 
+      fields: 'id as course_id,user_id,name,course_image,slug,price'
+    });
+  }
+
+  fetchCourseResources(course_ids){
+    return (new TrainerCourseResource()).list({
+      start: 0,
+      limit: 9999999,
+      whereStr: `course_id IN (${course_ids.join(',')})`,
+      fields: 'id as resource_id,course_id,name,type,price'
+    });
+  }
+
+}
+
+class TrainerBlog extends TrainerBase {
+
+  table = "blogs";
+  updated_at = true;
+
+  edit(data,files,user_id){
+    
+    let frmdata = _.pick(data,['user_id','name','slug','short_description','description','blog_image', 'blog_banner']);
+    frmdata['user_id'] = user_id;
+    frmdata['slug'] = slugify(frmdata.name,{remove: /[*#+~.()'"!:@]/g, lower: true});
+    return this.uploadImage(data, _.get(files,'blog_image',false),'blog')
+    .then(fname => {
+      frmdata['blog_image'] = fname;
+      return this.uploadImage(data, _.get(files,'banner_image',false), 'banner');
+    })
+    .then(fname => {
+      frmdata['banner_image'] = fname;
+      if(parseInt(data.id) > 0){
+        return super.edit(frmdata, data.id);
+      }else{
+        return super.add(frmdata);
+      }
+    });
+
+  }
+
+  bySlug(slug) {
+    return this.list({where:{slug:slug}, limit: 1})
+    .then(res => _.get(res, 'data.0', false));
+  }
+
+  delete(pkval){
+    return this.find(pkval)
+    .then(rec => { 
+      if(!_.isEmpty(_.get(rec, 'blog_image', ''))) {
+        this.deleteImage('blogs', rec.blog_image);
+      }
+    })
+    .then(()=> super.delete(pkval));
+  }
+
+}
+
+
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch, TrainerBlog};
