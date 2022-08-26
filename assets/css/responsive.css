@@ -1033,7 +1033,7 @@
 }
 @media(min-width:1200px){
     .serviceWrapper {
-        margin-top: -240px;
+        margin-top: 0px;
     }
     .profile-Flex {
         margin-top: -255px;

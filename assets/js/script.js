@@ -170,6 +170,7 @@ window['scrollEffect'] = function () {
     }).removeClass('animated');
     wow.addBox(this);
   }).scrollSpy();
+  
 
 };
 
