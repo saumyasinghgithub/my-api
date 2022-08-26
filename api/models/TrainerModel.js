@@ -533,6 +533,10 @@ class TrainerSearch extends TrainerBase{
     })
     .then(({data}) => {
       tData.library = _.get(data,'0',{});
+      return (new CourseModel()).getByTrainer(tData.about.user_id);
+    })
+    .then(courses =>  {
+      tData.courses = courses;
       return tData;
     });
   }
@@ -638,6 +642,17 @@ class TrainerSearch extends TrainerBase{
       fields: 'id as resource_id,course_id,name,type,price'
     });
   }
+ 
+searchStates(){
+  let stats = [];
+  return new Promise((resolve, reject) =>{
+    return this.db.run(`SELECT COUNT(id) FROM users WHERE role_id = 4`)
+    .then(res => {
+      stats.push(parseInt(_.get(res, '0.allTrainers', 0)));
+      resolve({success: true, stats: stats});
+    })
+  })
+}
 
 }
 
