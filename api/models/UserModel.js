@@ -64,8 +64,12 @@ class UserModel extends BaseModel {
   }
 
   buildWhereClause(attrs){
-    attrs.sql += ` WHERE ${this.pk} <> 1`;
-    return attrs;
+    if(_.get(attrs,'where',false)){
+      return super.buildWhereClause(attrs);
+    }else{
+      attrs.sql += ` WHERE ${this.pk} <> 1`;
+      return attrs;
+    }
   }
 
   createMoodleUser(data){

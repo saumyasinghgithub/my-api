@@ -59,7 +59,7 @@ class BaseModel{
     let ary = [];
 
     if(_.get(params,'where',false)){
-      const attrs = this.buildWhereClause({where: params.where, refine, ary});
+      const attrs = this.buildWhereClause({where: params.where, refine: refine, ary: ary});
       refine = attrs.refine;
       ary = attrs.ary;
     }
