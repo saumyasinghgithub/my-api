@@ -565,6 +565,10 @@ class TrainerSearch extends TrainerBase{
       return this.fetchCourseResources(_.flattenDeep(courses.map(uc => uc.courses.map(c => c.course_id))))
       .then(cres => {
         ret.data = ret.data.map(ud => ({...ud, courses: {...ud.courses, courses: ud.courses.courses.map(udc => ({...udc, resources: _.filter(cres.data,{course_id: udc.course_id})}))}}))
+        return this.searchStats();
+      })
+      .then(stats =>{
+        ret.stats = stats;
         return ret;
       })
     });
@@ -643,15 +647,22 @@ class TrainerSearch extends TrainerBase{
     });
   }
  
-searchStates(){
-  let stats = [];
-  return new Promise((resolve, reject) =>{
-    return this.db.run(`SELECT COUNT(id) FROM users WHERE role_id = 4`)
+searchStats(user_ids){
+  
+  let stats = {allCourses:0, allTrainers:0, currentUsers:0, currentCourses:0};
+    return this.db.run(`SELECT COUNT(id) AS allTrainers FROM users WHERE role_id = 4 AND active=1`)
     .then(res => {
-      stats.push(parseInt(_.get(res, '0.allTrainers', 0)));
-      resolve({success: true, stats: stats});
+     
+      stats.allTrainers = (parseInt(_.get(res, '0.allTrainers', 0)));
+      return this.db.run(`SELECT COUNT(id) AS allCourses FROM courses`);
     })
-  })
+    .then(res => {
+      stats.allCourses = (parseInt(_.get(res, '0.allCourses', 0)));
+     // stats.currentCourses = course_ids;
+      return stats;
+    })
+    
+
 }
 
 }
