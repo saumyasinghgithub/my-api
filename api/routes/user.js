@@ -30,6 +30,10 @@ module.exports = () => {
     routeWrapper(req,res, false, () => (new MoodleAPI()).createUser({...req.body}));
   })
 
+  router.markfav('/markfav', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new UserModel()).markfav({user_id: token.data.id, ...req.body}));  
+  });
+
   return router;
   
 };

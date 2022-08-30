@@ -69,7 +69,7 @@ class BaseModel{
     }
 
     let ret = { success: false };
-    return this.db.run('SELECT COUNT(' + this.pk + ') as total FROM ' + this.table + refine,ary)
+    return this.db.run('SELECT COUNT(DISTINCT(' + this.pk + ')) as total FROM ' + this.table + refine,ary)
     .then(res => {
       if(res){
         ret['pageInfo'] = {

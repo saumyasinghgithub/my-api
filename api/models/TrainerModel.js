@@ -543,19 +543,26 @@ class TrainerSearch extends TrainerBase{
 
   search(params){
     let ret = {success: false, message: "Invalid Search Criteria"};
-    let user_ids = [];
+    let all_user_ids = [], user_ids = [];
     if(_.get(params,'calibs',false)){
 
       let calibs = JSON.parse(params.calibs);
       params.whereStr = _.join(_.map(calibs, (pval,pk) => `(pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)})`),' OR ');
 
     }    
-    return this.list({...params,limit: 999999999, fields: 'DISTINCT(user_id) as user_id'})
+    return this.list({...params, start: 0, limit:9999999, fields: 'DISTINCT(user_id) as user_id'})
     .then(res => {
-      user_ids = res.data.map(d => d.user_id);
+      params['start'] = parseInt(_.get(params,'start',0));
+      params['limit'] = parseInt(_.get(params,'limit',this.pageLimit));
+      all_user_ids = res.data.map(d => d.user_id);
+      user_ids = all_user_ids.slice(params.start,params.start+params.limit);
+      ret = {success:true, pageInfo: {
+        hasMore: all_user_ids.length - params.start > params.limit, 
+        total: all_user_ids.length
+      }};
       return this.fetchAbout(params, user_ids);
     }).then(about => {
-      ret = {success: about.success, data: about.data, pageInfo: about.pageInfo};
+      ret = {...ret, data: about.data};
       return this.fetchCalibs(user_ids,params.paCalibs);
     }).then(calibs => {
       ret.data = ret.data.map(ud => ({...ud, calibs: _.filter(calibs,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
@@ -565,7 +572,7 @@ class TrainerSearch extends TrainerBase{
       return this.fetchCourseResources(_.flattenDeep(courses.map(uc => uc.courses.map(c => c.course_id))))
       .then(cres => {
         ret.data = ret.data.map(ud => ({...ud, courses: {...ud.courses, courses: ud.courses.courses.map(udc => ({...udc, resources: _.filter(cres.data,{course_id: udc.course_id})}))}}))
-        return this.searchStats();
+        return this.searchStats(all_user_ids);
       })
       .then(stats =>{
         ret.stats = stats;
@@ -647,18 +654,39 @@ class TrainerSearch extends TrainerBase{
     });
   }
  
-searchStats(user_ids){
+searchStats(all_user_ids){
   
-  let stats = {allCourses:0, allTrainers:0, currentUsers:0, currentCourses:0};
+  let stats = {allTrainers:0, allCourses:0, trainers: all_user_ids.length, courses: 0};
     return this.db.run(`SELECT COUNT(id) AS allTrainers FROM users WHERE role_id = 4 AND active=1`)
-    .then(res => {
+    .then(res1 => {
      
-      stats.allTrainers = (parseInt(_.get(res, '0.allTrainers', 0)));
+      stats.allTrainers = (parseInt(_.get(res1, '0.allTrainers', 0)));
       return this.db.run(`SELECT COUNT(id) AS allCourses FROM courses`);
     })
-    .then(res => {
-      stats.allCourses = (parseInt(_.get(res, '0.allCourses', 0)));
-     // stats.currentCourses = course_ids;
+    .then(res2 => {
+      stats.allCourses = (parseInt(_.get(res2, '0.allCourses', 0)));
+      return this.db.run(`SELECT COUNT(id) AS total FROM courses WHERE user_id IN (${all_user_ids.join(',')})`);
+    })
+    .then(res3 => {
+      stats.courses = (parseInt(_.get(res3, '0.total', 0)));
+      return this.db.run(`SELECT 
+      SUM(IF(type='PPT' || type='pdf',1,0)) as allBooks, 
+      SUM(IF(type='video',1,0)) as allVideos, 
+      SUM(IF(type='audio',1,0)) as allAudios 
+      FROM course_resources`);
+    })
+    .then(res4 => {
+      stats = {...stats, ..._.get(res4,'0',{})};
+
+      return this.db.run(`SELECT 
+        SUM(IF(type='PPT' || type='pdf',1,0)) as books, 
+        SUM(IF(type='video',1,0)) as videos, 
+        SUM(IF(type='audio',1,0)) as audios 
+        FROM course_resources WHERE course_id IN 
+        (SELECT id AS total FROM courses WHERE user_id IN (${all_user_ids.join(',')}))`);
+    })
+    .then(res5 => {
+      stats = {...stats, ..._.get(res5,'0',{})};
       return stats;
     })
     
