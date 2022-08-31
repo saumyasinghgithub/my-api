@@ -13,14 +13,14 @@ class ContactModel extends BaseModel {
   add(data){
     return super.add(data)
     .then(res => {
-      if(res.success){
+      if(res.success){        
           return Emailer.sendEmail({
             to: data.email,
             subject: `Contact Form Submission`,
             html: this.contactFormEmail({...data, name: data.name, phone: data.phone, email:data.email, message:data.message})
           })
           .then(() => {
-            return res;
+            return {success:true,message:"Your details have been submitted !"} ;
           })
         }else{
           return res;
