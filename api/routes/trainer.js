@@ -305,9 +305,9 @@ module.exports = () => {
   });
 
 router.get('/search', function (req, res){
-  routeWrapper(req,res, false, () => {
-      return (new TModel.TrainerSearch()).search(req.query);
-  })
+  routeWrapper(req,res, false, (token) => {
+      return (new TModel.TrainerSearch()).search({...req.query, user_id: _.get(token,'data.id',false)});
+  }, true)
 });
 
 router.get('/:slug/courses', function (req, res) {

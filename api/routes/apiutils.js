@@ -69,18 +69,16 @@ const handleError = (err) => {
   };
 }
 
-const routeWrapper = (req,res, mustVerify, primFunc) => {    
+const routeWrapper = (req,res, mustVerify, primFunc, sendToken = false) => {    
   canAccess(req)
   .then(() => {
+    const token = verifyToken(req, true);
     if(mustVerify){
-      token = verifyToken(req, true);
       if (!token['success']) {
         throw (token['message']);
       }
-      return primFunc(token);
-    }else{
-      return primFunc();
     }
+    return primFunc(sendToken ? token : false);
   })
   .catch(handleError)
   .then(obj => res.json(obj))

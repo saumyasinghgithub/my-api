@@ -556,14 +556,22 @@ class TrainerSearch extends TrainerBase{
       params['limit'] = parseInt(_.get(params,'limit',this.pageLimit));
       all_user_ids = res.data.map(d => d.user_id);
       user_ids = all_user_ids.slice(params.start,params.start+params.limit);
-      ret = {success:true, pageInfo: {
+      ret = {success:true, favTrainers: [], pageInfo: {
         hasMore: all_user_ids.length - params.start > params.limit, 
         total: all_user_ids.length
       }};
       return this.fetchAbout(params, user_ids);
     }).then(about => {
       ret = {...ret, data: about.data};
-      return this.fetchCalibs(user_ids,params.paCalibs);
+      if(params.user_id){
+        return this.favTrainers(params.user_id,user_ids)
+        .then((favTrainers) => {
+          ret = {...ret, favTrainers: favTrainers};
+           return this.fetchCalibs(user_ids,params.paCalibs);
+        });
+      }else{
+        return this.fetchCalibs(user_ids,params.paCalibs);
+      }
     }).then(calibs => {
       ret.data = ret.data.map(ud => ({...ud, calibs: _.filter(calibs,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
       return this.fetchCourses(user_ids);
@@ -578,6 +586,14 @@ class TrainerSearch extends TrainerBase{
         ret.stats = stats;
         return ret;
       })
+    });
+  }
+
+  favTrainers(user_id, trainer_ids){
+    const sql = `SELECT trainer_id FROM favorites WHERE user_id=${user_id} AND trainer_id IN (${trainer_ids.join(',')})`;
+    return this.db.run(sql,[])
+    .then(res => {
+      return _.get(res,'length',0) > 0 ? res.map(r => r.trainer_id) : [];
     });
   }
 
