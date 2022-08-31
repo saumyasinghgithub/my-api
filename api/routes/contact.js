@@ -10,7 +10,7 @@ module.exports = () => {
  
 
   router.post('/add', function (req, res, next) {
-    routeWrapper(req,res, false, () => (new ContactModel()).add(req.body));
+    routeWrapper(req,res, false, () => (new ContactModel()).add(_.pick(req.body,['name','phone','email','message'])));
   });
 
   return router;

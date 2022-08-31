@@ -11,8 +11,7 @@ class ContactModel extends BaseModel {
   pageLimit = 10;
 
   add(data){
-    let frmdata = _.pick(data,['name','phone','email','message']);
-    return super.add(frmdata)
+    return super.add(data)
     .then(res => {
       if(res.success){
           return Emailer.sendEmail({
@@ -20,8 +19,12 @@ class ContactModel extends BaseModel {
             subject: `Contact Form Submission`,
             html: this.contactFormEmail({...data, name: data.name, phone: data.phone, email:data.email, message:data.message})
           })
-      }
-      return res;
+          .then(() => {
+            return res;
+          })
+        }else{
+          return res;
+        }
     })
   }
 
