@@ -79,7 +79,7 @@ const routeWrapper = (req,res, mustVerify, primFunc, sendToken = false) => {
         throw (token['message']);
       }
     }
-    return primFunc(sendToken ? token : false);
+    return primFunc(mustVerify || sendToken ? token : false);
   })
   .catch(handleError)
   .then(obj => res.json(obj))

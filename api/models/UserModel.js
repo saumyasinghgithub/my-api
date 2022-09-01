@@ -251,8 +251,8 @@ class UserModel extends BaseModel {
     return new Promise((resolve,reject) => {
       this.db.run(`DELETE FROM favorites WHERE user_id=? AND trainer_id=?`,[user_id,trainer_id])
       .then(() => {
-        if(parseInt(fav)===1){
-          return this.db.run(`INSERT FROM favorites (user_id,trainer_id) VALUES (?,?)`,[user_id,trainer_id]);  
+        if(parseInt(fav) === 1){
+          return this.db.run(`INSERT INTO favorites (user_id,trainer_id) VALUES (?,?)`,[user_id,trainer_id]);  
         }
       })
       .then(() => resolve({success:true}))
