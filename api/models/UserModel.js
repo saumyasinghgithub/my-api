@@ -227,12 +227,13 @@ class UserModel extends BaseModel {
   }
 
   sendForgotPasswordEmail(userData){
+    
     return Emailer.sendEmail({
       to: userData.email,
       subject: `${process.env.APP_NAME}::RESET YOUR PASSWORD`,
       html: this.forgotPasswordEmail({name: userData.firstname+' ' + userData.lastname, token: userData.token})
     })
-    .then(resolve);
+    .then(console.log);
   }
 
   forgotPasswordEmail({name,token}){
@@ -243,7 +244,6 @@ class UserModel extends BaseModel {
     <p>Please do not share your credentials to avoid sensitive data breach.</p>
     Good Luck.<br />
     Administrator`;
-
     return html;
   }
 
