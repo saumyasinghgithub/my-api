@@ -19,7 +19,6 @@ class Emailer{
 
     var mailOptions = {
       from: process.env.DEFAULT_EMAIL_FROM,
-      bcc: process.env.DEFAULT_EMAIL_TO,
       to: 'surojit19@gmail.com',
       subject: 'LOG FROM KS',
       html: 'Log coming in',
@@ -30,6 +29,7 @@ class Emailer{
     
       this.transport.sendMail(mailOptions, function(error, info){
         if (error) {
+          console.log(error);
           reject(error);
         } else {
           resolve();

@@ -15,7 +15,7 @@ class ContactModel extends BaseModel {
     .then(res => {
       if(res.success){        
           return Emailer.sendEmail({
-            to: data.email,
+            to: process.env.CONTACT_FORM_EMAIL,
             subject: `Contact Form Submission`,
             html: this.contactFormEmail({...data, name: data.name, phone: data.phone, email:data.email, message:data.message})
           })
