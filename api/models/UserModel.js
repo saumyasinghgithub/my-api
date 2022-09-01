@@ -63,6 +63,64 @@ class UserModel extends BaseModel {
     });
   }
 
+  forgotPassword({email}) {
+    let ret = {success: true, message: `We found ${email} registered with us and sent you an email to reset your password. Please check your email ${email}.`};
+    
+    return new Promise((resolve,reject) => {
+    
+    
+      this.findBy({fname: 'email', fvalue: email})
+      .then(res => {
+        if(_.get(res,'0.email','') === email){
+
+          const token = apiutils.genToken({
+            id: res[0].id,
+            validTill: moment().add(48, 'hours').unix()
+          });
+
+          this.sendForgotPasswordEmail({...res[0],token: token})
+          .then(() => resolve(ret))
+          .catch(err => resolve({success:false, message: err.message}))
+
+        }else{
+          resolve({success: false, message: `${email} is not registered with us!`});
+        }
+      })
+
+    });
+  }
+
+  verifyResetPassword({token}){
+    let ret = {success: false, message: "Not verified"};
+    return new Promise((resolve,reject) => {
+      try{
+        let payload = apiutils.verifyToken(token,true);
+        if(payload.success){
+          ret['success'] = true;
+          ret['uid'] = payload.id;
+        }
+        else if(payload.tokenExpired){
+          ret['message']="Your link has expired, please go to login and perform forgot password again!";
+        }else{
+          ret['message'] = payload.message;
+        }
+      }catch(e){
+        console.log(e);
+        ret['message'] = 'Err Occured.' + e;
+        return ret;
+      } 
+    })
+  }
+
+  resetPassword({newpass,token}){
+   this.verifyResetPassword({token: token})
+   .then(vpass => {
+      if(vpass.success){
+        // update password for vpass.uid using password = bcrypt.hashSync(newpass, 8);
+      }
+   })
+  }
+
   buildWhereClause(attrs){
     if(_.get(attrs,'where',false)){
       return super.buildWhereClause(attrs);
@@ -161,6 +219,27 @@ class UserModel extends BaseModel {
     <p>You can use the following credetials to <a href="${process.env.APP_URL}/login">login to your ${data.role} area</a></p>
     <p>Username: <b>${data.email}</b></p>
     <p>Password: <b>${data.origpass}</b></p>
+    <p>Please do not share your credentials to avoid sensitive data breach.</p>
+    Good Luck.<br />
+    Administrator`;
+
+    return html;
+  }
+
+  sendForgotPasswordEmail(userData){
+    return Emailer.sendEmail({
+      to: userData.email,
+      subject: `${process.env.APP_NAME}::RESET YOUR PASSWORD`,
+      html: this.forgotPasswordEmail({name: userData.firstname+' ' + userData.lastname, token: userData.token})
+    })
+    .then(resolve);
+  }
+
+  forgotPasswordEmail({name,token}){
+    let html = `<p>Hi ${name}),</p>
+    <p>${process.env.APP_NAME}.</p>
+    <p>We have processed your request to reset your password.</p>
+    <p><a href="${process.env.APP_URL}/resetpass?t=${token}">Click here</a> to reset your password</p>
     <p>Please do not share your credentials to avoid sensitive data breach.</p>
     Good Luck.<br />
     Administrator`;

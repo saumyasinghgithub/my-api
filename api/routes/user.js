@@ -9,6 +9,10 @@ module.exports = () => {
   router.post('/login',(req,res) => {    
     routeWrapper(req,res, false, () => (new UserModel()).checkLogin(req.body))
   });
+
+  router.post('/forgotpass',(req,res) => {    
+    routeWrapper(req,res, false, () => (new UserModel()).forgotPassword(req.body))
+  });
   
   router.get('/list', function (req, res) {
     routeWrapper(req,res, true, () => (new UserModel()).list(req.query))

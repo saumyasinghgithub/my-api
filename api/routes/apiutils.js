@@ -34,7 +34,7 @@ const genToken = (payload) => {
 }
 
 const verifyToken = (req,return_token_as_object = false) => {
-  const ret = {success: false, message: "Invalid Access!"}; 
+  const ret = {success: false, message: "Invalid Access!", tokenExpired: false}; 
   try{
     const token = req.header('token'); 
        
@@ -44,6 +44,7 @@ const verifyToken = (req,return_token_as_object = false) => {
       if(_.get(userData,'id',false)){
         if(moment(userData.validTill).isAfter(moment())){    
           ret['message'] = 'Token expired, please login again to continue!'; 
+          ret['tokenExpired'] = true;
          }else{
           ret['success'] = true;
           ret['data'] = return_token_as_object ? userData : userData.id;verifyToken
