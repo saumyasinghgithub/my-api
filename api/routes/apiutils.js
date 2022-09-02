@@ -34,7 +34,7 @@ const genToken = (payload) => {
 }
 
 const verifyToken = (req,return_token_as_object = false) => {
-  const ret = {success: false, message: "Invalid Access!"}; 
+  const ret = {success: false, message: "Invalid Access!", tokenExpired: false}; 
   try{
     const token = req.header('token'); 
        
@@ -44,9 +44,10 @@ const verifyToken = (req,return_token_as_object = false) => {
       if(_.get(userData,'id',false)){
         if(moment(userData.validTill).isAfter(moment())){    
           ret['message'] = 'Token expired, please login again to continue!'; 
+          ret['tokenExpired'] = true;
          }else{
           ret['success'] = true;
-          ret['data'] = return_token_as_object ? userData : userData.id;verifyToken
+          ret['data'] = return_token_as_object ? userData : userData.id;
        }     
       }
     }
@@ -69,18 +70,16 @@ const handleError = (err) => {
   };
 }
 
-const routeWrapper = (req,res, mustVerify, primFunc) => {    
+const routeWrapper = (req,res, mustVerify, primFunc, sendToken = false) => {    
   canAccess(req)
   .then(() => {
+    const token = verifyToken(req, true);
     if(mustVerify){
-      token = verifyToken(req, true);
       if (!token['success']) {
         throw (token['message']);
       }
-      return primFunc(token);
-    }else{
-      return primFunc();
     }
+    return primFunc(mustVerify || sendToken ? token : false);
   })
   .catch(handleError)
   .then(obj => res.json(obj))

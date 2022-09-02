@@ -9,6 +9,14 @@ module.exports = () => {
   router.post('/login',(req,res) => {    
     routeWrapper(req,res, false, () => (new UserModel()).checkLogin(req.body))
   });
+
+  router.post('/forgotpass',(req,res) => {    
+    routeWrapper(req,res, false, () => (new UserModel()).forgotPassword(req.body))
+  });
+
+  router.post('/resetpass',(req,res) => {    
+    routeWrapper(req,res, false, (vpass) => (new UserModel()).changePassword({...req.body, vpass: vpass}), true)
+  });
   
   router.get('/list', function (req, res) {
     routeWrapper(req,res, true, () => (new UserModel()).list(req.query))
@@ -28,7 +36,11 @@ module.exports = () => {
 
   router.post('/moodle/createuser',function(req,res){
     routeWrapper(req,res, false, () => (new MoodleAPI()).createUser({...req.body}));
-  })
+  });
+
+  router.post('/markfav', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new UserModel()).markfav({user_id: token.data.id, ...req.body}));  
+  });
 
   return router;
   

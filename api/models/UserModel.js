@@ -7,8 +7,6 @@ const Emailer = require('./EmailModel');
 const RoleModel = require('./RoleModel');
 const TModel = require('./TrainerModel');
 const MoodleAPI = require('./MoodleAPI');
-const { response } = require('express');
-
 
 class UserModel extends BaseModel {
 
@@ -60,6 +58,50 @@ class UserModel extends BaseModel {
           resolve(ret);
         }
       });
+    });
+  }
+
+  forgotPassword({email}) {
+    let ret = {success: true, message: `We found ${email} registered with us and sent you an email to reset your password. Please check your email ${email}.`};
+    
+    return new Promise((resolve,reject) => {
+    
+    
+      this.findBy({fname: 'email', fvalue: email})
+      .then(res => {
+        if(_.get(res,'0.email','') === email){
+
+          const token = apiutils.genToken({
+            id: res[0].id,
+            validTill: moment().add(48, 'hours').unix()
+          });
+
+          this.sendForgotPasswordEmail({...res[0],token: token})
+          .then(() => resolve(ret))
+          .catch(err => resolve({success:false, message: err.message}))
+
+        }else{
+          resolve({success: false, message: `${email} is not registered with us!`});
+        }
+      })
+
+    });
+  }
+
+  changePassword({password,vpass}){
+    return new Promise((resolve,reject) => {
+      if(vpass.success){
+        this.edit({password: bcrypt.hashSync(password, 8)},vpass.data.id)
+        .then(ret => {
+          if(ret.success){
+            resolve({success: true, message: "Your password has been updated! Please use new password to login!"});
+          }else{
+            resolve({success: false, message: "Not able to reset your password, please try again!"});
+          }
+        })
+      }else{
+        resolve({success: false, message: vpass.message});
+      }
     });
   }
 
@@ -166,6 +208,41 @@ class UserModel extends BaseModel {
     Administrator`;
 
     return html;
+  }
+
+  sendForgotPasswordEmail(userData){
+    
+    return Emailer.sendEmail({
+      to: userData.email,
+      subject: `${process.env.APP_NAME}::RESET YOUR PASSWORD`,
+      html: this.forgotPasswordEmail({name: userData.firstname+' ' + userData.lastname, token: userData.token})
+    })
+    .then(console.log);
+  }
+
+  forgotPasswordEmail({name,token}){
+    let html = `<p>Hi ${name}),</p>
+    <p>${process.env.APP_NAME}.</p>
+    <p>We have processed your request to reset your password.</p>
+    <p><a href="${process.env.APP_URL}/resetpass/${token}">Click here</a> to reset your password</p>
+    <p>Click Here ${process.env.APP_URL}/resetpass/${token}</p>
+    <p>Please do not share your credentials to avoid sensitive data breach.</p>
+    Good Luck.<br />
+    Administrator`;
+    return html;
+  }
+
+  markfav({user_id,trainer_id,fav}){
+    return new Promise((resolve,reject) => {
+      this.db.run(`DELETE FROM favorites WHERE user_id=? AND trainer_id=?`,[user_id,trainer_id])
+      .then(() => {
+        if(parseInt(fav) === 1){
+          return this.db.run(`INSERT INTO favorites (user_id,trainer_id) VALUES (?,?)`,[user_id,trainer_id]);  
+        }
+      })
+      .then(() => resolve({success:true}))
+      .catch(reject);
+    });
   }
 
   
