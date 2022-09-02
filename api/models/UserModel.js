@@ -240,7 +240,8 @@ class UserModel extends BaseModel {
     let html = `<p>Hi ${name}),</p>
     <p>${process.env.APP_NAME}.</p>
     <p>We have processed your request to reset your password.</p>
-    <p><a href="${process.env.APP_URL}/resetpass?t=${token}">Click here</a> to reset your password</p>
+    <p><a href="${process.env.APP_URL}/resetpass/${token}">Click here</a> to reset your password</p>
+    <p>Click Here ${process.env.APP_URL}/resetpass/${token}</p>
     <p>Please do not share your credentials to avoid sensitive data breach.</p>
     Good Luck.<br />
     Administrator`;
