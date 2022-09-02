@@ -47,7 +47,7 @@ const verifyToken = (req,return_token_as_object = false) => {
           ret['tokenExpired'] = true;
          }else{
           ret['success'] = true;
-          ret['data'] = return_token_as_object ? userData : userData.id;verifyToken
+          ret['data'] = return_token_as_object ? userData : userData.id;
        }     
       }
     }

@@ -7,8 +7,6 @@ const Emailer = require('./EmailModel');
 const RoleModel = require('./RoleModel');
 const TModel = require('./TrainerModel');
 const MoodleAPI = require('./MoodleAPI');
-const { response } = require('express');
-
 
 class UserModel extends BaseModel {
 
@@ -90,35 +88,21 @@ class UserModel extends BaseModel {
     });
   }
 
-  verifyResetPassword({token}){
-    let ret = {success: false, message: "Not verified"};
+  changePassword({password,vpass}){
     return new Promise((resolve,reject) => {
-      try{
-        let payload = apiutils.verifyToken(token,true);
-        if(payload.success){
-          ret['success'] = true;
-          ret['uid'] = payload.id;
-        }
-        else if(payload.tokenExpired){
-          ret['message']="Your link has expired, please go to login and perform forgot password again!";
-        }else{
-          ret['message'] = payload.message;
-        }
-      }catch(e){
-        console.log(e);
-        ret['message'] = 'Err Occured.' + e;
-        return ret;
-      } 
-    })
-  }
-
-  resetPassword({newpass,token}){
-   this.verifyResetPassword({token: token})
-   .then(vpass => {
       if(vpass.success){
-        // update password for vpass.uid using password = bcrypt.hashSync(newpass, 8);
+        this.edit({password: bcrypt.hashSync(password, 8)},vpass.uid)
+        .then(ret => {
+          if(ret.success){
+            resolve({success: true, message: "Your password has been updated! Please use new password to login!"});
+          }else{
+            resolve({success: false, message: "Not able to reset your password, please try again!"});
+          }
+        })
+      }else{
+        resolve({success: false, message: vpass.message});
       }
-   })
+    });
   }
 
   buildWhereClause(attrs){
