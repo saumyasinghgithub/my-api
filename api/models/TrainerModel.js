@@ -201,8 +201,6 @@ class TrainerAbout extends TrainerBase {
 
   table = "trainer_about";
 
-  
-
   edit(data,files,user_id){
     
     let frmdata = _.pick(data,['firstname','middlename','lastname','slug','biography','trainings']);
@@ -234,6 +232,9 @@ class TrainerAbout extends TrainerBase {
     .then(res => _.get(res, 'data.0', false));
   }
 
+  myFavs({start,limit,user_id}){
+    return this.list({whereStr: `user_id IN (SELECT trainer_id FROM favorites WHERE user_id=${user_id})`, start: start, limit: limit});
+  }
 
 }
 

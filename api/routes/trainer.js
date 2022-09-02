@@ -363,15 +363,19 @@ router.delete('/my-blogs/:id', function (req, res, next) {
   }); 
 });
 
-router.get('/my-sales-stats', function (req, res, next) {
-  routeWrapper(req,res, true, (token) => {
-    if(isTrainer(token.data)){
-      return (new TModel.TrainerCourse()).loadStats(token.data.id);  
-    }else{
-      throw({message: "Permission Denied!"});
-    }
-  }); 
-});
+  router.get('/my-sales-stats', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerCourse()).loadStats(token.data.id);  
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    }); 
+  });
+
+  router.get('/my-preferred', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerAbout()).myFavs({...req.query,user_id: token.data.id})); 
+  });
 
   return router;
   

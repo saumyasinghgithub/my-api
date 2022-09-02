@@ -4,7 +4,7 @@ const BaseModel = require('./BaseModel');
 class CourseModel extends BaseModel {
 
   table = "courses";
-  getBySlug({slug}){
+  getBySlug({slug,user_id}){
    let whereParams = {where: {slug: slug}, limit: 1}
     let cData = {};
     return this.list(whereParams)
@@ -22,6 +22,10 @@ class CourseModel extends BaseModel {
     })
     .then(({data}) => {
       cData.contents = data;
+      return this.db.run(`SELECT id FROM favorite_courses WHERE user_id=? AND course_id=?`,[user_id,cData.course.id])
+    })
+    .then((res) => {
+      cData.isFav = _.get(res,'0.id', false) ? true : false;
       return cData;
     });
   }
@@ -55,6 +59,23 @@ class CourseModel extends BaseModel {
       };
       getCourseWithResource();
     });
+  }
+
+  markfav({user_id,course_id,fav}){
+    return new Promise((resolve,reject) => {
+      this.db.run(`DELETE FROM favorite_courses WHERE user_id=? AND course_id=?`,[user_id,course_id])
+      .then(() => {
+        if(parseInt(fav) === 1){
+          return this.db.run(`INSERT INTO favorite_courses (user_id,course_id) VALUES (?,?)`,[user_id,course_id]);  
+        }
+      })
+      .then(() => resolve({success:true}))
+      .catch(reject);
+    });
+  }
+
+  myFavs({user_id,start,limit}){
+    return this.list({whereStr: `id IN (SELECT course_id FROM favorite_courses WHERE user_id=${user_id})`, start: start, limit: limit});
   }
 
 

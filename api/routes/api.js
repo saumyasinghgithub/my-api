@@ -26,9 +26,9 @@ module.exports = function() {
   })
 */
   router.get('/course/:slug', function (req, res) {
-    routeWrapper(req,res, false, () => {
+    routeWrapper(req,res, false, (token) => {
       let data = {};
-      return (new CourseModel()).getBySlug(req.params)
+      return (new CourseModel()).getBySlug({...req.params,user_id:_.get(token,'data.id',0)})
       .then(cData => {
         data = {...cData};
         return (new TModel.TrainerAbout()).list({where: {user_id: data.course.user_id}, limit: 1})
@@ -39,7 +39,15 @@ module.exports = function() {
         return data;
       })
       .catch(e => ({success: false, message: e.message}))
-    })
+    },true)
+  });
+
+  router.post('/course/markfav', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new CourseModel()).markfav({user_id: token.data.id, ...req.body}));  
+  });
+
+  router.get('/my-preferred-courses', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new CourseModel()).myFavs({...req.query,user_id: token.data.id})); 
   });
 
   router.get('/', (req,res,next) => {
