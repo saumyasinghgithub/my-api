@@ -91,7 +91,7 @@ class UserModel extends BaseModel {
   changePassword({password,vpass}){
     return new Promise((resolve,reject) => {
       if(vpass.success){
-        this.edit({password: bcrypt.hashSync(password, 8)},vpass.uid)
+        this.edit({password: bcrypt.hashSync(password, 8)},vpass.data.id)
         .then(ret => {
           if(ret.success){
             resolve({success: true, message: "Your password has been updated! Please use new password to login!"});
