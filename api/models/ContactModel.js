@@ -8,7 +8,7 @@ const Emailer = require('./EmailModel');
 class ContactModel extends BaseModel {
 
   table = "contact_us";
-  pageLimit = 10;
+  pageLimit = 25;
 
   add(data){
     return super.add(data)
@@ -41,6 +41,15 @@ class ContactModel extends BaseModel {
     By AD Admin`;
 
     return html;
+  }
+
+  delete(pkval){
+    return this.find(pkval)
+    .then(rec => { 
+      if(rec){
+        return super.delete(pkval);
+      }
+    })
   }
 
 }

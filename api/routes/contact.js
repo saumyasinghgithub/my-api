@@ -13,6 +13,14 @@ module.exports = () => {
     routeWrapper(req,res, false, () => (new ContactModel()).add(_.pick(req.body,['name','phone','email','message'])));
   });
 
+  router.get('/list', function (req, res) {
+    routeWrapper(req,res, false, () => (new ContactModel()).list(req.query))
+  });
+
+  router.delete('contact/:id', function (req, res, next) {
+    routeWrapper(req,res, true, () => (new ContactModel()).delete(req.params.id));  
+  }); 
+
   return router;
   
 };
