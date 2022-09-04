@@ -17,7 +17,7 @@ module.exports = () => {
     routeWrapper(req,res, false, () => (new ContactModel()).list(req.query))
   });
 
-  router.delete('contact/:id', function (req, res, next) {
+  router.delete('/:id', function (req, res, next) {
     routeWrapper(req,res, true, () => (new ContactModel()).delete(req.params.id));  
   }); 
 
