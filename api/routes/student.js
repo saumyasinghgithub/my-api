@@ -3,6 +3,7 @@ const router = express.Router();
 const {routeWrapper, isStudent} = require('./apiutils');
 const SModel = require('../models/StudentModel');
 const SEModel = require('../models/StudentEnrollmentModel');
+const PaymentModel = require('../models/PaymentModel');
 const _ = require('lodash');
 const res = require('express/lib/response');
 
@@ -31,6 +32,16 @@ module.exports = () => {
   });
   
   router.get('/my-order', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      return (new PaymentModel()).list({...req.query, where: {user_id: token.data.id}})
+      .then(oData => {
+        return ({...oData, success: true});
+      })
+      .catch(e => ({success: false, message: e.message}))
+    })
+  });
+
+  router.get('/my-enrollments', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       return (new SEModel()).getEnrolledDataByID(token.data.id)
       .then(oData => {

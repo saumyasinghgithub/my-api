@@ -4607,3 +4607,35 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
     padding: 2% 2%;
     margin-bottom: 10px;
 }
+.alertdesign .alert{
+    width: 100% !important;
+    margin-left: 0% !important;
+    padding: 0.5rem 0.5rem !important;
+}
+.mysale .gelpCx{
+    margin-top: 25px;
+}
+.mysale .rdt_TableHeadRow{
+    border: 1px solid #ccc;
+    border-bottom: 0px;
+}
+.mysale .rdt_TableRow{
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.mysale .rdt_TableCol{
+    border-right: 1px solid #ccc;
+}
+.mysale .rdt_TableCell{
+    border-right: 1px solid #ccc;
+}
+
+.myblog .dEloFe {
+    display: block;
+    text-align: center;
+}
+
+.myblog .rdt_TableRow .btn-light{
+    margin-top: 3%;
+}
