@@ -550,7 +550,13 @@ class TrainerSearch extends TrainerBase{
 
     if(_.get(params,'calibs',false) && params.calibs!="{}"){
       let calibs = JSON.parse(params.calibs);
-      params.whereStr += ` AND (` + _.join(_.map(calibs, (pval,pk) => `(pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)})`),' OR ') + ')';
+      calibs = _.map(calibs, (pval,pk) => `pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)}`);
+      if(calibs.length > 1){
+        params.whereStr += ` AND ((` + _.join(calibs,') OR (') + '))';
+      }else{
+        params.whereStr += ` AND ` + calibs[0];
+      }
+      
     }
 
     return this.list({...params, start: 0, limit:9999999, fields: 'DISTINCT(user_id) as user_id'})
@@ -563,6 +569,7 @@ class TrainerSearch extends TrainerBase{
         hasMore: all_user_ids.length - params.start > params.limit, 
         total: all_user_ids.length
       }};
+      params.start = 0; //== since we already sliced users
       return this.fetchAbout(params, user_ids);
     }).then(about => {
       ret = {...ret, data: about.data};
@@ -582,13 +589,20 @@ class TrainerSearch extends TrainerBase{
       ret.data = ret.data.map(ud => ({...ud, courses: _.omit(_.filter(courses,{user_id: ud.user_id})[0],'user_id')}))
       return this.fetchCourseResources(_.flattenDeep(courses.map(uc => uc.courses.map(c => c.course_id))))
       .then(cres => {
-        ret.data = ret.data.map(ud => ({...ud, courses: {...ud.courses, courses: ud.courses.courses.map(udc => ({...udc, resources: _.filter(cres.data,{course_id: udc.course_id})}))}}))
-        return this.searchStats(all_user_ids);
+        ret.data = ret.data.map(ud => ({...ud, courses: {...ud.courses, courses: ud.courses.courses.map(udc => ({...udc, resources: _.filter(cres.data,{course_id: udc.course_id})}))}}));
+
+        if(parseInt(params.loadStats)===1){
+          return this.searchStats(all_user_ids)
+          .then(stats =>{
+            ret.stats = stats;
+            return ret;
+          });          
+        }else{
+          return ret;
+        }
+
       })
-      .then(stats =>{
-        ret.stats = stats;
-        return ret;
-      })
+      
     });
   }
 
@@ -656,7 +670,7 @@ class TrainerSearch extends TrainerBase{
   fetchUserCourses(user_id){
     return (new TrainerCourse()).list({
       start: 0,
-      limit: 4,
+      limit: 3,
       sortBy: 'created_at',
       sortDir: 'DESC',
       whereStr: `user_id=${parseInt(user_id)}`, 

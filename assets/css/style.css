@@ -528,6 +528,14 @@ ul.resultlist li a {
     text-align: center;
 }
 
+.flexWrapper .nav li:first-child {
+    padding-top: 0px;
+}
+
+.flexWrapper .nav li:last-child {
+    padding-bottom: 50px;
+}
+
 .flexWrapper .nav {
     display: block;
 }
@@ -535,6 +543,17 @@ ul.resultlist li a {
 .flexWrapper .nav li a {
     color: #4f5052;
     text-decoration: none;
+}
+
+.flexWrapper .nav li:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.flexWrapper .nav li:hover img {
+    border-color: #0f79aaaa !important;
+    border: 4px solid;
+    border-radius: 50px;
 }
 
 .flexWrapper .nav li span {
