@@ -545,12 +545,14 @@ class TrainerSearch extends TrainerBase{
   search(params){
     let ret = {success: false, message: "Invalid Search Criteria"};
     let all_user_ids = [], user_ids = [];
-    if(_.get(params,'calibs',false)){
+    
+    params.whereStr = `user_id IN (SELECT id FROM users where id = user_id AND active = 1)`;
 
+    if(_.get(params,'calibs',false) && params.calibs!="{}"){
       let calibs = JSON.parse(params.calibs);
-      params.whereStr = _.join(_.map(calibs, (pval,pk) => `(pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)})`),' OR ');
+      params.whereStr += ` AND (` + _.join(_.map(calibs, (pval,pk) => `(pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)})`),' OR ') + ')';
+    }
 
-    }    
     return this.list({...params, start: 0, limit:9999999, fields: 'DISTINCT(user_id) as user_id'})
     .then(res => {
       params['start'] = parseInt(_.get(params,'start',0));
