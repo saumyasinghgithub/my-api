@@ -19,7 +19,9 @@ module.exports = () => {
   });
   
   router.get('/list', function (req, res) {
-    routeWrapper(req,res, true, () => (new UserModel()).list(req.query))
+    routeWrapper(req,res, true, () => (new UserModel()).list({...req.query, 
+      fields: `id,firstname,middlename,lastname,email,mobile,registered_at,active,role_id, IF(role_id=${process.env.TRAINER_ROLE} ,(SELECT slug FROM trainer_about WHERE user_id=users.id) ,'id') as slug` 
+    }))
   });
 
   router.post('/add', function (req, res, next) {
