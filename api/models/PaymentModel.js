@@ -5,6 +5,8 @@ const CartModel = require('./CartModel');
 const StudentEnrollmentModel = require('./StudentEnrollmentModel');
 const Emailer = require('./EmailModel');
 const UserModel = require('./UserModel');
+const MoodleAPI = require('./MoodleAPI');
+
 
 class PaymentModel extends BaseModel {
 
@@ -101,12 +103,40 @@ class PaymentModel extends BaseModel {
             user_id: user_id, 
             course_id: ci.course,
             resources: ci.resources.join(',')
-          }).finally(enrollStudent);
+          })
+          .then(() => this.enrollSICMoodle({
+            user_id: user_id,
+            course_id: course_id
+          }))
+          .finally(enrollStudent);
         }
       };
 
       enrollStudent();
 
+    });
+  }
+
+
+  extractMoodleIds({user_id, course_id}){
+    let mid = {userid: 0, courseid: 0};
+    return this.db.run(`SELECT moodle_id FROM users WHERE id=?`,user_id)
+    .then(res => mid.userid = _.get(res,'0.moodle_id',0))
+    .then(() => this.db.run(`SELECT moodle_id FROM courses WHERE id=?`,course_id))
+    .then(res => mid.courseid = _.get(res,'0.moodle_id',0))
+    .then(() => mid);
+  }
+
+  enrollSICMoodle({user_id, course_id}){
+    
+    return this.extractMoodleIds({user_id, course_id})
+    .then(mid => {
+      if(mid.userid > 0 && mid.courseid > 0){
+        return (new MoodleAPI()).setCourseUser({
+          userid: mid.userid,
+          courseid: mid.courseid
+        }).then(console.log);
+      }
     });
   }
 
