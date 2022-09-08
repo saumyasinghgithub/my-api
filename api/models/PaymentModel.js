@@ -134,8 +134,9 @@ class PaymentModel extends BaseModel {
       if(mid.userid > 0 && mid.courseid > 0){
         return (new MoodleAPI()).setCourseUser({
           userid: mid.userid,
-          courseid: mid.courseid
-        }).then(console.log);
+          courseid: mid.courseid,
+          roleid: parseInt(process.env.MOODLE_STUDENT_ROLE)
+        });
       }
     });
   }

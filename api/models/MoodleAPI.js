@@ -54,7 +54,7 @@ class MoodleAPIBase{
       .then(() => {
         let url = `${this.api}?moodlewsrestformat=json&wstoken=${this.getToken()}&wsfunction=${func}`;
         return axios.post(url,params).then(res => res.data)
-      });
+      }).catch(console.log);
   }
 
 }
@@ -94,7 +94,7 @@ class MoodleAPI extends MoodleAPIBase{
 
   setCourseUser(enrole){
 
-    enrole['roleid']=process.env.MOODLE_STUDENT_ROLE;
+    //enrole['roleid']=process.env.MOODLE_STUDENT_ROLE;
     
     let params = _.map(enrole, (v,k) => `enrolments[0][${k}]=${v}`).join('&');
     return this.hit('enrol_manual_enrol_users',params);
