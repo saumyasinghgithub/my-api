@@ -15,7 +15,7 @@ class CartModel extends BaseModel {
   }
 
   getCartData({user_id}){
-    let sql = `SELECT c.slug, c.name, c.price as baseprice, c.course_image, ca.* FROM cart ca
+    let sql = `SELECT c.slug, c.name, c.course_image, ca.* FROM cart ca
     INNER JOIN courses c ON ca.course_id = c.id  
     WHERE ca.user_id = ? AND ca.status=? 
     ORDER BY ca.id DESC`

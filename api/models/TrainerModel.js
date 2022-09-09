@@ -328,7 +328,7 @@ class TrainerCourse extends TrainerBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['user_id','name', 'sku','price','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lectures','media']);
+    let frmdata = _.pick(data,['user_id','name', 'sku','short_description','description','learn_brief','requirements','stock_qnty','course_image','level','language','duration','lectures']);
     frmdata['user_id'] = user_id;
     frmdata['slug'] = slugify(frmdata.name,{remove: /[*#+~.()'"!:@]/g},{lower: true});
     return this.uploadImage(data, _.get(files,'course_image',false),'courses')
@@ -337,7 +337,7 @@ class TrainerCourse extends TrainerBase {
       if(parseInt(data.id) > 0){
         return super.edit(frmdata, data.id).then(editRes => {
           if(editRes.success){
-            return this.updateCourseInMoodle(data).then(() => editRes);
+            return this.updateCourseInMoodle({...data, user_id: user_id}).then(() => editRes);
           }else{
             return editRes;
           }
@@ -349,21 +349,41 @@ class TrainerCourse extends TrainerBase {
 
   }
 
+  extractUserMoodleId(user_id){    
+    return this.db.run(`SELECT moodle_id FROM users WHERE id=?`,user_id)
+    .then(res => parseInt(_.get(res,'0.moodle_id',0)))
+  }
+
 
   createCourseInMoodle(data){
-    return (new MoodleAPI()).createCourse({
+    let course_mid = 0;
+    let mAPIObj = new MoodleAPI();
+    return mAPIObj.createCourse({
       fullname: data.name, 
       shortname: data.sku, 
       summary: data.short_description
     }).then(res => {
-      let mid = parseInt(_.get(res,'[0].id',0));
-      if(mid > 0){
-        return super.edit({moodle_id: mid}, data.id).then(() => {
+      course_mid = parseInt(_.get(res,'[0].id',0));
+      if(course_mid > 0){
+        return super.edit({moodle_id: course_mid}, data.id).then(() => {
           return res;
         });
       }
       return res;
-    });
+    }).then(() => {
+      if(course_mid > 0){
+        return this.extractUserMoodleId(data.user_id)
+        .then(user_mid => {
+          if(user_mid > 0){           
+            return mAPIObj.setCourseUser({
+              userid: user_mid,
+              courseid: course_mid,
+              roleid: parseInt(process.env.MOODLE_TEACHER_ROLE)
+            });
+          }
+        })
+      }
+    })
   }
 
 
@@ -376,6 +396,7 @@ class TrainerCourse extends TrainerBase {
         summary: data.short_description
       });
     }else{
+      console.log("adding course", data.name);
       return this.createCourseInMoodle(data);
     }
   }
@@ -674,7 +695,7 @@ class TrainerSearch extends TrainerBase{
       sortBy: 'created_at',
       sortDir: 'DESC',
       whereStr: `user_id=${parseInt(user_id)}`, 
-      fields: 'id as course_id,user_id,name,course_image,slug,price'
+      fields: 'id as course_id,user_id,name,course_image,slug'
     });
   }
 

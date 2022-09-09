@@ -35,7 +35,6 @@ CREATE TABLE `courses` (
   `name` varchar(255) NOT NULL,
   `sku` varchar(200) NOT NULL,
   `slug` varchar(255) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
   `short_description` text,
   `description` text,
   `learn_brief` text,
@@ -46,7 +45,6 @@ CREATE TABLE `courses` (
   `language` varchar(100) DEFAULT NULL,
   `duration` int(11) DEFAULT NULL,
   `lectures` int(11) DEFAULT NULL,
-  `media` varchar(100) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

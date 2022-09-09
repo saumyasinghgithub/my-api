@@ -39,8 +39,7 @@ module.exports = () => {
         return ({data, success: true});
       })
       .catch(e => ({success: false, message: e.message}))
-  })
-
+    });
   });
 
   return router;

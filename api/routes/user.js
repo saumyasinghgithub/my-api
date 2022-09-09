@@ -36,10 +36,6 @@ module.exports = () => {
     routeWrapper(req,res, true, () => (new UserModel()).delete(req.params.id));  
   }); 
 
-  router.post('/moodle/createuser',function(req,res){
-    routeWrapper(req,res, false, () => (new MoodleAPI()).createUser({...req.body}));
-  });
-
   router.post('/markfav', function (req, res, next) {
     routeWrapper(req,res, true, (token) => (new UserModel()).markfav({user_id: token.data.id, ...req.body}));  
   });
