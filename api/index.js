@@ -35,6 +35,7 @@ app.use('/user', require('./routes/user')());
 app.use('/trainer', require('./routes/trainer')());
 app.use('/student', require('./routes/student')());
 app.use('/sociallink', require('./routes/sociallink')());
+app.use('/blog', require('./routes/blog')());
 app.use('/role', require('./routes/role')());
 app.use('/contact', require('./routes/contact')());
 app.use('/', require('./routes/api')());

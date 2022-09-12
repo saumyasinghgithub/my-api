@@ -4468,12 +4468,14 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
     padding: 0;
     white-space: nowrap;
     line-height: 1.2;
+    color: #fff;
 }
 
 .small-box p {
     font-size: 1rem;
     margin-top: 0;
     margin-bottom: 1rem;
+    color: #fff;
 }
 
 .bg-info, .bg-info>a {
@@ -4637,6 +4639,7 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
 .mysale .rdt_TableHeadRow{
     border: 1px solid #ccc;
     border-bottom: 0px;
+    background-color: #efefef;
 }
 .mysale .rdt_TableRow{
     border: 1px solid #ccc;
@@ -4649,6 +4652,9 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
 .mysale .rdt_TableCell{
     border-right: 1px solid #ccc;
 }
+.my-sale .card-header{
+    border-radius: 10px;
+}
 
 .myblog .dEloFe {
     display: block;
@@ -4657,4 +4663,52 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
 
 .myblog .rdt_TableRow .btn-light{
     margin-top: 3%;
+}
+.my-course .jjHOKC:first-child{
+    max-width: 65px;
+    min-width: 60px;
+}
+.my-course .jjHOKC:nth-child(2){
+    max-width: 195px;
+    min-width: 190px;
+    padding: 10px 10px;
+}
+.my-course .jjHOKC:nth-child(3){
+    max-width: 90px;
+    min-width: 85px;
+}
+.my-course .jjHOKC:nth-child(4){
+    max-width: 80px;
+    min-width: 75px;
+}
+.my-course .jjHOKC:nth-child(5){
+    max-width: 121px;
+    min-width: 120px;
+}
+.my-course .jjHOKC:nth-child(6){
+    max-width: 110px;
+    min-width: 105px;
+}
+.my-course .jjHOKC:nth-child(7){
+    max-width: 15px;
+    min-width: 103px;
+}
+.my-course .bg-primary{
+    margin-right: 5px;
+    color: white;
+    padding: 4px;
+}
+.my-course .jzGaAN{
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.my-course .btn-light{
+    background-color: transparent;
+    border-color: transparent;
+}
+.myblog .btn-light{
+    background-color: transparent;
+    border-color: transparent;
 }
