@@ -106,7 +106,7 @@ class PaymentModel extends BaseModel {
           })
           .then(() => this.enrollSICMoodle({
             user_id: user_id,
-            course_id: course_id
+            course_id: ci.course
           }))
           .finally(enrollStudent);
         }
@@ -158,7 +158,7 @@ class PaymentModel extends BaseModel {
   
   paymentEmail(data){
     let dData = data.dump;
-    console.log(data);
+    //console.log(data);
     let html = `<table width="600px" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border:1px solid #d6dbdf;">
     <tr><td>
     <table width="100%" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center">
