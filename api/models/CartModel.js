@@ -82,7 +82,64 @@ class CartModel extends BaseModel {
     })
   }
 
+  sales(params){
+    let refine = '';
+    let ary = [];   
 
+    if(_.get(params,'where',false)){
+      refine += ' AND cart.user_id=?';
+      console.log(params.where.user_id);
+      ary.push(parseInt(_.get(params, 'user_id', params.where.user_id)));
+    }
+
+    let ret = { success: false };
+    let sqlQuery = `SELECT cart.id, cart.user_id, cart.price, courses.name as course_name, CONCAT(users.firstname," ",users.middlename," ",users.lastname) AS fullname, users.firstname, users.middlename, users.lastname, cart.course_resources FROM cart
+    RIGHT JOIN courses ON cart.course_id = courses.id
+    RIGHT JOIN users ON cart.user_id = users.id
+    where cart.status = 'paid'`;
+
+    refine += ' LIMIT ?,?';
+    ary.push(parseInt(_.get(params, 'start', 0)));
+    ary.push(parseInt(_.get(params, 'limit', this.pageLimit))); 
+
+    return this.db.run(`SELECT COUNT(cart.id) as total, cart.id, cart.user_id, cart.price, courses.name as course_name, CONCAT(users.firstname," ",users.middlename," ",users.lastname) AS fullname, users.firstname, users.middlename, users.lastname, cart.course_resources FROM cart
+    RIGHT JOIN courses ON cart.course_id = courses.id
+    RIGHT JOIN users ON cart.user_id = users.id
+    where cart.status = 'paid'`)
+      .then(ress => {
+        if (ress) { 
+          ret['pageInfo'] = {
+            hasMore: (ress[0].total - parseInt(_.get(params,'start',0))) > parseInt(_.get(params,'limit',this.pageLimit)),
+            total: ress[0].total
+          };     
+          ret['success'] = true;
+          ret['message'] = 'list of data';
+          ret['data'] = ress;
+        } else {
+          ret['error'] = 'No data found';
+        }
+        return ret;        
+      })
+      .then(() => {        
+        return this.db.run(sqlQuery + refine, ary);
+      })
+      .then(res => {
+        if (res) {
+          ret['success'] = true;
+          ret['data'] = res;
+        } else {
+          ret['error'] = 'No data found';
+        }
+        return ret;
+      });
+  }
+
+  salesUserList(){ 
+    return this.db.run('call getDistinctCartUsers()')
+    .then(res => {
+      return {success: true, data: res[0]};
+    });
+  }
 }
 
 
