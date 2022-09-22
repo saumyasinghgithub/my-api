@@ -92,10 +92,18 @@ class CartModel extends BaseModel {
       ary.push(parseInt(_.get(params, 'user_id', params.where.user_id)));
     }
 
+    if(_.get(params,'startDate',false)){
+      refine += ' AND payments.created_at BETWEEN ? AND ?';
+      console.log(params.startDate);
+      ary.push(_.get(params, 'startDate', params.startDate));
+      ary.push(_.get(params, 'endDate', params.endDate));
+    }
+
     let ret = { success: false };
     let sqlQuery = `SELECT cart.id, cart.user_id, cart.price, courses.name as course_name, CONCAT(users.firstname," ",users.middlename," ",users.lastname) AS fullname, users.firstname, users.middlename, users.lastname, cart.course_resources FROM cart
     RIGHT JOIN courses ON cart.course_id = courses.id
     RIGHT JOIN users ON cart.user_id = users.id
+    RIGHT JOIN payments ON cart.user_id = payments.user_id
     where cart.status = 'paid'`;
 
     refine += ' LIMIT ?,?';
@@ -130,15 +138,9 @@ class CartModel extends BaseModel {
         } else {
           ret['error'] = 'No data found';
         }
+        console.log(sqlQuery + refine, ary);
         return ret;
       });
-  }
-
-  salesUserList(){ 
-    return this.db.run('call getDistinctCartUsers()')
-    .then(res => {
-      return {success: true, data: res[0]};
-    });
   }
 }
 
