@@ -27,24 +27,24 @@ SET time_zone = "+00:00";
 -- Table structure for table `sociallinks`
 --
 
-CREATE TABLE `sociallinks` (
+CREATE TABLE IF NOT EXISTS `sociallinks` (
   `id` int(11) NOT NULL,
   `title` text NOT NULL,
   `class` text NOT NULL,
   `link` text NOT NULL,
   `active` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `sociallinks`
 --
 
 INSERT INTO `sociallinks` (`id`, `title`, `class`, `link`, `active`, `created_at`, `updated_at`) VALUES
-(3, 'facebook', 'fas fa-pencil-alt', 'https://www.facebook.com/', 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(4, 'linkedIn', 'fab fa-500px', 'https://www.linkedin.com/', 1, '2022-09-08 12:05:31', '0000-00-00 00:00:00'),
-(5, 'instagram', 'fa-brands fa-instagram', 'https://fontawesome.com/download', 1, '2022-09-09 05:31:30', '0000-00-00 00:00:00');
+(3, 'facebook', 'fab fa-facebook text-light', 'https://www.facebook.com/', 1, '2022-09-09 07:29:57', '0000-00-00 00:00:00'),
+(4, 'linkedIn', 'fab fa-linkedin', 'https://www.linkedin.com/', 1, '2022-09-09 07:30:10', '0000-00-00 00:00:00'),
+(5, 'instagram', 'fab fa-instagram', 'https://instagram.com', 1, '2022-09-09 07:30:34', '0000-00-00 00:00:00');
 
 --
 -- Indexes for dumped tables
@@ -64,9 +64,7 @@ ALTER TABLE `sociallinks`
 -- AUTO_INCREMENT for table `sociallinks`
 --
 ALTER TABLE `sociallinks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-COMMIT;
-
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
