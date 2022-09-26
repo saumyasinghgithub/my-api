@@ -286,10 +286,7 @@ class PaymentModel extends BaseModel {
       users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,
       DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, 
       courses.name FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id  WHERE payments.is_complete= 1 AND payments.user_id=${user_id.user_id}`+refine, ary);
-      return this.db.run(`SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,
-      users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,
-      DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, 
-      courses.name FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id  WHERE payments.is_complete= 1 AND payments.user_id=${user_id.user_id}`+refine, ary);
+      return this.db.run(`SELECT payments.id, JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,payments.amount, DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id WHERE payments.is_complete= 1 AND payments.user_id=3`+refine, ary);
     })
     .then(res => {
       if (res) {
