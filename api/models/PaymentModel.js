@@ -144,7 +144,6 @@ class PaymentModel extends BaseModel {
   notifyPayment2User(orderData){
     (new UserModel()).find(orderData.user_id)
     .then(udata =>{
-      //console.log(udata);
       return Emailer.sendEmail({
         to: udata.email,
         cc: "rajeshs@knowledgesynonyms.com, surojitb@knowledgesynonyms.com",
@@ -158,7 +157,6 @@ class PaymentModel extends BaseModel {
   
   paymentEmail(data){
     let dData = data.dump;
-    //console.log(data);
     let html = `<table width="600px" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border:1px solid #d6dbdf;">
     <tr><td>
     <table width="100%" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center">
@@ -265,6 +263,44 @@ class PaymentModel extends BaseModel {
     });
   }
 
+  mysales(user_id,params){
+    let refine = '';
+    let ary = [];
+
+    let ret = { success: false };
+    return this.db.run('SELECT COUNT(DISTINCT(' + this.pk + ')) as total FROM ' + this.table + refine,ary)
+    .then(res => {
+      if(res){
+        ret['pageInfo'] = {
+          hasMore: (res[0].total - parseInt(_.get(params,'start',0))) > parseInt(_.get(params,'limit',this.pageLimit)),
+          total: res[0].total
+        };
+      }else{
+        throw({message: "SQL failed!"});
+      }
+    })
+    .then(() => {
+     console.log(user_id);
+
+      console.log(`SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,
+      users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,
+      DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, 
+      courses.name FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id  WHERE payments.is_complete= 1 AND payments.user_id=${user_id.user_id}`+refine, ary);
+      return this.db.run(`SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,
+      users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,
+      DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, 
+      courses.name FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id  WHERE payments.is_complete= 1 AND payments.user_id=${user_id.user_id}`+refine, ary);
+    })
+    .then(res => {
+      if (res) {
+        ret['success'] = true;
+        ret['data'] = res;
+      } else {
+        ret['error'] = 'No data found';
+      }
+      return ret;
+    });
+  }
 }
 
 module.exports = PaymentModel;
