@@ -42,11 +42,11 @@ class UserModel extends BaseModel {
               finallyResolve();
             }else{
               this.createMoodleUser({
-                "username": data.user,
+                "username": data.user.toLowerCase(),
                 "password": data.pass,
                 "firstname": res[0].firstname,
                 "lastname": res[0].lastname,
-                "email": data.user,
+                "email": data.user.toLowerCase(),
                 "id": res[0].id,
                 "role_id": res[0].role_id
               }).finally(finallyResolve);
