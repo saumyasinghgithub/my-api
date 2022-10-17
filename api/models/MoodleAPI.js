@@ -64,14 +64,14 @@ class MoodleAPIBase{
 class MoodleAPI extends MoodleAPIBase{
 
   createUser(user){
-    let params = _.map(user, (v,k) => `users[0][${k}]=${v}`).join('&');
+    let params = _.map(user, (v,k) => `users[0][${k}]=${encodeURIComponent(v)}`).join('&');
     return this.hit('core_user_create_users',params);
     //== returns moodle_id which needs to be stored in user's table moodle_id column
   }
 
   assignUserRole(roleuser){
     roleuser['contextid']=process.env.MOODLE_CONTEXT_ID;
-    let params = _.map(roleuser, (v,k) => `assignments[0][${k}]=${v}`).join('&');
+    let params = _.map(roleuser, (v,k) => `assignments[0][${k}]=${encodeURIComponent(v)}`).join('&');
     return this.hit('core_role_assign_roles',params);
   }
 
@@ -80,7 +80,7 @@ class MoodleAPI extends MoodleAPIBase{
     course['visible'] = 1;
     course['lang'] = 'en';
     
-    let params = _.map(course, (v,k) => `courses[0][${k}]=${v}`).join('&');
+    let params = _.map(course, (v,k) => `courses[0][${k}]=${encodeURIComponent(v)}`).join('&');
     return this.hit('core_course_create_courses',params);
     ///== another call needed for assignUserRole based on trainer's moodle_id
   }
@@ -88,7 +88,7 @@ class MoodleAPI extends MoodleAPIBase{
   updateCourse(course){
     course['categoryid'] = process.env.MOODLE_CATEGORY_ID;
     
-    let params = _.map(course, (v,k) => `courses[0][${k}]=${v}`).join('&');
+    let params = _.map(course, (v,k) => `courses[0][${k}]=${encodeURIComponent(v)}`).join('&');
     return this.hit('core_course_update_courses',params);
   }
 
@@ -96,7 +96,7 @@ class MoodleAPI extends MoodleAPIBase{
 
     //enrole['roleid']=process.env.MOODLE_STUDENT_ROLE;
     
-    let params = _.map(enrole, (v,k) => `enrolments[0][${k}]=${v}`).join('&');
+    let params = _.map(enrole, (v,k) => `enrolments[0][${k}]=${encodeURIComponent(v)}`).join('&');
     return this.hit('enrol_manual_enrol_users',params);
 }
 
