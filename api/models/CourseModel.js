@@ -35,7 +35,19 @@ class CourseModel extends BaseModel {
   }
 
   getCourseRatings(course_id){
-    return (new CourseRating()).getRatingByCourse(course_id);    
+    let ratingObj = {rating:0, ratings: 0, enrollments: 0};
+    return (new CourseRating()).getRatingByCourse(course_id)
+    .then(rating => {
+      ratingObj = {...ratingObj, ...rating};
+      return this.recordCount('users','active=1');
+    })   
+    .then(total => {
+      console.log(total);
+      return {
+        ...ratingObj,
+        enrollments: total
+      };
+    }); 
   }
 
   getCourseResources(course_id){
@@ -87,7 +99,9 @@ class CourseModel extends BaseModel {
   }
 
   setRating(rating){
-    return (new CourseRating()).save(rating);
+    return (new CourseRating()).save(rating)
+    .then(() => this.getCourseRatings(rating.course_id))
+    .then(ratingObj => ({success:true, rating: ratingObj}));
   }
 
 
@@ -115,9 +129,7 @@ class CourseRating extends BaseModel{
 
   save(ratingObj){
     return this.deleteWhere({user_id: ratingObj.user_id, course_id: ratingObj.course_id})
-    .then(() => this.add(ratingObj))
-    .then(() => this.getRatingByCourse(ratingObj.course_id))
-    .then(rating => ({success:true, rating: rating}));
+    .then(() => this.add(ratingObj));
   }
 }
 

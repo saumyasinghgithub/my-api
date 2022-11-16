@@ -172,6 +172,13 @@ class BaseModel{
     });
   }
 
+  recordCount(table = this.table, where = '1=1'){
+    let sql = `SELECT count(*) as total FROM ${table} WHERE ${where}`;
+    return this.db.run(sql)
+    .then(res => _.get(res,'0.total',0))
+    .catch(() => 0)
+  }
+
 }
 
 module.exports = BaseModel;
