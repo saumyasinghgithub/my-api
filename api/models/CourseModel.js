@@ -22,12 +22,25 @@ class CourseModel extends BaseModel {
     })
     .then(({data}) => {
       cData.contents = data;
+      return this.getCourseRatings(cData.course.id);
+    })
+    .then((rating) => {
+      cData.rating = rating;
       return this.db.run(`SELECT id FROM favorite_courses WHERE user_id=? AND course_id=?`,[user_id,cData.course.id])
     })
     .then((res) => {
       cData.isFav = _.get(res,'0.id', false) ? true : false;
       return cData;
     });
+  }
+
+  getCourseRatings(course_id){
+    return (new CourseRating()).getRatingByCourse(course_id)
+    .then(res => ({
+      rating: _.isNull(res[0].rating) ? 0 : null,
+      ratings: _.get(res,'0.ratings',0)
+    }))
+    .catch(err => ({rating:0, ratings: 0}))
   }
 
   getCourseResources(course_id){
@@ -78,6 +91,10 @@ class CourseModel extends BaseModel {
     return this.list({whereStr: `id IN (SELECT course_id FROM favorite_courses WHERE user_id=${user_id})`, start: start, limit: limit});
   }
 
+  setRating(rating){
+    return (new CourseRating()).save(rating);
+  }
+
 
 }
 
@@ -87,6 +104,20 @@ class CourseResource extends BaseModel{
 
 class CourseContent extends BaseModel{
   table = "course_content";
+}
+
+class CourseRating extends BaseModel{
+  table = "course_rating";
+
+  getRatingByCourse(course_id){
+    return this.db.run('SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM ' + this.table + ' WHERE course_id=?',[course_id]);
+  }
+
+  save(rating){
+    return this.deleteWhere({user_id: rating.user_id, course_id: rating.course_id})
+    .then(() => this.add(rating))
+    .then(() => this.getRatingByCourse(rating.course_id));
+  }
 }
 
 module.exports = CourseModel;
