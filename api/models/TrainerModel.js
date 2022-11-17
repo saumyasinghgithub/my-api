@@ -792,5 +792,22 @@ class TrainerBlog extends TrainerBase {
 
 }
 
+class TrainerRating extends TrainerBase{
+  table = "trainer_rating";
 
-module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch, TrainerBlog};
+  getRatingByTrainer(trainer_id){
+    return this.db.run('SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM ' + this.table + ' WHERE course_id=?',[trainer_id])
+      .then(res => ({
+        rating: _.isNull(res[0].rating) ? 0 : res[0].rating,
+        ratings: _.get(res,'0.ratings',0)
+      }))
+      .catch(err => ({rating:0, ratings: 0}));
+  }
+
+  save(ratingObj){
+    return this.deleteWhere({user_id: ratingObj.user_id, trainer_id: ratingObj.course_id})
+    .then(() => this.add(ratingObj));
+  }
+}
+
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch, TrainerBlog, TrainerRating};
