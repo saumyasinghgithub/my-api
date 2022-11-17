@@ -605,6 +605,9 @@ class TrainerSearch extends TrainerBase{
       }
     }).then(calibs => {
       ret.data = ret.data.map(ud => ({...ud, calibs: _.filter(calibs,{user_id: ud.user_id}).map(c => _.omit(c,'user_id'))}))
+      return this.fetchRatings(user_ids);
+    }).then(ratings => {
+      ret.data = ret.data.map(ud => ({...ud, rating: _.omit(ratings[ud.user_id],'trainer_id')}));
       return this.fetchCourses(user_ids);
     }).then(courses => {
       ret.data = ret.data.map(ud => ({...ud, courses: _.omit(_.filter(courses,{user_id: ud.user_id})[0],'user_id')}))
@@ -688,6 +691,10 @@ class TrainerSearch extends TrainerBase{
     });
   }
 
+  fetchRatings(user_ids){
+    return (new TrainerRating()).getRatingByTrainers(user_ids);
+  }
+
   fetchUserCourses(user_id){
     return (new TrainerCourse()).list({
       start: 0,
@@ -708,44 +715,44 @@ class TrainerSearch extends TrainerBase{
     });
   }
  
-searchStats(all_user_ids){
-  
-  let stats = {allTrainers:0, allCourses:0, trainers: all_user_ids.length, courses: 0};
-    return this.db.run(`SELECT COUNT(id) AS allTrainers FROM users WHERE role_id = 4 AND active=1`)
-    .then(res1 => {
-     
-      stats.allTrainers = (parseInt(_.get(res1, '0.allTrainers', 0)));
-      return this.db.run(`SELECT COUNT(id) AS allCourses FROM courses`);
-    })
-    .then(res2 => {
-      stats.allCourses = (parseInt(_.get(res2, '0.allCourses', 0)));
-      return this.db.run(`SELECT COUNT(id) AS total FROM courses WHERE user_id IN (${all_user_ids.join(',')})`);
-    })
-    .then(res3 => {
-      stats.courses = (parseInt(_.get(res3, '0.total', 0)));
-      return this.db.run(`SELECT 
-      SUM(IF(type='PPT' || type='pdf',1,0)) as allBooks, 
-      SUM(IF(type='video',1,0)) as allVideos, 
-      SUM(IF(type='audio',1,0)) as allAudios 
-      FROM course_resources`);
-    })
-    .then(res4 => {
-      stats = {...stats, ..._.get(res4,'0',{})};
-
-      return this.db.run(`SELECT 
-        SUM(IF(type='PPT' || type='pdf',1,0)) as books, 
-        SUM(IF(type='video',1,0)) as videos, 
-        SUM(IF(type='audio',1,0)) as audios 
-        FROM course_resources WHERE course_id IN 
-        (SELECT id AS total FROM courses WHERE user_id IN (${all_user_ids.join(',')}))`);
-    })
-    .then(res5 => {
-      stats = {...stats, ..._.get(res5,'0',{})};
-      return stats;
-    })
+  searchStats(all_user_ids){
     
+    let stats = {allTrainers:0, allCourses:0, trainers: all_user_ids.length, courses: 0};
+      return this.db.run(`SELECT COUNT(id) AS allTrainers FROM users WHERE role_id = 4 AND active=1`)
+      .then(res1 => {
+      
+        stats.allTrainers = (parseInt(_.get(res1, '0.allTrainers', 0)));
+        return this.db.run(`SELECT COUNT(id) AS allCourses FROM courses`);
+      })
+      .then(res2 => {
+        stats.allCourses = (parseInt(_.get(res2, '0.allCourses', 0)));
+        return this.db.run(`SELECT COUNT(id) AS total FROM courses WHERE user_id IN (${all_user_ids.join(',')})`);
+      })
+      .then(res3 => {
+        stats.courses = (parseInt(_.get(res3, '0.total', 0)));
+        return this.db.run(`SELECT 
+        SUM(IF(type='PPT' || type='pdf',1,0)) as allBooks, 
+        SUM(IF(type='video',1,0)) as allVideos, 
+        SUM(IF(type='audio',1,0)) as allAudios 
+        FROM course_resources`);
+      })
+      .then(res4 => {
+        stats = {...stats, ..._.get(res4,'0',{})};
 
-}
+        return this.db.run(`SELECT 
+          SUM(IF(type='PPT' || type='pdf',1,0)) as books, 
+          SUM(IF(type='video',1,0)) as videos, 
+          SUM(IF(type='audio',1,0)) as audios 
+          FROM course_resources WHERE course_id IN 
+          (SELECT id AS total FROM courses WHERE user_id IN (${all_user_ids.join(',')}))`);
+      })
+      .then(res5 => {
+        stats = {...stats, ..._.get(res5,'0',{})};
+        return stats;
+      })
+      
+
+  }
 
 }
 
@@ -796,12 +803,28 @@ class TrainerRating extends TrainerBase{
   table = "trainer_rating";
 
   getRatingByTrainer(trainer_id){
-    return this.db.run('SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM ' + this.table + ' WHERE course_id=?',[trainer_id])
+    return this.db.run('SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM ' + this.table + ' WHERE trainer_id=?',[trainer_id])
       .then(res => ({
         rating: _.isNull(res[0].rating) ? 0 : res[0].rating,
         ratings: _.get(res,'0.ratings',0)
       }))
       .catch(err => ({rating:0, ratings: 0}));
+  }
+
+  getRatingByTrainers(ids){
+    let ratings = {};
+    ids.forEach(id => ratings[id]={rating:0, ratings: 0});
+    return new Promise((resolve,reject)=>{
+      this.db.run('SELECT trainer_id,AVG(rating) as rating,COUNT(id) as ratings FROM  ' + this.table + ' WHERE trainer_id IN (?) GROUP BY trainer_id',[ids.join(',')])
+      .then(res => {
+        res.forEach(r => ratings[r.trainer_id] = {
+          rating: _.isNull(r.rating) ? 0 : r.rating,
+          ratings: _.get(r,'ratings',0)
+        });
+      })
+      .catch(err => {/* do nothing */})
+      .finally(() => resolve(ratings))
+    });
   }
 
   save(ratingObj){
