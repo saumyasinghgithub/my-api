@@ -46,10 +46,6 @@ module.exports = function() {
     routeWrapper(req,res, true, (token) => (new CourseModel()).setRating({user_id: token.data.id, course_id: req.body.course_id, rating: req.body.rating}));  
   });
 
-  router.post('/trainer/setRating', function (req, res, next) {
-    routeWrapper(req,res, true, (token) => (new TModel.TrainerRating()).setRating({user_id: token.data.id, trainer_id: req.body.trainer_id, rating: req.body.rating}));  
-  });
-
   router.post('/course/markfav', function (req, res, next) {
     routeWrapper(req,res, true, (token) => (new CourseModel()).markfav({user_id: token.data.id, ...req.body}));  
   });

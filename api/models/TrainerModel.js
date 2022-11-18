@@ -67,6 +67,12 @@ class TrainerBase extends BaseModel {
     })
   }
 
+  myTotalStudents(trainer_id){
+    return this.db.run('SELECT count(user_id) total FROM student_enrollments WHERE course_id IN (select id from courses where user_id=?) GROUP BY user_id',[trainer_id])
+    .then(res => _.get(res,'0.total',0))
+    .catch(err => 0);
+  }
+
 }
 
 class TrainerCalib extends TrainerBase {
@@ -447,6 +453,14 @@ class TrainerCourse extends TrainerBase {
     });
   }
 
+  totalCourses(trainer_id){ 
+
+    return this.db.run('SELECT count(id) as total FROM courses where user_id=?',[trainer_id])
+    .then(res => _.get(res,'0.total',0))
+    .catch(err => 0);
+
+  }
+
 }
 
 class TrainerCourseContent extends TrainerBase {
@@ -516,10 +530,22 @@ class TrainerSearch extends TrainerBase{
       tData.about=_.get(data,'0',{});
       if(_.get(tData,'about.id',false)){
         whereParams = {'where' : {'user_id': tData.about.user_id}};
-        return (new TrainerAward()).list(whereParams);
+        return (new TrainerRating()).getRatingByTrainer(tData.about.user_id);
       }else{
         throw {message: "No such trainer found"};
       }
+    })
+    .then((rating) => {
+      tData.rating=rating;
+      return this.myTotalStudents(tData.about.user_id);
+    })
+    .then(totalStudent => {
+      tData.total = {students: totalStudent, courses: 0};
+      return (new TrainerCourse()).totalCourses(tData.about.user_id);
+    })
+    .then(totalCourse => {
+      tData.total.courses = totalCourse;
+      return (new TrainerAward()).list(whereParams);
     })
     .then(({data}) => {
       tData.awards = data;
@@ -828,8 +854,10 @@ class TrainerRating extends TrainerBase{
   }
 
   save(ratingObj){
-    return this.deleteWhere({user_id: ratingObj.user_id, trainer_id: ratingObj.course_id})
-    .then(() => this.add(ratingObj));
+    return this.deleteWhere({user_id: ratingObj.user_id, trainer_id: ratingObj.trainer_id})
+    .then(() => this.add(ratingObj))
+    .then(() => this.getRatingByTrainer(ratingObj.trainer_id))
+    .then(rating => ({success: true, rating: rating}))
   }
 }
 

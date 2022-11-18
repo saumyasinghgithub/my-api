@@ -304,6 +304,10 @@ module.exports = () => {
     })
   });
 
+  router.post('/setRating', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerRating()).save({user_id: token.data.id, trainer_id: req.body.trainer_id, rating: req.body.rating}));  
+  });
+
 router.get('/search', function (req, res){
   routeWrapper(req,res, false, (token) => {
       return (new TModel.TrainerSearch()).search({...req.query, user_id: _.get(token,'data.id',false)});
