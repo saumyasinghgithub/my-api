@@ -266,6 +266,44 @@ class PaymentModel extends BaseModel {
       return ret;
     });
   }
+  trainersales(userData){
+    let refine = '';
+    let ary = [];
+    let ret = { success: false };
+    return this.db.run('SELECT COUNT(DISTINCT(' + this.pk + ')) as total FROM ' + this.table + refine,ary)
+    .then(res => {
+      if(res){
+        ret['pageInfo'] = {
+          hasMore: (res[0].total - parseInt(_.get(userData,'start',0))) > parseInt(_.get(userData,'limit',this.pageLimit)),
+          total: res[0].total
+        };
+      }else{
+        throw({message: "SQL failed!"});
+      }
+    })
+    .then(() => {
+      refine += ' WHERE';
+      if(isTrainer(userData.userData)){
+        refine += ` JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?) AND `;
+        ary.push(_.get(userData.user_id,'where',userData.user_id));
+      }
+      refine += ' payments.is_complete = 1 ORDER BY ? ? LIMIT ?,?';
+      ary.push(_.get(userData,'sortBy',this.sortBy)); 
+      ary.push(_.get(userData,'sortDir',this.sortDir));
+      ary.push(parseInt(_.get(userData,'start',0)));
+      ary.push(parseInt(_.get(userData,'limit',this.pageLimit)));
+      return this.db.run(`SELECT c.id,c.name,(SELECT SUM(amount) FROM payments WHERE JSON_SEARCH(items,'all',c.id) IS NOT NULL AND created_at < NOW()) as earning, (select CONCAT_WS(' ', firstname,lastname) FROM trainer_about WHERE user_id=c.user_id) as trainer FROM courses c WHERE c.user_id IN (select id FROM users WHERE role_id=4) AND name LIKE '%ce%'`);
+    })
+    .then(res => {
+      if (res) {
+        ret['success'] = true;
+        ret['data'] = res;
+      } else {
+        ret['error'] = 'No data found';
+      }
+      return ret;
+    });
+  }
 }
 
 module.exports = PaymentModel;
