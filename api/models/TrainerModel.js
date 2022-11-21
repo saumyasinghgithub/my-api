@@ -841,7 +841,7 @@ class TrainerRating extends TrainerBase{
     let ratings = {};
     ids.forEach(id => ratings[id]={rating:0, ratings: 0});
     return new Promise((resolve,reject)=>{
-      this.db.run('SELECT trainer_id,AVG(rating) as rating,COUNT(id) as ratings FROM  ' + this.table + ' WHERE trainer_id IN (?) GROUP BY trainer_id',[ids.join(',')])
+      this.db.run('SELECT trainer_id,AVG(rating) as rating,COUNT(id) as ratings FROM  ' + this.table + ' WHERE trainer_id IN ('+ids.join(',')+') GROUP BY trainer_id')
       .then(res => {
         res.forEach(r => ratings[r.trainer_id] = {
           rating: _.isNull(r.rating) ? 0 : r.rating,

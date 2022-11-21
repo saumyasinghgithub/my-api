@@ -50,6 +50,10 @@ class CourseModel extends BaseModel {
     }); 
   }
 
+  fetchRatings(cids){
+    return (new CourseRating()).getRatingByCourses(cids);
+  }
+
   getCourseResources(course_id){
     return (new CourseResource()).list({'where' : {'course_id': course_id}, limit:9999999});
   }
@@ -62,6 +66,11 @@ class CourseModel extends BaseModel {
     return this.list({where: {user_id:tid}, limit:9999999})
     .then(({data}) => {
       return this.getCoursesWithResources(data);
+    }).then(courses =>{
+      return this.fetchRatings(courses.map(c => c.id))
+      .then(ratings => {
+        return courses.map(course=>({...course,rating:ratings[course.id]}))
+      })
     })
   }
 
@@ -117,6 +126,22 @@ class CourseContent extends BaseModel{
 
 class CourseRating extends BaseModel{
   table = "course_rating";
+
+  getRatingByCourses(cids){
+    let ratings = {};
+    cids.forEach(id => ratings[id]={rating:0, ratings: 0});
+    return new Promise((resolve,reject)=>{
+      this.db.run('SELECT course_id,AVG(rating) as rating,COUNT(id) as ratings FROM  ' + this.table + ' WHERE course_id IN ('+cids.join(',')+') GROUP BY course_id')
+      .then(res => {
+        res.forEach(r => ratings[r.course_id] = {
+          rating: _.isNull(r.rating) ? 0 : r.rating,
+          ratings: _.get(r,'ratings',0)
+        });
+      })
+      .catch(err => {/* do nothing */})
+      .finally(() => resolve(ratings))
+    });
+  }
 
   getRatingByCourse(course_id){
     return this.db.run('SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM ' + this.table + ' WHERE course_id=?',[course_id])
