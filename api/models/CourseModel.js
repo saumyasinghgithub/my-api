@@ -22,12 +22,32 @@ class CourseModel extends BaseModel {
     })
     .then(({data}) => {
       cData.contents = data;
+      return this.getCourseRatings(cData.course.id);
+    })
+    .then((rating) => {
+      cData.rating = rating;
       return this.db.run(`SELECT id FROM favorite_courses WHERE user_id=? AND course_id=?`,[user_id,cData.course.id])
     })
     .then((res) => {
       cData.isFav = _.get(res,'0.id', false) ? true : false;
       return cData;
     });
+  }
+
+  getCourseRatings(course_id){
+    let ratingObj = {rating:0, ratings: 0, enrollments: 0};
+    return (new CourseRating()).getRatingByCourse(course_id)
+    .then(rating => {
+      ratingObj = {...ratingObj, ...rating};
+      return this.recordCount('users','active=1');
+    })   
+    .then(total => {
+      console.log(total);
+      return {
+        ...ratingObj,
+        enrollments: total
+      };
+    }); 
   }
 
   getCourseResources(course_id){
@@ -78,6 +98,12 @@ class CourseModel extends BaseModel {
     return this.list({whereStr: `id IN (SELECT course_id FROM favorite_courses WHERE user_id=${user_id})`, start: start, limit: limit});
   }
 
+  setRating(rating){
+    return (new CourseRating()).save(rating)
+    .then(() => this.getCourseRatings(rating.course_id))
+    .then(ratingObj => ({success:true, rating: ratingObj}));
+  }
+
 
 }
 
@@ -87,6 +113,24 @@ class CourseResource extends BaseModel{
 
 class CourseContent extends BaseModel{
   table = "course_content";
+}
+
+class CourseRating extends BaseModel{
+  table = "course_rating";
+
+  getRatingByCourse(course_id){
+    return this.db.run('SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM ' + this.table + ' WHERE course_id=?',[course_id])
+      .then(res => ({
+        rating: _.isNull(res[0].rating) ? 0 : res[0].rating,
+        ratings: _.get(res,'0.ratings',0)
+      }))
+      .catch(err => ({rating:0, ratings: 0}));
+  }
+
+  save(ratingObj){
+    return this.deleteWhere({user_id: ratingObj.user_id, course_id: ratingObj.course_id})
+    .then(() => this.add(ratingObj));
+  }
 }
 
 module.exports = CourseModel;
