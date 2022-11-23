@@ -861,4 +861,33 @@ class TrainerRating extends TrainerBase{
   }
 }
 
-module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch, TrainerBlog, TrainerRating};
+class TrainerSocial extends TrainerBase {
+
+  table = "trainer_social";
+
+  edit(data,user_id){
+    let iData = [];
+
+    _.each(data.scurl, (v,k) => {
+      if(v!=='' && data.scname[k]!=''){
+        iData.push({
+          'user_id': user_id,
+          'name': data.scname[k],
+          'url': v
+        });
+      }
+      
+    });
+
+    return this.deleteWhere({'user_id': user_id})
+    .then(res => this.addMulti(iData))
+    .then(data => ({
+      success: true,
+      message: 'Data saved!'
+    }));
+    
+  }
+
+}
+
+module.exports = {TrainerAward, TrainerCalib, TrainerAcademic, TrainerExp, TrainerAbout, TrainerServices, TrainerKnowledge, TrainerCommunity, TrainerLibrary, TrainerCourse, TrainerCourseContent, TrainerCourseResource, TrainerSearch, TrainerBlog, TrainerRating, TrainerSocial};

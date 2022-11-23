@@ -115,6 +115,27 @@ module.exports = () => {
     });
   });
 
+  router.get('/my-social', function (req, res) { 
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        let whereParams = {'where' : {'user_id': token.data.id},'limit': 99999};
+        return (new TModel.TrainerSocial()).list(whereParams);
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    })
+  });
+
+  router.put('/my-social', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerSocial()).edit(req.body,token.data.id);
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    });
+  });
+
   router.get('/my-services', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
