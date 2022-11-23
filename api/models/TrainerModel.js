@@ -581,6 +581,10 @@ class TrainerSearch extends TrainerBase{
     })
     .then(({data}) => {
       tData.library = _.get(data,'0',{});
+      return (new TrainerSocial()).list(whereParams);
+    })
+    .then(({data}) => {
+      tData.social = _.get(data,'0',{});
       return (new CourseModel()).getByTrainer(tData.about.user_id);
     })
     .then(courses =>  {
@@ -866,23 +870,17 @@ class TrainerSocial extends TrainerBase {
   table = "trainer_social";
 
   edit(data,user_id){
-    let iData = [];
-
-    _.each(data.scurl, (v,k) => {
-      if(v!=='' && data.scname[k]!=''){
-        iData.push({
-          'user_id': user_id,
-          'name': data.scname[k],
-          'url': v
-        });
-      }
-      
-    });
+    let iData = {
+      user_id: user_id
+    };
+    ['facebook','instagram','linkedin','pinterest','twitter','youtube']
+    .forEach(fld => iData[fld] = data[fld]);
 
     return this.deleteWhere({'user_id': user_id})
-    .then(res => this.addMulti(iData))
+    .then(res => this.add(iData))
     .then(data => ({
       success: true,
+      data: iData,
       message: 'Data saved!'
     }));
     

@@ -119,7 +119,11 @@ module.exports = () => {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
         let whereParams = {'where' : {'user_id': token.data.id},'limit': 99999};
-        return (new TModel.TrainerSocial()).list(whereParams);
+        return (new TModel.TrainerSocial()).list(whereParams)
+        .then(recs => {
+          recs.data = _.get(recs,'data.0',{});
+          return recs;
+        });
       }else{
         throw({message: "Permission Denied!"});
       }
