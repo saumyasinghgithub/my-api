@@ -282,17 +282,20 @@ class PaymentModel extends BaseModel {
       }
     })
     .then(() => {
-      refine += ' WHERE';
-      if(isTrainer(userData.userData)){
-        refine += ` JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?) AND `;
-        ary.push(_.get(userData.user_id,'where',userData.user_id));
+      console.log(userData.where.startDate);
+      console.log(userData.where.endDate);
+      if((userData.where.startDate !== 'undefined') && (userData.where.endDate !== 'undefined')){
+        refine += `created_at BETWEEN ? AND ? ) as earning, (select CONCAT_WS(' ', firstname,lastname) FROM trainer_about WHERE user_id=c.user_id) as trainer FROM courses c WHERE c.user_id IN (select id FROM users WHERE role_id=4) AND name LIKE '%ce%' LIMIT ?,?`;
+        ary.push(_.get(userData.where.startDate,'where',this.sortBy));
+        ary.push(_.get(userData.where.endDate,'where',this.sortBy));
+      } else {
+        refine += `created_at < NOW()) as earning, (select CONCAT_WS(' ', firstname,lastname) FROM trainer_about WHERE user_id=c.user_id) as trainer FROM courses c WHERE c.user_id IN (select id FROM users WHERE role_id=4) AND name LIKE '%ce%' LIMIT ?,?`;
       }
-      refine += ' payments.is_complete = 1 ORDER BY ? ? LIMIT ?,?';
-      ary.push(_.get(userData,'sortBy',this.sortBy)); 
-      ary.push(_.get(userData,'sortDir',this.sortDir));
+      
       ary.push(parseInt(_.get(userData,'start',0)));
       ary.push(parseInt(_.get(userData,'limit',this.pageLimit)));
-      return this.db.run(`SELECT c.id,c.name,(SELECT SUM(amount) FROM payments WHERE JSON_SEARCH(items,'all',c.id) IS NOT NULL AND created_at < NOW()) as earning, (select CONCAT_WS(' ', firstname,lastname) FROM trainer_about WHERE user_id=c.user_id) as trainer FROM courses c WHERE c.user_id IN (select id FROM users WHERE role_id=4) AND name LIKE '%ce%'`);
+      console.log(`SELECT c.id,c.name,(SELECT SUM(amount) FROM payments WHERE JSON_SEARCH(items,'all',c.id) IS NOT NULL AND `+refine, ary);
+      return this.db.run(`SELECT c.id,c.name,(SELECT SUM(amount) FROM payments WHERE JSON_SEARCH(items,'all',c.id) IS NOT NULL AND `+refine, ary);
     })
     .then(res => {
       if (res) {
