@@ -115,6 +115,31 @@ module.exports = () => {
     });
   });
 
+  router.get('/my-social', function (req, res) { 
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        let whereParams = {'where' : {'user_id': token.data.id},'limit': 99999};
+        return (new TModel.TrainerSocial()).list(whereParams)
+        .then(recs => {
+          recs.data = _.get(recs,'data.0',{});
+          return recs;
+        });
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    })
+  });
+
+  router.put('/my-social', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {
+      if(isTrainer(token.data)){
+        return (new TModel.TrainerSocial()).edit(req.body,token.data.id);
+      }else{
+        throw({message: "Permission Denied!"});
+      }
+    });
+  });
+
   router.get('/my-services', function (req, res) {
     routeWrapper(req,res, true, (token) => {
       if(isTrainer(token.data)){
@@ -302,6 +327,10 @@ module.exports = () => {
       .then(tData => ({...tData, success: true}))
       .catch(e => ({success: false, message: e.message}))
     })
+  });
+
+  router.post('/setRating', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerRating()).save({user_id: token.data.id, trainer_id: req.body.trainer_id, rating: req.body.rating}));  
   });
 
 router.get('/search', function (req, res){

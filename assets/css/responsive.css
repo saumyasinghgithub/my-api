@@ -606,7 +606,7 @@
         position: relative;
         float: right;
         margin-top: 10px;
-        right: unset;
+        /* right: unset; */
     }
     .profile-Flex {
         margin-top: 40px;
