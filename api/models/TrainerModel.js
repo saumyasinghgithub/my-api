@@ -6,6 +6,7 @@ const slugify = require('slugify');
 const PAModel = require('./PAModel');
 const CourseModel  = require('./CourseModel');
 const MoodleAPI = require('./MoodleAPI');
+const moment = require('moment');
 
 
 class TrainerBase extends BaseModel {
@@ -51,7 +52,7 @@ class TrainerBase extends BaseModel {
         resolve(_.get(data,`old_${ftype}_image`,'')); 
       }
       if(_.get(file,'size',0) > 0){
-        let fname = ftype + '_' + data.id + '_' + file.name;
+        let fname = ftype + '_' + data.id + '_' + moment().unix() + file.name;
         let fpath = path.resolve('public','uploads',ftype,fname);
         file.mv(fpath, err => {
           if(err){

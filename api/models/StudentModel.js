@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const slugify = require('slugify');
 const PAModel = require('./PAModel');
+const moment = require('moment');
 
 class StudentBase extends BaseModel {
 
@@ -48,7 +49,7 @@ class StudentBase extends BaseModel {
         resolve(_.get(data,`old_${ftype}_image`,'')); 
       }
       if(_.get(file,'size',0) > 0){
-        let fname = ftype + '_' + data.id + '_' + file.name;
+        let fname = ftype + '_' + data.id + '_' +moment().unix()+ file.name;
         let fpath = path.resolve('public','uploads', 'student',ftype,fname);
         file.mv(fpath, err => {
           if(err){
