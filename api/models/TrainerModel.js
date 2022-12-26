@@ -577,7 +577,7 @@ class TrainerSearch extends TrainerBase{
       return (new TrainerCommunity()).list(whereParams);
     })
     .then(({data}) => {
-      tData.community = data;
+      tData.community = _.get(data, '0', {});
       return (new TrainerLibrary()).list(whereParams);
     })
     .then(({data}) => {
