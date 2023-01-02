@@ -99,6 +99,8 @@ class AdminDashboard extends AdminModel {
       totalTrainer: 0,
       totalOrders: 0,
       totalCourses: 0,
+      monthWiseData: [],
+
     };
     return this.getTotalOrders()
       .then((total) => (stats.totalOrders = total))
@@ -116,6 +118,14 @@ class AdminDashboard extends AdminModel {
       )
       .then(() => this.getTotalCourses())
       .then((total) => (stats.totalCourses = total))
+      .then(() => this.totalOrderByMonth())
+      .then(
+        (res) =>
+        (stats = {
+          ...stats,
+          monthWiseData:res
+        })
+      ) 
       .then(() => stats);
   }
 
@@ -140,6 +150,11 @@ class AdminDashboard extends AdminModel {
     return this.db
       .run("SELECT count(*) AS total FROM courses WHERE name IS NOT NULL")
       .then((res) => _.get(res, "0.total", 0));
+  }
+  totalOrderByMonth() {
+    return this.db
+    .run("SELECT  id, DATE_FORMAT(`created_at`,'%b') `month`, COUNT(id) totalOrder FROM cart WHERE status = 'paid' AND created_at BETWEEN DATE_SUB(NOW(), INTERVAL 365 DAY) AND  NOW() GROUP BY DATE_FORMAT(`created_at`,'%M') ASC")
+     
   }
 }
 
