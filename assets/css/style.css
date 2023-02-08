@@ -5262,14 +5262,3 @@ min-width:150px;
     transition: all ease-in-out 400ms;
     opacity: 1;
 }
-
-.mysale .btn-primary{
-    display: none;
-}
-
-.fade.modal.show .btn-primary{
-    display: none;
-}
-.profile-save.btn.btn-primary{
-    display: inline !important;
-}
