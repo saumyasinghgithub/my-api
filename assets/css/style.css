@@ -1553,7 +1553,8 @@ i.fas.fa-sync-alt {
 
 ol.breadcrumb {
     position: relative;
-    padding: 0.75rem 0;
+    padding: 0.7rem 0;
+    margin-left: 56px;
 }
 
 .congrateBoxinner h2 {
@@ -1699,8 +1700,8 @@ nav.breadcrumb-list {
 span.backarrow {
     position: absolute;
     left: 0;
-    top: 7px;
-    font-size: 20px;
+    top: 10px;
+    font-size: 16px;
     color: #4f5052;
     font-style: italic;
 }
@@ -5261,4 +5262,19 @@ min-width:150px;
     transform: translateX(0);
     transition: all ease-in-out 400ms;
     opacity: 1;
+}
+
+.mysale .btn-primary{
+    display: none;
+}
+
+.fade.modal.show .btn-primary{
+    display: none;
+}
+.profile-save.btn.btn-primary{
+    display: inline !important;
+}
+
+.breadcrumb-item.active {
+    color: #0f79aa;
 }

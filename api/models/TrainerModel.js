@@ -350,7 +350,13 @@ class TrainerCourse extends TrainerBase {
           }
         });
       }else{
-        return super.add(frmdata);
+        return super.add(frmdata).then(addRes => {
+          if(addRes.success){
+            return this.updateCourseInMoodle({...data, user_id: user_id}).then(() => addRes);
+          }else{
+            return addRes;
+          }
+        });
       }
     });
 
