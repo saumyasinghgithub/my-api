@@ -12,7 +12,7 @@ class MoodleAPIBase{
   password = null;
 
   constructor(domain = null){
-      this.domain = 'http://demo.knowledgesynonyms.com/moodle';//domain;     
+      this.domain = 'https://lms.autodidact.app';//domain;     
       this.username='apiuser';
       this.password='APIUser@1234';   
       this.api = `${this.domain}/webservice/rest/server.php`;

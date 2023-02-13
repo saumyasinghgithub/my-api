@@ -57,14 +57,14 @@ ul, li {
 }
 
 a.navbar-brand {
-    font-size: 21px;
+    font-size: 25px;
     color: #fff;
     float: left;
 }
 
 ul.navbar-nav li {
     display: inline-block;
-    padding: 5px 10px;
+    padding: 10px 10px;
     color: #fff;
     cursor: pointer;
 }
@@ -511,6 +511,8 @@ ul.resultlist li a {
     display: block;
     margin: 0px auto;
     width: 70px;
+    height: 70px;
+    border-radius: 50%;
 }
 
 .flexWrapper .nav li.active img {
@@ -617,6 +619,8 @@ ul.resultlist li a {
     position: absolute;
     top: 10px;
     width: 120px;
+    height: 120px;
+    border-radius: 50%;
 }
 
 .bio-data-header {
@@ -1162,6 +1166,9 @@ p {
 .preferredtrainercard{
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
+.preferredtrainercard  img{
+    border-radius:50%;
+}
 .courseOverview h3 {
     font-size: 30px;
     font-weight: bold;
@@ -1546,7 +1553,8 @@ i.fas.fa-sync-alt {
 
 ol.breadcrumb {
     position: relative;
-    padding: 0.75rem 0;
+    padding: 0.7rem 0;
+    margin-left: 56px;
 }
 
 .congrateBoxinner h2 {
@@ -1692,8 +1700,8 @@ nav.breadcrumb-list {
 span.backarrow {
     position: absolute;
     left: 0;
-    top: 7px;
-    font-size: 20px;
+    top: 10px;
+    font-size: 16px;
     color: #4f5052;
     font-style: italic;
 }
@@ -1838,7 +1846,7 @@ label.filterSeach img {
 .profiletabBox {
     position: relative;
     padding-bottom: 40px;
-    min-height: 250px;
+    min-height: 190px;
 }
 
 .profiletabBox ul.profileTab li a {
@@ -1961,7 +1969,7 @@ ul.profile-socail-icon li img {
 }
 
 .profileFollowList {
-    margin-top: 40px;
+    margin-top: 20px;
     width: 100%;
     position: relative;
 }
@@ -2284,11 +2292,12 @@ span.awardYear {
 
 .knowledgeFooter ul li {
     display: inline-block;
-    margin-left: 21px;
+    /* margin-left: 21px; */
 }
 
 .knowledgeFooter ul li img {
     width: 15px;
+    /* margin-top: -17px; */
 }
 
 .knowledgeBox:hover {
@@ -2384,8 +2393,9 @@ span.awardYear {
 
 .librarybuttonList ul li {
     display: inline-block;
-    /* padding: 12px 15px; */
-    padding: 0 !important;
+    padding: 5px !important;
+    border-radius:5px;
+    /* padding: 0 !important; */
     margin-right:1.5rem !important;
 }
 
@@ -2399,7 +2409,14 @@ span.awardYear {
 }
 
 .librarybuttonList ul li:hover {
-    background: #dddada;
+    background: #0f79aa;
+    color:#fff;
+}
+.librarybuttonList ul li a:hover{
+    color:#fff !important;
+}
+.librarybuttonList ul li:hover img{
+    filter: invert(1) brightness(5);
 }
 
 .libraryStar .far {
@@ -2647,6 +2664,7 @@ thead.table_header_line {
     top: 15px;
     right: 15px;
     cursor: pointer;
+    z-index: 99;
 }
 
 img.awardIocn {
@@ -2787,6 +2805,7 @@ button.navbar-toggler h4 {
 
 .addMore {
     margin-top: 20px;
+    display: none;
 }
 
 .proTextTtile {
@@ -3698,6 +3717,10 @@ h2.subheading {
     .bannerBottomtext ul li {
         font-size: 9px !important;
     }
+    .mysale .card-header {
+        padding: 0.75rem 0.25rem;
+    }
+
 }
 
 @media (max-width: 767px) {
@@ -3804,7 +3827,10 @@ h2.subheading {
         right: unset;
         text-align: left;
     }
-
+    .social-share-icon {
+        top: 40% !important;
+        left: 10% !important;
+    }
     /*------------------------css for Wish List page open ------------------------*/
     .WishList .col-md-8 {
         max-width: 100%;
@@ -4034,6 +4060,15 @@ div.drum-wrapper, div.drum-wrapper .inner {
     margin-bottom: 10px;
     font-size: 15px !important;
 }
+.social-share-icon {
+    top: 30% !important;
+    left: 12% !important;
+}
+.social-share-icon a {
+    height: 30px !important;
+    width: 30px !important;
+    line-height: 30px !important;
+}
 }
 @media (max-width: 767px) {
     .home-wrapper {
@@ -4124,18 +4159,51 @@ div.drum-wrapper, div.drum-wrapper .inner {
         width: 22px !important;
         height: 22px !important;
     }
+    .slide-in-content {
+        height: 100vh !important;
+    }
+    .profile_menu{
+        top:0;
+    }
 }
 @media (max-width: 480px){
 .flexWrapper .nav li span {
     display: block !important;
 }
+.social-share-icon {
+    top: 51% !important;
+    left: 42% !important;
+    width: auto !important;
+}
+.flexWrapper .nav li img {
+    width: 56px;
+    height: 56px;
+}
 }
 @media(min-width:219px) and (max-width:331px) {
-    .home-result-wrapper {
-        min-height: 530px !important;
-    }
     .btn.btnBlue.preferdCourseBtn {
         font-size: 11px;
+    }
+    .social-share-icon {
+        top: 44% !important;
+        left: 32% !important;
+        width: auto !important;
+    }
+}
+@media (min-width:769px) and (max-width:991px){
+    .social-share-icon {
+        top: 30% !important;
+        left: 12% !important;
+    }
+    .social-share-icon a {
+        height: 30px !important;
+        width: 30px !important;
+        line-height: 30px !important;
+    }
+}
+@media(min-width:219px) and (max-width:381px) {
+    .home-result-wrapper {
+        min-height: 530px !important;
     }
 }
 .search-trainer {
@@ -4277,6 +4345,9 @@ footer.footer ul li a {
 .cd-breadcrumb lii {
     display: inline-block;
     margin: 0.5em 0;
+}
+.cd-breadcrumb li{
+    display:flex !important;
 }
 
 .cd-breadcrumb li::after {
@@ -4557,6 +4628,9 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
         margin-top: 31px;
         display: contents;
     }
+    .headingtext {
+        width: 100%;
+    }
     .sendMsg {
         margin-top: 70px !important;
         position: absolute !important;
@@ -4565,6 +4639,7 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
     }
     .social_share_icons {
         /* margin-right: 0px !important; */
+        display: block !important;
     }
     .profileTabQu .nav {
         margin-bottom: 0px !important;
@@ -4590,6 +4665,13 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
         right: 0 !important;
         top: 38px !important;
         margin-top: 0px !important;
+    }
+    .ViewCourseBtn{
+        margin-top:10px;
+    }
+    .profile-wrapper.profile-wrapperStudent {
+        padding-top: 70px !important;
+
     }
 }
 
@@ -4676,7 +4758,7 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
 }
 
 .small-box p {
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin-top: 0;
     margin-bottom: 1rem;
     color: #fff;
@@ -4928,6 +5010,9 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
 .libraryInfobox .btn.btnBlue {
     font-size: 11px;
 }
+.txtR {
+    text-align: center !important;
+}
 }
 .btn-primary {
     color: #fff;
@@ -4987,4 +5072,209 @@ min-width:150px;
 }
 .bQdYbR{
     min-width:170px !important;
+}
+.slide-in-contentteacher .lineANimation:after{
+    margin-top:10px;
+    height:2px;
+}
+@media (max-width: 575px) {
+    .slide-in-contentteacher .lineANimation{
+        margin-bottom:30px;
+    }
+    .navbar-nav{
+        margin-top:2px;
+    }
+}
+.CourseTabledesign .CourseRow{
+    background: #0f79aa;
+    color: #fff;
+}
+.hideicon .fa-plus{
+    display:none;
+}
+/* 
+.navigation {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menuToggle {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    background-color: #fff;
+    border-radius: 70px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+}
+
+.menuToggle::before {
+    content: '+';
+    position: absolute;
+    font-size: 2em;
+    font-weight: 550;
+    color: #087fe0;
+    margin-top: -6px;
+    transition: 1.5s;
+}
+
+.menuToggle.active::before {
+    transform: rotate(315deg);
+}
+
+.menu {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border-radius: 20px;
+    z-index: -1;
+    transition: transform 0.5s, width 0.5s, height 0.5s;
+    transition-delay: 1s, 0.5s, 0.5s;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.menuToggle.active~.menu {
+    display:flex;
+    width: 220px;
+    height: 60px;
+    right: -20px;
+    z-index: 1;
+    transform: translateY(55px);
+    transition-delay: 0s, 0.5s, 0.5s;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+}
+
+.menu::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    left: calc(85% - 8px);
+    bottom: 4px;
+    transform: rotate(45deg);
+    border-radius: 2px;
+    transition: 0.5s;
+}
+
+.menuToggle.active~.menu::before {
+    transition-delay: 0.5s;
+    top: -6px;
+}
+
+.menu ul {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    gap: 10px;
+}
+
+.menu ul li {
+    list-style: none;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-30px);
+    transition: 0.25s;
+    transition-delay: calc(0s + var(--i));
+}
+
+.menuToggle.active~.menu ul li {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0px);
+    transition-delay: calc(0.75s + var(--i));
+}
+
+.menu ul li a {
+    display: block;
+    font-size: 1.5em;
+}
+ */
+
+
+
+
+.social-share-icon{
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    width:100%;
+    -webkit-filter: url(#goo);
+    filter: url(#goo);
+    overflow: hidden;
+}
+.social-share-icon a.a{
+    z-index: 123;
+}
+.social-share-icon a{
+    text-decoration: none;
+    color: #212121;
+    height: 45px;
+    width: 45px;
+    border-radius: 100px;
+    display: inline-block;
+    background-color: #FFF;
+    line-height: 45px;
+    text-align: center;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2)
+}
+.social-share-icon a:hover{
+    background-color: #DDD;
+}
+.social-share-icon a i{
+    line-height: inherit;
+}
+.social-share-icon a.a1{
+    transform: translateX(245px);
+    transition: all ease-in-out 200ms;
+    opacity: 0;
+}
+.social-share-icon a.a2{
+    transform: translateX(196px);
+    transition: all ease-in-out 300ms;
+    opacity: 0;
+}
+.social-share-icon a.a3{
+    transform: translateX(147px);
+    transition: all ease-in-out 400ms;
+    opacity: 0;
+}
+.social-share-icon:hover a.a1{
+    transform: translateX(0);
+    transition: all ease-in-out 600ms;
+    opacity: 1;
+}
+.social-share-icon:hover a.a2{
+    transform: translateX(0);
+    transition: all ease-in-out 500ms;
+    opacity: 1;
+}
+.social-share-icon:hover a.a3{
+    transform: translateX(0);
+    transition: all ease-in-out 400ms;
+    opacity: 1;
+}
+
+.mysale .btn-primary{
+    display: none;
+}
+
+.fade.modal.show .btn-primary{
+    display: none;
+}
+.profile-save.btn.btn-primary{
+    display: inline !important;
+}
+
+.breadcrumb-item.active {
+    color: #0f79aa;
 }
