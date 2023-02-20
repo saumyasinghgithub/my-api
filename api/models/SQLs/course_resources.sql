@@ -6,3 +6,5 @@ CREATE TABLE `course_resources` (
   `price` DECIMAL(10,2) NULL , 
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , 
   PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+  ALTER TABLE `course_resources` CHANGE `type` `type` ENUM('pdf','scorm','audio','video','PPT','webinar') CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
