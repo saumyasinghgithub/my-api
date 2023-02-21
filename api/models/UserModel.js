@@ -102,11 +102,14 @@ class UserModel extends BaseModel {
           vpass.data.id
         ).then((ret) => {
           if (ret.success) {
-            resolve({
-              success: true,
-              message:
-                "Your password has been updated! Please use new password to login!",
-            });
+            this.updateMoodleUser(vpass.data.id, { password: password }).then(
+              (updated) =>
+                resolve({
+                  success: true,
+                  message:
+                    "Your password has been updated! Please use new password to login!",
+                })
+            );
           } else {
             resolve({
               success: false,
