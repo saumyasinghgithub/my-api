@@ -1062,6 +1062,16 @@ class TrainerSubscribe extends TrainerBase {
         return res;
       });
   }
+
+  subscribers(data) {
+    data.email = data.email;
+    data.trainerUrl = data.trainerUrl;
+    let whereParams = { where: { email: data.email, trainerUrl: data.trainerUrl} };
+    return this.list(whereParams)
+      .then((res) => {
+        return res.data;
+      });      
+  }
 }
 
 module.exports = {
