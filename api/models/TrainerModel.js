@@ -1052,6 +1052,18 @@ class TrainerSocial extends TrainerBase {
   }
 }
 
+class TrainerSubscribe extends TrainerBase {
+  table = "subscription";
+  subscribe(data) {
+    data.email = data.email;
+    data.trainerUrl = data.trainerUrl;
+    return super.add(data)
+      .then((res) => {
+        return res;
+      });
+  }
+}
+
 module.exports = {
   TrainerAward,
   TrainerCalib,
@@ -1069,4 +1081,5 @@ module.exports = {
   TrainerBlog,
   TrainerRating,
   TrainerSocial,
+  TrainerSubscribe,
 };

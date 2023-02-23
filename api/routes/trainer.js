@@ -406,6 +406,9 @@ router.delete('/my-blogs/:id', function (req, res, next) {
     routeWrapper(req,res, true, (token) => (new TModel.TrainerAbout()).myFavs({...req.query,user_id: token.data.id})); 
   });
 
+  router.post('/subscribe', function (req, res, next) {
+    routeWrapper(req, res, true, (token) => (new TModel.TrainerSubscribe()).subscribe({ email: req.body.email, trainerUrl: req.body.trainerUrl }));
+  });
   return router;
   
 };
