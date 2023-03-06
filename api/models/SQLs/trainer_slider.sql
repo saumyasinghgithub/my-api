@@ -1,0 +1,1 @@
+CREATE TABLE `ks_ad_crmdb`.`trainer_slider` (`id` INT(11) NOT NULL AUTO_INCREMENT , `user_id` INT(11) NOT NULL , `slider_img` VARCHAR(300) NOT NULL , `slider_text` VARCHAR(300) NOT NULL , `cta_link` TEXT NOT NULL , `created_at` DATETIME NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
