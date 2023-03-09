@@ -29,6 +29,16 @@ module.exports = () => {
     });
   });
 
+  router.get("/:id", function (req, res) {
+    routeWrapper(req, res, true, (token) => {
+      if (isTrainer(token.data)) {
+        return new CGModel().fetchDetail(req.params.id, token.data.id);
+      } else {
+        throw { message: "Permission Denied!" };
+      }
+    });
+  });
+
   router.delete("/my-corporate/:id", function (req, res, next) {
     routeWrapper(req, res, true, (token) => {
       if (isTrainer(token.data)) {

@@ -5,6 +5,7 @@ const path = require("path");
 const moment = require("moment");
 const { parse } = require("csv-parse");
 const UserModel = require("./UserModel");
+const CourseModel = require("./CourseModel");
 
 class CorporateGroupModel extends BaseModel {
   table = "corporate_groups";
@@ -24,6 +25,55 @@ class CorporateGroupModel extends BaseModel {
       }
       return ret;
     });
+  }
+
+  fetchDetail(id, trainer_id) {
+    let ret = {
+      success: false,
+      error: "Permission denied",
+      cg: false,
+      students: [],
+      mycourses: [],
+    };
+
+    return this.find(id)
+      .then((rec) => {
+        if (rec.trainer_id === trainer_id) {
+          ret.cg = rec;
+          return this.fetchStudents(rec.id);
+        } else {
+          return false;
+        }
+      })
+      .then((usr) => {
+        if (usr && ret.cg) {
+          ret.students = usr;
+          return new CourseModel().list({
+            where: { user_id: trainer_id },
+            limit: 9999999,
+          });
+        } else {
+          return false;
+        }
+      })
+      .then((courses) => {
+        ret.mycourses = courses.data;
+        ret.success = true;
+        ret.error = "";
+      })
+      .then(() => ret);
+    /*
+      .finally(() => ret);*/
+  }
+
+  fetchStudents(cgid) {
+    return new UserModel()
+      .list({
+        fields: `id,CONCAT_WS(' ',firstname,middlename,lastname) as name,email`,
+        whereStr: `id IN (SELECT student_id FROM ${this.studentTable} WHERE cg_id=${cgid})`,
+        sortBy: "name",
+      })
+      .then((usr) => usr.data);
   }
 
   import(cg_id, csv) {
