@@ -66,5 +66,15 @@ module.exports = () => {
       .then((obj) => res.send(obj.message));
   });
 
+  router.post("/assign", function (req, res, next) {
+    routeWrapper(req, res, true, (token) => {
+      if (isTrainer(token.data)) {
+        return new CGModel().assign({ ...req.body, trainer_id: token.data.id });
+      } else {
+        throw { message: "Permission Denied!" };
+      }
+    });
+  });
+
   return router;
 };

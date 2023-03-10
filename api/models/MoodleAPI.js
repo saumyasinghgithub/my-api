@@ -98,7 +98,16 @@ class MoodleAPI extends MoodleAPIBase {
     return this.hit("enrol_manual_enrol_users", params);
   }
 
-  createCourseGroup(course_moodle_id, gname, gdesc) {
+  setCourseUsers(userids, courseid) {
+    let roleid = process.env.MOODLE_STUDENT_ROLE;
+    let params = _.map(
+      userids,
+      (v, k) => `enrolments[${k}][courseid]=${courseid}&enrolments[${k}][roleid]=${roleid}&enrolments[${k}][userid]=${encodeURIComponent(v)}`
+    ).join("&");
+    return this.hit("enrol_manual_enrol_users", params);
+  }
+
+  createCourseGroup({ course_moodle_id, gname, gdesc }) {
     const group = {
       courseid: course_moodle_id,
       name: gname,

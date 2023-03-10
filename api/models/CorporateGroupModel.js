@@ -6,6 +6,8 @@ const moment = require("moment");
 const { parse } = require("csv-parse");
 const UserModel = require("./UserModel");
 const CourseModel = require("./CourseModel");
+const MoodleAPI = require("./MoodleAPI");
+const PaymentModel = require("./PaymentModel");
 
 class CorporateGroupModel extends BaseModel {
   table = "corporate_groups";
@@ -168,6 +170,54 @@ class CorporateGroupModel extends BaseModel {
       whereStr: "imported_at IS NULL",
     });
   }
+
+  assign({ cgid, courseid, userids }) {
+    let course = {};
+    let cgc_moodle_id = null;
+    return new CourseModel()
+      .find(courseid)
+      .then((c) => (course = c))
+      .then(() => new CGCModel().getMoodleId(cgid, userids, course))
+      .then((mid) => (cgc_moodle_id = mid))
+      .then(() => this.enrollUsers2Course(userids, course))
+      .then((user_moodle_ids) => new MoodleAPI().addMembersToGroup(cgc_moodle_id, user_moodle_ids));
+  }
+
+  enrollUsers2Course(userids, course) {
+    let user_moodle_ids = null,
+      allUsers = [];
+    return (
+      new UserModel()
+        .list({
+          fields: "email,firstname,moodle_id",
+          whereStr: `id IN (${userids}) AND role_id=${process.env.STUDENT_ROLE} AND moodle_id IS NOT NULL`,
+        })
+        .then((users) => {
+          allUsers = users.data;
+          user_moodle_ids = allUsers.map((u) => u.moodle_id);
+        })
+        .then(() => new MoodleAPI().setCourseUsers(user_moodle_ids, course.moodle_id))
+        //==== need to add users to student_enrollement here
+        .then(() => this.emailUsers(allUsers, course))
+        .then(() => user_moodle_ids)
+    );
+  }
+
+  emailUsers(users, course) {
+    return new Promise((resolve, reject) => {
+      let idx = 0;
+      const emailUser = () => {
+        if (_.get(users, idx, false) === false) {
+          resolve();
+        } else {
+          let user = users[idx++];
+          console.log(user);
+          new PaymentModel().notifyEnrolledUser({ email: user.email, username: user.firstname, courseName: course.name }).finally(emailUser);
+        }
+      };
+      emailUser();
+    });
+  }
 }
 
 class ImportStudentModel extends BaseModel {
@@ -176,6 +226,45 @@ class ImportStudentModel extends BaseModel {
 
 class CGSModel extends BaseModel {
   table = "corporate_groups_students";
+}
+
+class CGCModel extends BaseModel {
+  table = "corporate_groups_courses";
+
+  getMoodleId(cgid, userids, course) {
+    return this.list({
+      fields: "moodle_id, student_ids",
+      where: { cg_id: cgid, course_id: course.id },
+      whereStr: "moodle_id IS NOT NULL",
+      limit: 1,
+    }).then((res) => {
+      if (res.length === 1) {
+        return res[0];
+      } else {
+        let moodleId = null;
+        return this.createCGC(cgid, course.moodle_id)
+          .then((mid) => (moodleId = mid))
+          .then(() =>
+            this.add({
+              cg_id: cgid,
+              course_id: course.id,
+              student_ids: JSON.stringify(userids.split(",")),
+              moodle_id: moodleId,
+            })
+          )
+          .then(() => moodleId);
+      }
+    });
+  }
+
+  createCGC(cgid, course_moodle_id) {
+    let data = { course_moodle_id: course_moodle_id, gname: "", gdesc: "" };
+    return new CorporateGroupModel()
+      .find(cgid)
+      .then((cg) => (data = { ...data, gname: cg.name, gdesc: cg.details }))
+      .then(() => new MoodleAPI().createCourseGroup(data))
+      .then((res) => res[0].id);
+  }
 }
 
 module.exports = CorporateGroupModel;
