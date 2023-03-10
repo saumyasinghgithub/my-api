@@ -49,8 +49,9 @@ class CorporateGroupModel extends BaseModel {
         if (usr && ret.cg) {
           ret.students = usr;
           return new CourseModel().list({
-            where: { user_id: trainer_id },
+            whereStr: `user_id=${trainer_id} AND moodle_id IS NOT NULL`,
             limit: 9999999,
+            fields: "id,name,sku",
           });
         } else {
           return false;
@@ -70,7 +71,7 @@ class CorporateGroupModel extends BaseModel {
     return new UserModel()
       .list({
         fields: `id,CONCAT_WS(' ',firstname,middlename,lastname) as name,email`,
-        whereStr: `id IN (SELECT student_id FROM ${this.studentTable} WHERE cg_id=${cgid})`,
+        whereStr: `id IN (SELECT student_id FROM ${this.studentTable} WHERE cg_id=${cgid}) AND moodle_id IS NOT NULL`,
         sortBy: "name",
       })
       .then((usr) => usr.data);
