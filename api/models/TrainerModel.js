@@ -489,7 +489,7 @@ class TrainerCourse extends TrainerBase {
           stats.push(
             (parseInt(_.get(res, "0.sold", 0)) /
               parseInt(_.get(res, "0.total", 0))) *
-              100
+            100
           );
           return this.db.run(
             `SELECT COUNT(DISTINCT user_id) as students FROM student_enrollments WHERE course_id IN (SELECT id FROM courses where user_id=?)`,
@@ -904,8 +904,8 @@ class TrainerSearch extends TrainerBase {
           SUM(IF(type='audio',1,0)) as audios 
           FROM course_resources WHERE course_id IN 
           (SELECT id AS total FROM courses WHERE user_id IN (${all_user_ids.join(
-            ","
-          )}))`);
+          ","
+        )}))`);
       })
       .then((res5) => {
         stats = { ...stats, ..._.get(res5, "0", {}) };
@@ -976,8 +976,8 @@ class TrainerRating extends TrainerBase {
     return this.db
       .run(
         "SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM " +
-          this.table +
-          " WHERE trainer_id=?",
+        this.table +
+        " WHERE trainer_id=?",
         [trainer_id]
       )
       .then((res) => ({
@@ -994,18 +994,18 @@ class TrainerRating extends TrainerBase {
       this.db
         .run(
           "SELECT trainer_id,AVG(rating) as rating,COUNT(id) as ratings FROM  " +
-            this.table +
-            " WHERE trainer_id IN (" +
-            ids.join(",") +
-            ") GROUP BY trainer_id"
+          this.table +
+          " WHERE trainer_id IN (" +
+          ids.join(",") +
+          ") GROUP BY trainer_id"
         )
         .then((res) => {
           res.forEach(
             (r) =>
-              (ratings[r.trainer_id] = {
-                rating: _.isNull(r.rating) ? 0 : r.rating,
-                ratings: _.get(r, "ratings", 0),
-              })
+            (ratings[r.trainer_id] = {
+              rating: _.isNull(r.rating) ? 0 : r.rating,
+              ratings: _.get(r, "ratings", 0),
+            })
           );
         })
         .catch((err) => {
@@ -1066,11 +1066,89 @@ class TrainerSubscribe extends TrainerBase {
   subscribers(data) {
     data.email = data.email;
     data.trainerUrl = data.trainerUrl;
-    let whereParams = { where: { email: data.email, trainerUrl: data.trainerUrl} };
+    let whereParams = { where: { email: data.email, trainerUrl: data.trainerUrl } };
     return this.list(whereParams)
       .then((res) => {
         return res.data;
-      });      
+      });
+  }
+}
+
+class TrainerSlider extends TrainerBase {
+  table = "trainer_slider";
+  slidersave(data, files) {
+    let frmdata = _.pick(data, [
+      "user_id",
+      "slider_text",
+      "cta_link",
+    ]);
+    return this.uploadImage(
+      data,
+      _.get(files, "slider_image", false),
+      "slider"
+    )
+    .then((fname) => {
+      frmdata["slider_image"] = fname;
+    })
+    .then((fname) => {
+      if (data.id > 0) {
+        return super.edit(frmdata, data.id);
+      } else {
+        return super.add(frmdata);
+      }
+    });
+  }
+  sliderList(data) {
+    return super.list().then(res => {
+      if(res.success && res.data.length > 0){ 
+      }
+      return res;
+    });
+  }
+  edit(data, files, user_id) {
+    let frmdata = _.pick(data, [
+      "firstname",
+      "middlename",
+      "lastname",
+      "slug",
+      "biography",
+      "trainings",
+    ]);
+    frmdata["user_id"] = user_id;
+    const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
+    frmdata["slug"] = slugify(spath, {
+      remove: /[*#+~.()'"!:@]/g,
+      lower: true,
+    });
+    return this.uploadImage(
+      data,
+      _.get(files, "profile_image", false),
+      "profile"
+    )
+      .then((fname) => {
+        frmdata["profile_image"] = fname;
+        return this.uploadImage(
+          data,
+          _.get(files, "award_image", false),
+          "award"
+        );
+      })
+      .then((fname) => {
+        frmdata["award_image"] = fname;
+        return this.uploadImage(
+          data,
+          _.get(files, "base_image", false),
+          "base"
+        );
+      })
+      .then((fname) => {
+        frmdata["base_image"] = fname;
+        if (data.id > 0) {
+          return super.edit(frmdata, data.id);
+        } else {
+          return super.add(frmdata);
+        }
+      });
   }
 }
 
@@ -1092,4 +1170,5 @@ module.exports = {
   TrainerRating,
   TrainerSocial,
   TrainerSubscribe,
+  TrainerSlider,
 };

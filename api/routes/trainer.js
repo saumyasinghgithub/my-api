@@ -414,6 +414,14 @@ router.delete('/my-blogs/:id', function (req, res, next) {
     routeWrapper(req,res, true, (token) => (new TModel.TrainerSubscribe()).subscribers(req.query)); 
   });
 
+  router.put('/imagesliders', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerSlider()).slidersave(req.body,req.files)); 
+  });
+
+  router.get('/sliders', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerSlider()).sliderList(req.query)); 
+  });
+
   return router;
   
 };
