@@ -1,0 +1,2 @@
+CREATE TABLE `ks_ad_crmdb`.`coupons` (`id` INT NOT NULL , `coupon_code` VARCHAR(200) NOT NULL , `expiry_date` DATETIME NOT NULL , `created_at` DATETIME NOT NULL ) ENGINE = InnoDB;
+ALTER TABLE `coupons` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);

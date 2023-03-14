@@ -406,6 +406,26 @@ router.delete('/my-blogs/:id', function (req, res, next) {
     routeWrapper(req,res, true, (token) => (new TModel.TrainerAbout()).myFavs({...req.query,user_id: token.data.id})); 
   });
 
+  router.post('/subscribe', function (req, res, next) {
+    routeWrapper(req, res, true, (token) => (new TModel.TrainerSubscribe()).subscribe({ email: req.body.email, trainerUrl: req.body.trainerUrl }));
+  });
+
+  router.get('/subscribers', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerSubscribe()).subscribers(req.query)); 
+  });
+
+  router.put('/imagesliders', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerSlider()).slidersave(req.body,req.files)); 
+  });
+
+  router.get('/sliders', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => (new TModel.TrainerSlider()).sliderList(req.query)); 
+  });
+  router.delete('/delslider/:id', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {      
+        return (new TModel.TrainerSlider()).delete(req.params.id);        
+    }); 
+  });
   return router;
   
 };
