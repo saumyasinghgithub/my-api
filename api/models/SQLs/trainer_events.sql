@@ -1,3 +1,11 @@
-CREATE TABLE `ks_ad_crmdb`.`trainer_events` (`id` INT(11) NOT NULL AUTO_INCREMENT , `user_id` INT(11) NOT NULL , `event_short_desc` VARCHAR(300) NOT NULL , `registration_link` VARCHAR(300) NOT NULL , `created_at` DATETIME NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+CREATE TABLE `trainer_events` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `event_img` varchar(300) NOT NULL,
+  `event_short_desc` varchar(300) NOT NULL,
+  `registration_link` varchar(300) NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE `trainer_events` ADD `event_img` VARCHAR(300) NOT NULL AFTER `user_id`;
+ALTER TABLE `trainer_events`
+  ADD PRIMARY KEY (`id`);
