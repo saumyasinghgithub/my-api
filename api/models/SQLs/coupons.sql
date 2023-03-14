@@ -1,2 +1,12 @@
-CREATE TABLE `ks_ad_crmdb`.`coupons` (`id` INT NOT NULL , `coupon_code` VARCHAR(200) NOT NULL , `expiry_date` DATETIME NOT NULL , `created_at` DATETIME NOT NULL ) ENGINE = InnoDB;
-ALTER TABLE `coupons` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+CREATE TABLE `trainer_coupons` (
+  `id` int(11) NOT NULL,
+  `coupon_code` varchar(200) NOT NULL,
+  `usage_limit` int(11) NOT NULL DEFAULT 0,
+  `item_id` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`item_id`)),
+  `expiry_date` date DEFAULT NULL,
+  `coupon_type` int(11) NOT NULL,
+  `discount_value` int(11) NOT NULL,
+  `created_at` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `trainer_coupons` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
