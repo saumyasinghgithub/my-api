@@ -4707,7 +4707,7 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
     cursor: pointer;
 }
 
-.clickable.selected {
+.circleBox.selected {
     background-color: #f3ac1b69 !important;
 }
 
@@ -5035,7 +5035,7 @@ div.drum-wrapper div.container, div.drum-wrapper figure {
     cursor:pointer;
 }   
 
-
+/*
 .mysale .rdt_TableCol:first-child,.mysale .rdt_TableCell:first-child{
 max-width:160px;
 min-width:150px;
@@ -5049,7 +5049,7 @@ min-width:150px;
     min-width:300px;    
     padding: 10px 16px;
 
-}
+}*/
 
 .dtqzBx div:first-child {
     white-space: break-spaces !important;
