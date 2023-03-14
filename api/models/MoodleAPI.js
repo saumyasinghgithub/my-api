@@ -11,7 +11,7 @@ class MoodleAPIBase {
   password = null;
 
   constructor(domain = null) {
-    this.domain = "https://lms.autodidact.app"; //domain;
+    this.domain = "https://lms.kstverse.com"; //domain;
     this.username = "apiuser";
     this.password = "APIUser@1234";
     this.api = `${this.domain}/webservice/rest/server.php`;
