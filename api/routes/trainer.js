@@ -421,7 +421,11 @@ router.delete('/my-blogs/:id', function (req, res, next) {
   router.get('/sliders', function (req, res, next) {
     routeWrapper(req,res, true, (token) => (new TModel.TrainerSlider()).sliderList(req.query)); 
   });
-
+  router.delete('/delslider/:id', function (req, res, next) {
+    routeWrapper(req,res, true, (token) => {      
+        return (new TModel.TrainerSlider()).delete(req.params.id);        
+    }); 
+  });
   return router;
   
 };
