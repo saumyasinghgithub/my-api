@@ -587,6 +587,40 @@ class TrainerSearch extends TrainerBase {
       });
   }
 
+  landing({ slug }) {
+    let tData = {};
+    let whereParams = { where: { slug: slug } };
+    return new TrainerAbout()
+      .list(whereParams)
+      .then(({ data }) => {
+        tData.about = _.get(data, "0", {});
+        if (_.get(tData, "about.id", false)) {
+          whereParams = { where: { user_id: tData.about.user_id } };
+        } else {
+          throw { message: "No such trainer found" };
+        }
+      })
+      .then(() =>
+        new TrainerBlog().list({
+          ...whereParams,
+          sortBy: "updated_at",
+          sortDir: "DESC",
+        })
+      )
+      .then(({ data }) => {
+        tData.blogs = parseInt(_.get(data, "length", 0)) > 0 ? data : [];
+        return new CourseModel().getByTrainer(tData.about.user_id);
+      })
+      .then((courses) => {
+        tData.courses = courses;
+        return new TrainerSlider().list(whereParams);
+      })
+      .then((slides) => {
+        tData.slides = slides.data;
+        return tData;
+      });
+  }
+
   search(params) {
     let ret = { success: false, message: "Invalid Search Criteria" };
     let all_user_ids = [],
@@ -1000,13 +1034,6 @@ class TrainerSlider extends TrainerBase {
     }
   }
 
-  sliderList(data) {
-    return super.list().then((res) => {
-      if (res.success && res.data.length > 0) {
-      }
-      return res;
-    });
-  }
   edit(data, files, user_id) {
     let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
     frmdata["user_id"] = user_id;

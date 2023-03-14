@@ -314,6 +314,15 @@ module.exports = () => {
     });
   });
 
+  router.get("/landing/:slug", function (req, res) {
+    routeWrapper(req, res, false, () => {
+      return new TModel.TrainerSearch()
+        .landing(req.params)
+        .then((tData) => ({ ...tData, success: true }))
+        .catch((e) => ({ success: false, message: e.message }));
+    });
+  });
+
   router.post("/setRating", function (req, res, next) {
     routeWrapper(req, res, true, (token) =>
       new TModel.TrainerRating().save({ user_id: token.data.id, trainer_id: req.body.trainer_id, rating: req.body.rating })
@@ -412,7 +421,7 @@ module.exports = () => {
   });
 
   router.get("/sliders", function (req, res, next) {
-    routeWrapper(req, res, true, (token) => new TModel.TrainerSlider().sliderList(req.query));
+    routeWrapper(req, res, true, (token) => new TModel.TrainerSlider().list({ whereStr: `user_id=${token.data.id}` }));
   });
   router.delete("/delslider/:id", function (req, res, next) {
     routeWrapper(req, res, true, (token) => {
