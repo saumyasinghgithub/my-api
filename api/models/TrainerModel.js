@@ -49,7 +49,7 @@ class TrainerBase extends BaseModel {
         resolve(_.get(data, `old_${ftype}_image`, ""));
       }
       if (_.get(file, "size", 0) > 0) {
-        let fname = ftype + "_" + data.id + "_" + moment().unix() + file.name;
+        let fname = ftype + "_" + _.get(data, "id", "new") + "_" + moment().unix() + file.name;
         let fpath = path.resolve("public", "uploads", ftype, fname);
         file.mv(fpath, (err) => {
           if (err) {
@@ -67,10 +67,9 @@ class TrainerBase extends BaseModel {
 
   myTotalStudents(trainer_id) {
     return this.db
-      .run(
-        "SELECT count(user_id) total FROM student_enrollments WHERE course_id IN (select id from courses where user_id=?) GROUP BY user_id",
-        [trainer_id]
-      )
+      .run("SELECT count(user_id) total FROM student_enrollments WHERE course_id IN (select id from courses where user_id=?) GROUP BY user_id", [
+        trainer_id,
+      ])
       .then((res) => _.get(res, "0.total", 0))
       .catch((err) => 0);
   }
@@ -193,40 +192,21 @@ class TrainerAbout extends TrainerBase {
   table = "trainer_about";
 
   edit(data, files, user_id) {
-    let frmdata = _.pick(data, [
-      "firstname",
-      "middlename",
-      "lastname",
-      "slug",
-      "biography",
-      "trainings",
-    ]);
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
     frmdata["user_id"] = user_id;
     const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
     frmdata["slug"] = slugify(spath, {
       remove: /[*#+~.()'"!:@]/g,
       lower: true,
     });
-    return this.uploadImage(
-      data,
-      _.get(files, "profile_image", false),
-      "profile"
-    )
+    return this.uploadImage(data, _.get(files, "profile_image", false), "profile")
       .then((fname) => {
         frmdata["profile_image"] = fname;
-        return this.uploadImage(
-          data,
-          _.get(files, "award_image", false),
-          "award"
-        );
+        return this.uploadImage(data, _.get(files, "award_image", false), "award");
       })
       .then((fname) => {
         frmdata["award_image"] = fname;
-        return this.uploadImage(
-          data,
-          _.get(files, "base_image", false),
-          "base"
-        );
+        return this.uploadImage(data, _.get(files, "base_image", false), "base");
       })
       .then((fname) => {
         frmdata["base_image"] = fname;
@@ -239,9 +219,7 @@ class TrainerAbout extends TrainerBase {
   }
 
   bySlug(slug) {
-    return this.list({ where: { slug: slug }, limit: 1 }).then((res) =>
-      _.get(res, "data.0", false)
-    );
+    return this.list({ where: { slug: slug }, limit: 1 }).then((res) => _.get(res, "data.0", false));
   }
 
   myFavs({ start, limit, user_id }) {
@@ -259,11 +237,7 @@ class TrainerServices extends TrainerBase {
   edit(data, files, user_id) {
     let frmdata = _.pick(data, ["service_offer", "consultancy", "coaching"]);
     frmdata["user_id"] = user_id;
-    return this.uploadImage(
-      data,
-      _.get(files, "service_image", false),
-      "service"
-    ).then((fname) => {
+    return this.uploadImage(data, _.get(files, "service_image", false), "service").then((fname) => {
       frmdata["service_image"] = fname;
       if (parseInt(data.id) > 0) {
         return super.edit(frmdata, data.id);
@@ -280,11 +254,7 @@ class TrainerKnowledge extends TrainerBase {
   edit(data, files, user_id) {
     let frmdata = _.pick(data, ["about_knowledge"]);
     frmdata["user_id"] = user_id;
-    return this.uploadImage(
-      data,
-      _.get(files, "knowledge_image", false),
-      "knowledge"
-    ).then((fname) => {
+    return this.uploadImage(data, _.get(files, "knowledge_image", false), "knowledge").then((fname) => {
       frmdata["knowledge_image"] = fname;
       if (parseInt(data.id) > 0) {
         return super.edit(frmdata, data.id);
@@ -301,11 +271,7 @@ class TrainerCommunity extends TrainerBase {
   edit(data, files, user_id) {
     let frmdata = _.pick(data, ["about_community", "youtube_community"]);
     frmdata["user_id"] = user_id;
-    return this.uploadImage(
-      data,
-      _.get(files, "community_image", false),
-      "community"
-    ).then((fname) => {
+    return this.uploadImage(data, _.get(files, "community_image", false), "community").then((fname) => {
       frmdata["community_image"] = fname;
       if (parseInt(data.id) > 0) {
         return super.edit(frmdata, data.id);
@@ -322,11 +288,7 @@ class TrainerLibrary extends TrainerBase {
   edit(data, files, user_id) {
     let frmdata = _.pick(data, ["about_library"]);
     frmdata["user_id"] = user_id;
-    return this.uploadImage(
-      data,
-      _.get(files, "library_image", false),
-      "library"
-    ).then((fname) => {
+    return this.uploadImage(data, _.get(files, "library_image", false), "library").then((fname) => {
       frmdata["library_image"] = fname;
       if (parseInt(data.id) > 0) {
         return super.edit(frmdata, data.id);
@@ -357,16 +319,8 @@ class TrainerCourse extends TrainerBase {
       "lectures",
     ]);
     frmdata["user_id"] = user_id;
-    frmdata["slug"] = slugify(
-      frmdata.name,
-      { remove: /[*#+~.()'"!:@]/g },
-      { lower: true }
-    );
-    return this.uploadImage(
-      data,
-      _.get(files, "course_image", false),
-      "courses"
-    ).then((fname) => {
+    frmdata["slug"] = slugify(frmdata.name, { remove: /[*#+~.()'"!:@]/g }, { lower: true });
+    return this.uploadImage(data, _.get(files, "course_image", false), "courses").then((fname) => {
       frmdata["course_image"] = fname;
       if (parseInt(data.id) > 0) {
         return super.edit(frmdata, data.id).then((editRes) => {
@@ -396,9 +350,7 @@ class TrainerCourse extends TrainerBase {
   }
 
   extractUserMoodleId(user_id) {
-    return this.db
-      .run(`SELECT moodle_id FROM users WHERE id=?`, user_id)
-      .then((res) => parseInt(_.get(res, "0.moodle_id", 0)));
+    return this.db.run(`SELECT moodle_id FROM users WHERE id=?`, user_id).then((res) => parseInt(_.get(res, "0.moodle_id", 0)));
   }
 
   createCourseInMoodle(data) {
@@ -461,9 +413,7 @@ class TrainerCourse extends TrainerBase {
   bySlug(slug) {
     return new TrainerAbout().bySlug(slug).then((about) => {
       if (about) {
-        return new CourseModel()
-          .getByTrainer(about.user_id)
-          .then((courses) => ({ trainer: about, courses: courses }));
+        return new CourseModel().getByTrainer(about.user_id).then((courses) => ({ trainer: about, courses: courses }));
       } else {
         return { trainer: false, courses: [] };
       }
@@ -474,10 +424,7 @@ class TrainerCourse extends TrainerBase {
     let stats = [];
     return new Promise((resolve, reject) => {
       return this.db
-        .run(
-          `SELECT SUM(price) total FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`,
-          [trainer_id]
-        )
+        .run(`SELECT SUM(price) total FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`, [trainer_id])
         .then((res) => {
           stats.push(parseInt(_.get(res, "0.total", 0)));
           return this.db.run(
@@ -486,11 +433,7 @@ class TrainerCourse extends TrainerBase {
           );
         })
         .then((res) => {
-          stats.push(
-            (parseInt(_.get(res, "0.sold", 0)) /
-              parseInt(_.get(res, "0.total", 0))) *
-              100
-          );
+          stats.push((parseInt(_.get(res, "0.sold", 0)) / parseInt(_.get(res, "0.total", 0))) * 100);
           return this.db.run(
             `SELECT COUNT(DISTINCT user_id) as students FROM student_enrollments WHERE course_id IN (SELECT id FROM courses where user_id=?)`,
             [trainer_id]
@@ -498,10 +441,9 @@ class TrainerCourse extends TrainerBase {
         })
         .then((res) => {
           stats.push(parseInt(_.get(res, "0.students", 0)));
-          return this.db.run(
-            `SELECT COUNT(id) orders FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`,
-            [trainer_id]
-          );
+          return this.db.run(`SELECT COUNT(id) orders FROM cart WHERE status='paid' AND course_id IN (SELECT id FROM courses where user_id=?)`, [
+            trainer_id,
+          ]);
         })
         .then((res) => {
           stats.push(parseInt(_.get(res, "0.orders", 0)));
@@ -512,9 +454,7 @@ class TrainerCourse extends TrainerBase {
 
   totalCourses(trainer_id) {
     return this.db
-      .run("SELECT count(id) as total FROM courses where user_id=?", [
-        trainer_id,
-      ])
+      .run("SELECT count(id) as total FROM courses where user_id=?", [trainer_id])
       .then((res) => _.get(res, "0.total", 0))
       .catch((err) => 0);
   }
@@ -524,25 +464,15 @@ class TrainerCourseContent extends TrainerBase {
   table = "course_content";
 
   edit(data, files) {
-    let frmdata = _.pick(data, [
-      "course_id",
-      "title",
-      "description",
-      "embed_resource",
-      "video",
-      "duration",
-      "lecture",
-    ]);
-    return this.uploadImage(data, _.get(files, "video", false), "content").then(
-      (fname) => {
-        frmdata["video"] = fname;
-        if (parseInt(data.id) > 0) {
-          return super.edit(frmdata, data.id);
-        } else {
-          return super.add(frmdata);
-        }
+    let frmdata = _.pick(data, ["course_id", "title", "description", "embed_resource", "video", "duration", "lecture"]);
+    return this.uploadImage(data, _.get(files, "video", false), "content").then((fname) => {
+      frmdata["video"] = fname;
+      if (parseInt(data.id) > 0) {
+        return super.edit(frmdata, data.id);
+      } else {
+        return super.add(frmdata);
       }
-    );
+    });
   }
 
   delete(pkval) {
@@ -657,6 +587,40 @@ class TrainerSearch extends TrainerBase {
       });
   }
 
+  landing({ slug }) {
+    let tData = {};
+    let whereParams = { where: { slug: slug } };
+    return new TrainerAbout()
+      .list(whereParams)
+      .then(({ data }) => {
+        tData.about = _.get(data, "0", {});
+        if (_.get(tData, "about.id", false)) {
+          whereParams = { where: { user_id: tData.about.user_id } };
+        } else {
+          throw { message: "No such trainer found" };
+        }
+      })
+      .then(() =>
+        new TrainerBlog().list({
+          ...whereParams,
+          sortBy: "updated_at",
+          sortDir: "DESC",
+        })
+      )
+      .then(({ data }) => {
+        tData.blogs = parseInt(_.get(data, "length", 0)) > 0 ? data : [];
+        return new CourseModel().getByTrainer(tData.about.user_id);
+      })
+      .then((courses) => {
+        tData.courses = courses;
+        return new TrainerSlider().list(whereParams);
+      })
+      .then((slides) => {
+        tData.slides = slides.data;
+        return tData;
+      });
+  }
+
   search(params) {
     let ret = { success: false, message: "Invalid Search Criteria" };
     let all_user_ids = [],
@@ -666,10 +630,7 @@ class TrainerSearch extends TrainerBase {
 
     if (_.get(params, "calibs", false) && params.calibs != "{}") {
       let calibs = JSON.parse(params.calibs);
-      calibs = _.map(
-        calibs,
-        (pval, pk) => `pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)}`
-      );
+      calibs = _.map(calibs, (pval, pk) => `pa_id=${parseInt(pk)} AND pa_value=${parseInt(pval)}`);
       if (calibs.length > 1) {
         params.whereStr += ` AND ((` + _.join(calibs, ") OR (") + "))";
       } else {
@@ -687,10 +648,7 @@ class TrainerSearch extends TrainerBase {
         params["start"] = parseInt(_.get(params, "start", 0));
         params["limit"] = parseInt(_.get(params, "limit", this.pageLimit));
         all_user_ids = res.data.map((d) => d.user_id);
-        user_ids = all_user_ids.slice(
-          params.start,
-          params.start + params.limit
-        );
+        user_ids = all_user_ids.slice(params.start, params.start + params.limit);
         ret = {
           success: true,
           favTrainers: [],
@@ -705,12 +663,10 @@ class TrainerSearch extends TrainerBase {
       .then((about) => {
         ret = { ...ret, data: about.data };
         if (params.user_id) {
-          return this.favTrainers(params.user_id, user_ids).then(
-            (favTrainers) => {
-              ret = { ...ret, favTrainers: favTrainers };
-              return this.fetchCalibs(user_ids, params.paCalibs);
-            }
-          );
+          return this.favTrainers(params.user_id, user_ids).then((favTrainers) => {
+            ret = { ...ret, favTrainers: favTrainers };
+            return this.fetchCalibs(user_ids, params.paCalibs);
+          });
         } else {
           return this.fetchCalibs(user_ids, params.paCalibs);
         }
@@ -718,9 +674,7 @@ class TrainerSearch extends TrainerBase {
       .then((calibs) => {
         ret.data = ret.data.map((ud) => ({
           ...ud,
-          calibs: _.filter(calibs, { user_id: ud.user_id }).map((c) =>
-            _.omit(c, "user_id")
-          ),
+          calibs: _.filter(calibs, { user_id: ud.user_id }).map((c) => _.omit(c, "user_id")),
         }));
         return this.fetchRatings(user_ids);
       })
@@ -734,14 +688,9 @@ class TrainerSearch extends TrainerBase {
       .then((courses) => {
         ret.data = ret.data.map((ud) => ({
           ...ud,
-          courses: _.omit(
-            _.filter(courses, { user_id: ud.user_id })[0],
-            "user_id"
-          ),
+          courses: _.omit(_.filter(courses, { user_id: ud.user_id })[0], "user_id"),
         }));
-        return this.fetchCourseResources(
-          _.flattenDeep(courses.map((uc) => uc.courses.map((c) => c.course_id)))
-        ).then((cres) => {
+        return this.fetchCourseResources(_.flattenDeep(courses.map((uc) => uc.courses.map((c) => c.course_id)))).then((cres) => {
           ret.data = ret.data.map((ud) => ({
             ...ud,
             courses: {
@@ -766,9 +715,7 @@ class TrainerSearch extends TrainerBase {
   }
 
   favTrainers(user_id, trainer_ids) {
-    const sql = `SELECT trainer_id FROM favorites WHERE user_id=${user_id} AND trainer_id IN (${trainer_ids.join(
-      ","
-    )})`;
+    const sql = `SELECT trainer_id FROM favorites WHERE user_id=${user_id} AND trainer_id IN (${trainer_ids.join(",")})`;
     return this.db.run(sql, []).then((res) => {
       return _.get(res, "length", 0) > 0 ? res.map((r) => r.trainer_id) : [];
     });
@@ -794,9 +741,7 @@ class TrainerSearch extends TrainerBase {
         return new PAModel()
           .list({
             limit: 99999,
-            whereStr: `id IN (${res.data
-              .map((d) => d.pa_value)
-              .join(",")}) AND active=1`,
+            whereStr: `id IN (${res.data.map((d) => d.pa_value).join(",")}) AND active=1`,
             fields: "id,title",
           })
           .then((res1) => {
@@ -827,9 +772,7 @@ class TrainerSearch extends TrainerBase {
           this.fetchUserCourses(user_id)
             .then((uc) => {
               let idx = _.findIndex(userCourses, { user_id: user_id });
-              userCourses[idx].courses = uc.data.map((d) =>
-                _.omit(d, "user_id")
-              );
+              userCourses[idx].courses = uc.data.map((d) => _.omit(d, "user_id"));
               userCourses[idx].total = uc.pageInfo.total;
             })
             .finally(iterate);
@@ -872,20 +815,14 @@ class TrainerSearch extends TrainerBase {
       courses: 0,
     };
     return this.db
-      .run(
-        `SELECT COUNT(id) AS allTrainers FROM users WHERE role_id = 4 AND active=1`
-      )
+      .run(`SELECT COUNT(id) AS allTrainers FROM users WHERE role_id = 4 AND active=1`)
       .then((res1) => {
         stats.allTrainers = parseInt(_.get(res1, "0.allTrainers", 0));
         return this.db.run(`SELECT COUNT(id) AS allCourses FROM courses`);
       })
       .then((res2) => {
         stats.allCourses = parseInt(_.get(res2, "0.allCourses", 0));
-        return this.db.run(
-          `SELECT COUNT(id) AS total FROM courses WHERE user_id IN (${all_user_ids.join(
-            ","
-          )})`
-        );
+        return this.db.run(`SELECT COUNT(id) AS total FROM courses WHERE user_id IN (${all_user_ids.join(",")})`);
       })
       .then((res3) => {
         stats.courses = parseInt(_.get(res3, "0.total", 0));
@@ -903,9 +840,7 @@ class TrainerSearch extends TrainerBase {
           SUM(IF(type='video',1,0)) as videos, 
           SUM(IF(type='audio',1,0)) as audios 
           FROM course_resources WHERE course_id IN 
-          (SELECT id AS total FROM courses WHERE user_id IN (${all_user_ids.join(
-            ","
-          )}))`);
+          (SELECT id AS total FROM courses WHERE user_id IN (${all_user_ids.join(",")}))`);
       })
       .then((res5) => {
         stats = { ...stats, ..._.get(res5, "0", {}) };
@@ -919,15 +854,7 @@ class TrainerBlog extends TrainerBase {
   updated_at = true;
 
   edit(data, files, user_id) {
-    let frmdata = _.pick(data, [
-      "user_id",
-      "name",
-      "slug",
-      "short_description",
-      "description",
-      "blog_image",
-      "blog_banner",
-    ]);
+    let frmdata = _.pick(data, ["user_id", "name", "slug", "short_description", "description", "blog_image", "blog_banner"]);
     frmdata["user_id"] = user_id;
     frmdata["slug"] = slugify(frmdata.name, {
       remove: /[*#+~.()'"!:@]/g,
@@ -936,11 +863,7 @@ class TrainerBlog extends TrainerBase {
     return this.uploadImage(data, _.get(files, "blog_image", false), "blog")
       .then((fname) => {
         frmdata["blog_image"] = fname;
-        return this.uploadImage(
-          data,
-          _.get(files, "banner_image", false),
-          "banner"
-        );
+        return this.uploadImage(data, _.get(files, "banner_image", false), "banner");
       })
       .then((fname) => {
         frmdata["banner_image"] = fname;
@@ -953,9 +876,7 @@ class TrainerBlog extends TrainerBase {
   }
 
   bySlug(slug) {
-    return this.list({ where: { slug: slug }, limit: 1 }).then((res) =>
-      _.get(res, "data.0", false)
-    );
+    return this.list({ where: { slug: slug }, limit: 1 }).then((res) => _.get(res, "data.0", false));
   }
 
   delete(pkval) {
@@ -974,12 +895,7 @@ class TrainerRating extends TrainerBase {
 
   getRatingByTrainer(trainer_id) {
     return this.db
-      .run(
-        "SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM " +
-          this.table +
-          " WHERE trainer_id=?",
-        [trainer_id]
-      )
+      .run("SELECT AVG(rating) as rating,COUNT(user_id) as ratings FROM " + this.table + " WHERE trainer_id=?", [trainer_id])
       .then((res) => ({
         rating: _.isNull(res[0].rating) ? 0 : res[0].rating,
         ratings: _.get(res, "0.ratings", 0),
@@ -1033,14 +949,7 @@ class TrainerSocial extends TrainerBase {
     let iData = {
       user_id: user_id,
     };
-    [
-      "facebook",
-      "instagram",
-      "linkedin",
-      "pinterest",
-      "twitter",
-      "youtube",
-    ].forEach((fld) => (iData[fld] = data[fld]));
+    ["facebook", "instagram", "linkedin", "pinterest", "twitter", "youtube"].forEach((fld) => (iData[fld] = data[fld]));
 
     return this.deleteWhere({ user_id: user_id })
       .then((res) => this.add(iData))
@@ -1049,6 +958,107 @@ class TrainerSocial extends TrainerBase {
         data: iData,
         message: "Data saved!",
       }));
+  }
+}
+
+class TrainerSubscribe extends TrainerBase {
+  table = "subscription";
+  subscribe(data) {
+    data.email = data.email;
+    data.trainerUrl = data.trainerUrl;
+    return super.add(data).then((res) => {
+      return res;
+    });
+  }
+
+  subscribers(data) {
+    data.email = data.email;
+    data.trainerUrl = data.trainerUrl;
+    let whereParams = { where: { email: data.email, trainerUrl: data.trainerUrl } };
+    return this.list(whereParams).then((res) => {
+      return res.data;
+    });
+  }
+}
+
+class TrainerSlider extends TrainerBase {
+  table = "trainer_slider";
+
+  processSlides(data, files, user_id) {
+    let sql = "DELETE FROM " + this.table + " WHERE user_id=" + user_id + " AND id NOT IN (" + _.compact(_.values(data.id)).join(",") + ")";
+    return this.db.run(sql).then(() => this.saveTheSlides(data, files, user_id));
+  }
+
+  saveTheSlides(data, files, user_id) {
+    let idx = -1,
+      keys = _.keys(data.id);
+    return new Promise((resolve, reject) => {
+      const saveSlide = () => {
+        idx++;
+        if (idx >= keys.length) {
+          resolve({ success: true, message: "Slides saved successfully!" });
+        } else {
+          this.slidersave(
+            {
+              user_id: user_id,
+              id: data.id[keys[idx]],
+              slider_text: data.slider_text[keys[idx]],
+              cta_link: data.cta_link[keys[idx]],
+              old_slider_image: data.old_slider_image[keys[idx]],
+            },
+            _.get(files, `slider_image_${idx}`, false)
+          )
+            .then(saveSlide)
+            .catch(saveSlide);
+        }
+      };
+
+      saveSlide();
+    });
+  }
+
+  slidersave(data, image) {
+    let frmdata = _.pick(data, ["user_id", "slider_text", "cta_link"]);
+
+    if (image) {
+      return this.uploadImage(data, image, "slider").then((fname) => {
+        frmdata["slider_image"] = fname;
+        if (data.id > 0) {
+          return super.edit(frmdata, data.id);
+        } else {
+          return super.add(frmdata);
+        }
+      });
+    } else {
+      return super.edit(frmdata, data.id);
+    }
+  }
+
+  edit(data, files, user_id) {
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
+    frmdata["user_id"] = user_id;
+    const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
+    frmdata["slug"] = slugify(spath, {
+      remove: /[*#+~.()'"!:@]/g,
+      lower: true,
+    });
+    return this.uploadImage(data, _.get(files, "profile_image", false), "profile")
+      .then((fname) => {
+        frmdata["profile_image"] = fname;
+        return this.uploadImage(data, _.get(files, "award_image", false), "award");
+      })
+      .then((fname) => {
+        frmdata["award_image"] = fname;
+        return this.uploadImage(data, _.get(files, "base_image", false), "base");
+      })
+      .then((fname) => {
+        frmdata["base_image"] = fname;
+        if (data.id > 0) {
+          return super.edit(frmdata, data.id);
+        } else {
+          return super.add(frmdata);
+        }
+      });
   }
 }
 
@@ -1069,4 +1079,6 @@ module.exports = {
   TrainerBlog,
   TrainerRating,
   TrainerSocial,
+  TrainerSubscribe,
+  TrainerSlider,
 };

@@ -90,7 +90,7 @@ class BaseModel{
       return this.db.run('SELECT ' + _.get(params,'fields','*') + ' FROM ' + this.table + refine, ary);
     })
     .then(res => {
-      // console.log(res);
+      console.log(res);
       if (res) {
         ret['success'] = true;
         ret['data'] = res;
@@ -102,6 +102,7 @@ class BaseModel{
   }
 
   add(data){
+    console.log('entering there');
     let sql = 'INSERT INTO ' + this.table;
     sql += '(' + _.keys(data).join(',') + ') VALUES ( ';
     sql += (new Array(_.keys(data).length)).fill('?').join(',') + ')';

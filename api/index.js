@@ -34,10 +34,11 @@ const middlewares = [
 app.use(middlewares);
 
 app.use("/cart", require("./routes/cart")());
+app.use("/coupons", require("./routes/coupons")());
+app.use("/corporate", require("./routes/corporate")());
 app.use("/admin", require("./routes/admin")());
 app.use("/user", require("./routes/user")());
 app.use("/trainer", require("./routes/trainer")());
-app.use("/corporate", require("./routes/corporate")());
 app.use("/student", require("./routes/student")());
 app.use("/sociallink", require("./routes/sociallink")());
 app.use("/blog", require("./routes/blog")());
