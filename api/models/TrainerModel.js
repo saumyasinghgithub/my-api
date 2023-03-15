@@ -985,8 +985,13 @@ class TrainerSlider extends TrainerBase {
   table = "trainer_slider";
 
   processSlides(data, files, user_id) {
-    let sql = "DELETE FROM " + this.table + " WHERE user_id=" + user_id + " AND id NOT IN (" + _.compact(_.values(data.id)).join(",") + ")";
-    return this.db.run(sql).then(() => this.saveTheSlides(data, files, user_id));
+    let ids = _.compact(_.values(data.id));
+    if (ids.length > 0) {
+      let sql = "DELETE FROM " + this.table + " WHERE user_id=" + user_id + " AND id NOT IN (" + ids.join(",") + ")";
+      return this.db.run(sql).then(() => this.saveTheSlides(data, files, user_id));
+    } else {
+      return this.saveTheSlides(data, files, user_id);
+    }
   }
 
   saveTheSlides(data, files, user_id) {
