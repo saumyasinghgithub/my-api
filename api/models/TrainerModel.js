@@ -986,7 +986,7 @@ class TrainerSlider extends TrainerBase {
 
   processSlides(data, files, user_id) {
     let ids = _.compact(_.values(data.id));
-    if (ids.length > 0) {
+    if (_.isArray(ids) && ids.length > 0) {
       let sql = "DELETE FROM " + this.table + " WHERE user_id=" + user_id + " AND id NOT IN (" + ids.join(",") + ")";
       return this.db.run(sql).then(() => this.saveTheSlides(data, files, user_id));
     } else {
