@@ -5914,28 +5914,31 @@ ul.ulDesign li {
     margin: auto;
     padding-top: 60px;
     padding-bottom: 60px;
-    font-size: 28px;
-    color: #767676;
+    font-size: 14px;
+    font-family: 'Open Sans', Arial, sans-serif;
+    color: #4f5052;
 }
 
 .landingFloatVideo {
-    width: 800px;
+    width: 700px;
     max-width: 100%;
-    background: #D9D9D9;
-    padding: 50px;
-    border-radius: 100px;
-    margin: 0 auto;
+    /* background: #D9D9D9; */
+    /* padding: 50px;
+    border-radius: 100px; */
+    /* margin: 0 auto; */
 }
 
 .landingHeading {
-    font-size: 50px;
     position: relative;
-    margin-bottom: 60px;
+    font-size: 33px;
+    margin-bottom: 30px;
+    font-family: 'Segoe UI';
+    font-weight: bold;
 }
 
-.landingHeading span {
+/* .landingHeading span {
     color: #0855BC;
-}
+} */
 
 .landingHeading:after {
     content: '';
@@ -5944,7 +5947,7 @@ ul.ulDesign li {
     height: 4px;
     left: 0;
     bottom: -11px;
-    background: #0855BC;
+    background: #4f5052;
 }
 
 .objectText li {
@@ -5957,17 +5960,17 @@ ul.ulDesign li {
 }
 
 .joinNowBtn button {
-    border: 1px solid #0855BC;
-    font-size: 30px;
-    color: #0855BC;
-    padding: 10px 40px;
-    border-radius: 50px;
+    border: 1px solid #0f79aa;
+    font-size: 25px;
+    color: #0f79aa !important;
+    padding: 15px 30px;
+    border-radius: 12px;
     background-color: transparent;
 }
 
 .joinNowBtn a:hover {
     text-decoration: none;
-    color: #0855BC;
+    color: #0f79aa;
 }
 
 .blogImg img {
@@ -5985,9 +5988,8 @@ ul.ulDesign li {
 
 .landingBlogBox,
 .landingObjBox,
-.landingFloatVideo,
-.landingUpEventBox {
-    margin-top: 120px;
+.landingFloatVideo {
+    margin-top: 60px;
 }
 
 .blogText h3 {
@@ -6002,12 +6004,12 @@ ul.ulDesign li {
 
 .UpEventText h4 {
     font-size: 35px;
-    padding-bottom: 20px;
+    padding-bottom: 15px;
 }
 
 .UpEventText h4~div {
-    padding-bottom: 20px;
-    line-height: 45px;
+    padding-bottom: 22px;
+    line-height: 32px;
 }
 
 .UpEventText .joinNowBtn {
@@ -6016,13 +6018,13 @@ ul.ulDesign li {
 
 .blogText h3 {
     padding-bottom: 20px;
-    font-size: 26px;
+    font-size: 15px;
 }
 
 .blogboxLine:after {
     content: '';
     height: 80%;
-    border: 1px dashed #000000;
+    border: 1px dashed #969696;
     position: absolute;
     left: 2px;
     top: 40px;
@@ -6032,14 +6034,14 @@ ul.ulDesign li {
     position: relative;
 }
 
-.blogboxLine:before {
+/* .blogboxLine:before {
     content: '';
     height: 80%;
     border: 1px dashed #000000;
     position: absolute;
     left: -2px;
     top: 40px;
-}
+} */
 
 .blogboxLine:first-child:before,
 .blogboxLine:first-child:after {
@@ -6063,7 +6065,7 @@ ul.ulDesign li {
 }
 
 .blogInnerT {
-    font-size: 18px;
+    font-size: 14px;
     line-height: 1.8rem;
 }
 
@@ -6101,9 +6103,8 @@ ul.ulDesign li {
 
     .landingBlogBox,
     .landingObjBox,
-    .landingFloatVideo,
-    .landingUpEventBox {
-        margin-top: 80px;
+    .landingFloatVideo {
+        margin-top: 40px;
     }
 
     .landingSlider {
@@ -6192,4 +6193,18 @@ ul.ulDesign li {
     .joinNowBtn {
         text-align: center;
     }
+}
+
+.landinglist li {
+    list-style-type: disclosure-closed;
+}
+
+.landinglist li::marker {
+    color: #37528B;
+}
+
+.blogdesc {
+    height: 60px;
+    line-height: 20px;
+    overflow: hidden;
 }
