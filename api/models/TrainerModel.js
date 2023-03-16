@@ -122,7 +122,7 @@ class TrainerAward extends TrainerBase {
         iData.push({
           user_id: user_id,
           award: data.award[k],
-          organisation: data.award[k],
+          organisation: data.organisation[k],
           year: v,
           url: data.url[k],
         });
