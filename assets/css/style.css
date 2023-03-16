@@ -30,7 +30,7 @@ body {
     margin: 0px;
     font-family: 'segoe UI';
     font-size: 14px;
-    overflow-x:hidden;
+    overflow-x: hidden;
 }
 
 body.menuopen {
@@ -41,7 +41,8 @@ body.menuopen {
     padding: 0px 30px;
 }
 
-ul, li {
+ul,
+li {
     padding: 0;
     margin: 0px;
     list-style: none;
@@ -5103,7 +5104,7 @@ div.drum-wrapper figure {
 
 .my-course .rdt_TableCol:nth-child(3),
 .my-course .rdt_TableCell:nth-child(3) {
-   /* max-width: 90px !important;*/
+    /* max-width: 90px !important;*/
     min-width: 85px !important;
 }
 
@@ -5633,127 +5634,151 @@ button:not(:disabled) {
         display: none;
     }
 }
+
 .modalClass.modal-dialog {
-    max-width: 90%; 
+    max-width: 90%;
 }
-.editTrainerdetails a{
+
+.editTrainerdetails a {
     background-color: #0f79aa !important;
 }
 
 @media (max-width:767px) {
-.headingtext {
-    font-size: 40px !important;
-    line-height: 32px;
-    width: 100% !important;
+    .headingtext {
+        font-size: 40px !important;
+        line-height: 32px;
+        width: 100% !important;
+    }
 }
-}
-.traineraboutmodalheader{
+
+.traineraboutmodalheader {
     margin-bottom: 15px;
 }
-.landingSlider{
+
+/* .landingSlider {
     margin: auto;
 }
+
 .landingPageRow{
     background-color: #EDECEB;
 }
-.landingFloatVideo{
+.landingFloatVideo {
     float: left;
-    padding:4%;
+    padding: 4%;
 }
-.landingVideo{
-    background-color:white;
-}
-.landingAlign{
+
+.landingVideo {
+    background-color: white;
+} */
+
+.landingAlign {
     text-align: center;
     font-size: 40px;
-    font-family: questrial,sans-serif;
+    font-family: questrial, sans-serif;
     font-style: normal;
     letter-spacing: normal;
     font-weight: 400;
 }
-.LandingSubscribe{
-    background-color: #D6D6D2;;
-    color: rgb(17,63,135);
+
+.LandingSubscribe {
+    background-color: #D6D6D2;
+    ;
+    color: rgb(17, 63, 135);
     padding-left: 6%;
     padding-right: 6%;
     padding-top: 1.5%;
     min-height: 350px;
 }
-.landingpageInput{
-    
-}
-.landingSubBlock{
+
+.landingpageInput {}
+
+.landingSubBlock {
     background-color: white;
     padding-top: 5%;
     min-height: 280px;
 }
-.landingBlog{
+
+.landingBlog {
     margin: auto;
     background-color: white;
 }
-.moreBlogsLink{
+
+.moreBlogsLink {
     text-align: center;
     font-weight: 600;
 }
-.landingFloatText{
+
+.landingFloatText {
     float: left;
     padding: 4%;
 }
-.joinnowBtn{
+
+.joinnowBtn {
     border-radius: 5px;
     background: #113F87;
     color: white;
     padding: 12px;
 }
-.landingEvents{
+
+.landingEvents {
     background-image: url('../images/account_img.jpg');
 }
-.landingEventsHeading{
+
+.landingEventsHeading {
     margin: auto;
     background-color: white;
     text-decoration: underline;
-    color:#113F87;
+    color: #113F87;
     padding-top: 4%;
     padding-bottom: 3%;
 }
-.landingEventsDiv{
+
+.landingEventsDiv {
     text-align: center;
 }
-.landingEventsHeadingLft{
+
+.landingEventsHeadingLft {
     float: left;
 }
-.landingEventsHeadingRht{
+
+.landingEventsHeadingRht {
     float: left;
 }
-.landingEventsSection{
+
+.landingEventsSection {
     background-image: url('../images/landingpage/events.png');
     margin: auto;
     color: white;
     filter: grayscale(0.2);
 }
-.kickoffDate{
-    color:#F9FF0E;
+
+.kickoffDate {
+    color: #F9FF0E;
     text-align: center;
     font-weight: bold;
     padding-top: 4%;
     font-size: large;
 }
-.eventHeading{
+
+.eventHeading {
     text-align: center;
 }
-.eventTime{
+
+.eventTime {
     text-align: center;
 }
-.eventDescription{
+
+.eventDescription {
     text-align: center;
     font: normal normal normal 18px/1.4em proxima-n-w01-reg;
     line-height: 1.5 !important;
     margin-top: calc(0px + -0.25em);
     margin-bottom: calc(0px + -0.25em);
     margin-bottom: 25px;
-    font-family: Arial,Helvetica,sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
-.eventRegisBtn{
+
+.eventRegisBtn {
     background: #113F87;
     color: white;
     padding: 12px;
@@ -5768,7 +5793,8 @@ button:not(:disabled) {
     margin-left: 41%;
     text-decoration: none;
 }
-.eventRegisBtn:hover{
+
+.eventRegisBtn:hover {
     background: #113F87;
     color: white;
     text-decoration: none;
@@ -5783,24 +5809,30 @@ button:not(:disabled) {
     font: normal normal normal 18px/1.4em proxima-n-w01-reg;
     margin-left: 41%;
 }
-.eventRegisBtn a{
+
+.eventRegisBtn a {
     color: white;
 }
+
 .eventRegisBtn a:hover {
     text-decoration: none;
     color: white;
 }
-.socialLinksEvents{
+
+.socialLinksEvents {
     text-align: center;
 }
-.fontawesomeCustomClass{
+
+.fontawesomeCustomClass {
     padding: 23px;
     font-size: 21px;
 }
+
 .socialLinksEvents a {
     color: white;
 }
-.objectiveImg{
+
+.objectiveImg {
     background-image: url('./../images/landingpage/objective.png');
     width: 84px;
     height: 84px;
@@ -5808,19 +5840,22 @@ button:not(:disabled) {
     display: block;
     float: left;
 }
-.floatLeftSpan{
+
+.floatLeftSpan {
     float: left;
 }
-ul.ulDesign li{
+
+ul.ulDesign li {
     list-style: disc;
 }
-.objHeading{
+
+.objHeading {
     line-height: 3.2;
 }
-.sliderh4{
 
-}
-.slider1Div{
+.sliderh4 {}
+
+.slider1Div {
     position: relative;
     margin: 90px 0px 32px 0;
     left: 128px;
@@ -5830,34 +5865,331 @@ ul.ulDesign li{
     width: 657px;
     height: auto;
 }
-.carousel.slide.carousel-fade{
+
+/* .carousel.slide.carousel-fade {
     margin-top: 69px;
-}
-.objectiveLi{
+} */
+
+.objectiveLi {
     padding-top: 31%;
 }
-.jnNwBtnDiv{
+
+.jnNwBtnDiv {
     padding-top: 9%;
 }
-.jnNwBtnDiv a:hover{
+
+.jnNwBtnDiv a:hover {
     color: white;
     text-decoration: none;
 }
-.subsCol{
+
+.subsCol {
     margin: auto;
 }
-.formItems{
+
+.formItems {
     margin: auto;
 }
-.formBtn{
+
+.formBtn {
     text-align: center;
     margin: auto;
 }
-.btnSubmitSubs{
+
+.btnSubmitSubs {
     background-color: #113F87;
     padding-left: 32px;
     padding-right: 32px;
 }
+
 .coupon-table {
     width: 100%;
+}
+
+
+/* Landing Page */
+
+.landingSlider {
+    max-width: 100%;
+    margin: auto;
+    padding-top: 60px;
+    padding-bottom: 60px;
+    font-size: 28px;
+    color: #767676;
+}
+
+.landingFloatVideo {
+    width: 800px;
+    max-width: 100%;
+    background: #D9D9D9;
+    padding: 50px;
+    border-radius: 100px;
+    margin: 0 auto;
+}
+
+.landingHeading {
+    font-size: 50px;
+    position: relative;
+    margin-bottom: 60px;
+}
+
+.landingHeading span {
+    color: #0855BC;
+}
+
+.landingHeading:after {
+    content: '';
+    width: 100px;
+    position: absolute;
+    height: 4px;
+    left: 0;
+    bottom: -11px;
+    background: #0855BC;
+}
+
+.objectText li {
+    padding-bottom: 40px;
+    list-style-type: disc;
+}
+
+.objectText {
+    margin-top: 40px;
+}
+
+.joinNowBtn button {
+    border: 1px solid #0855BC;
+    font-size: 30px;
+    color: #0855BC;
+    padding: 10px 40px;
+    border-radius: 50px;
+    background-color: transparent;
+}
+
+.joinNowBtn a:hover {
+    text-decoration: none;
+    color: #0855BC;
+}
+
+.blogImg img {
+    width: 100%;
+}
+
+.blogText h3~div {
+    padding-bottom: 10px;
+}
+
+.blogText {
+    padding-top: 20px;
+    line-height: 38px
+}
+
+.landingBlogBox,
+.landingObjBox,
+.landingFloatVideo,
+.landingUpEventBox {
+    margin-top: 120px;
+}
+
+.blogText h3 {
+    padding-bottom: 20px;
+}
+
+.UpEventText h3 {
+    font-size: 40px;
+    padding-bottom: 20px;
+    color: #0855BC;
+}
+
+.UpEventText h4 {
+    font-size: 35px;
+    padding-bottom: 20px;
+}
+
+.UpEventText h4~div {
+    padding-bottom: 20px;
+    line-height: 45px;
+}
+
+.UpEventText .joinNowBtn {
+    padding-top: 40px;
+}
+
+.blogText h3 {
+    padding-bottom: 20px;
+    font-size: 26px;
+}
+
+.blogboxLine:after {
+    content: '';
+    height: 80%;
+    border: 1px dashed #000000;
+    position: absolute;
+    left: 2px;
+    top: 40px;
+}
+
+.blogboxLine {
+    position: relative;
+}
+
+.blogboxLine:before {
+    content: '';
+    height: 80%;
+    border: 1px dashed #000000;
+    position: absolute;
+    left: -2px;
+    top: 40px;
+}
+
+.blogboxLine:first-child:before,
+.blogboxLine:first-child:after {
+    display: none;
+}
+
+.gx-5 {
+    --bs-gutter-x: 5rem;
+}
+
+.landingSubsBox {
+    background: #d6d6d2;
+    text-align: center;
+}
+
+.SubsInputBox {
+    display: block;
+    justify-content: center;
+    padding-top: 30px;
+    gap: 20px;
+}
+
+.blogInnerT {
+    font-size: 18px;
+    line-height: 1.8rem;
+}
+
+.blogInnerT a {
+    color: #0855BC;
+    text-decoration: none;
+}
+
+.SubscribeBtn button {
+    background: #0855BC;
+    border: none;
+    color: #fff;
+    padding: 10px 25px;
+    border-radius: 20px;
+}
+
+.subText {
+    color: #000;
+    font-size: 35px;
+}
+
+.SubsInputBox input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #000;
+    background: #ffff;
+}
+
+.landingBlogBox .joinNowBtn {
+    text-align: center;
+    padding-top: 80px;
+}
+
+@media only screen and (max-width: 1450px) {
+
+    .landingBlogBox,
+    .landingObjBox,
+    .landingFloatVideo,
+    .landingUpEventBox {
+        margin-top: 80px;
+    }
+
+    .landingSlider {
+        padding-top: 80px;
+        padding-bottom: 80px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .landingSlider {
+        font-size: 20px;
+    }
+
+    .landingHeading {
+        font-size: 40px;
+    }
+
+    .UpEventText h3 {
+        font-size: 35px;
+    }
+
+    .UpEventText h4 {
+        font-size: 30px;
+    }
+
+    .UpEventText h4~div {
+        padding-bottom: 42px;
+        line-height: 40px;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .landingSlider {
+        font-size: 16px;
+    }
+
+    .landingHeading {
+        font-size: 32px;
+    }
+
+    .UpEventText h3 {
+        font-size: 28px;
+    }
+
+    .UpEventText h4 {
+        font-size: 24px;
+    }
+
+    .UpEventText h4~div {
+        padding-bottom: 30px;
+        line-height: 30px;
+    }
+
+    .blogboxLine:after,
+    .blogboxLine:before {
+        display: none;
+    }
+
+    .landingSlider {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    .blogText h3~div {
+        padding-bottom: 15px;
+        line-height: 30px;
+    }
+
+    .blogText {
+        padding-bottom: 40px;
+    }
+
+    .landingBlogBox .joinNowBtn {
+        padding-top: 0;
+    }
+
+    .UpEventText {
+        padding-top: 20px;
+    }
+
+    .joinNowBtn button {
+        font-size: 20px;
+        padding: 10px 25px;
+    }
+
+    .joinNowBtn {
+        text-align: center;
+    }
 }
