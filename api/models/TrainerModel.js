@@ -282,6 +282,23 @@ class TrainerCommunity extends TrainerBase {
   }
 }
 
+class TrainersBlog extends TrainerBase {
+  table = "trainer_blogs";
+
+  edit(data, files, user_id) {
+    let frmdata = _.pick(data, ["about_blog"]);
+    frmdata["user_id"] = user_id;
+    return this.uploadImage(data, _.get(files, "blog_image", false), "blog").then((fname) => {
+      frmdata["blog_image"] = fname;
+      if (parseInt(data.id) > 0) {
+        return super.edit(frmdata, data.id);
+      } else {
+        return super.add(frmdata);
+      }
+    });
+  }
+}
+
 class TrainerLibrary extends TrainerBase {
   table = "trainer_library";
 
@@ -1086,4 +1103,5 @@ module.exports = {
   TrainerSocial,
   TrainerSubscribe,
   TrainerSlider,
+  TrainersBlog
 };

@@ -1,0 +1,1 @@
+CREATE TABLE `trainer_blogs` (`id` INT(11) NOT NULL AUTO_INCREMENT , `user_id` INT(11) NOT NULL , `about_blog` TEXT NOT NULL , `blog_image` VARCHAR(100) NOT NULL , `created_at` DATETIME NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
