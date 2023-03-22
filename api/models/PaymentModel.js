@@ -158,8 +158,7 @@ class PaymentModel extends BaseModel {
                 align="center">
                 <tr>
                     <td colspan="0" style="font-size: 18px;">T V E R S E <br><br>
-                        <span style="font-size: 14px;"><a href="https://kstverse.com/"
-                                style="color: #bebebe; text-decoration: none;"> www.kstverse.com</a></span>
+                        
                     </td>
                 </tr>
             </table>
