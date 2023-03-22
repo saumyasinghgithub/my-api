@@ -149,66 +149,99 @@ class PaymentModel extends BaseModel {
 
   paymentEmail(data) {
     let dData = data.dump;
-    let html = `<table width="600px" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border:1px solid #d6dbdf;">
-    <tr><td>
-    <table width="100%" cellspacing="0" cellpadding="5" border="0" bgcolor="#ffffff" align="center">
+    let html = `<table width="650px" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center"
+    style="box-shadow: 2px 2px 10px 5px #D5D8DC; font-family: Arial, Helvetica, sans-serif;">
     <tr>
-    <td><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/logo/stores/1/AD-logo.png" title="AD logo" alt="AD logo" width="200" ></td>
-    <td></td>
+        <td>
+            <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                style="background-image: url('https://kstverse.com/header.png') !important; height:206px; color:#fff;background-size: cover;width: 100%;background-repeat: no-repeat;padding: 60px;"
+                align="center">
+                <tr>
+                    <td colspan="0" style="font-size: 18px;">T V E R S E <br><br>
+                        <span style="font-size: 14px;"><a href="https://kstverse.com/"
+                                style="color: #bebebe; text-decoration: none;"> www.kstverse.com</a></span>
+                    </td>
+                </tr>
+            </table>
+            <table width="650" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center">
+                <tr>
+                    <td colspan="2" align="center">
+                        <h1 style="color: #0f79aa;padding:40px 0px 30px 0px;text-transform: uppercase;font-size: 18px;">
+                            Thank you ${data.firstname} for your order!</h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0">
+                        <p
+                            style="padding:10px 0px 40px 0px;text-align: center;line-height: 1.3rem;font-size: 14px;color: #4f5052;">
+                            Autodidact makes the search for a trainer easier for students. So, by coming on this
+                            platform you will be able to maximize your reach to professional who need guidance and other
+                            skill enhancement programs. It also helps Companies find you. It makes it easier for them to
+                            look for professionals with expertise.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <h2 style="color:#0f79aa;padding:5px 0px;margin: 0;font-size: 16px;"><u>Transaction Details:</u>
+                        </h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:30px 0px;font-size: 14px;color: #4f5052;">
+                        <p><b>Transaction ID:</b> &nbsp;&nbsp;&nbsp;&nbsp; ${data.razorpayPaymentId}</p>
+                        <p style="padding:15px 0px"><b>Order Amount:</b> &nbsp;&nbsp;&nbsp;&nbsp; ${data.currency}
+                            ${data.amount/100}</p>
+                        <p><b>Order ID:</b>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            ${_.get(data, 'razorpayOrderId')}</p>
+                    </td>
+                </tr>
+            </table>
+            <table width="650" cellspacing="" cellpadding="5" border="0" bgcolor="#ffffff" align="left"
+                style="border-collapse: collapse; margin:30px 20px;">
+                <tr>
+                    <th align="left"
+                        style="background-color: #0f79aa; color:#fff; letter-spacing: 1px; padding: 18px; border-collapse: collapse;font-size: 16px;">
+                        Items Description</th>
+                    <th align="right"
+                        style="background-color: #0f79aa; color:#fff; letter-spacing: 1px; padding: 18px; border-collapse: collapse;font-size: 16px;">
+                        Price</th>
+                </tr>
+                <tr>
+                    <td align="left" style="border-collapse: collapse; padding: 18px;font-size: 14px;color: #4f5052;">
+                        <p>${_.get(data, 'description')}
+                        <p>
+                    </td>
+                    <td align="right" style="padding: 18px;border-collapse: collapse;font-size: 14px;color: #4f5052;">
+                        ${data.currency} ${data.amount/100}</td>
+                </tr>
+                <tr>
+                    <td align="left"
+                        style="border-collapse: collapse; padding: 18px; text-transform: uppercase;font-size: 14px;color: #4f5052;">
+                        <p><strong>Total</strong>
+                        <p>
+                    </td>
+                    <td align="right" style="padding: 18px;border-collapse: collapse;font-size: 14px;color: #4f5052;">
+                        <strong>${data.currency} ${data.amount/100}</strong></td>
+                </tr>
+            </table>
+            <table width="650" cellspacing="0" cellpadding="0" border="0"
+                style="background-image: url('https://kstverse.com/footer.png') !important; color:#fff;background-size: cover;margin: 0;background-repeat: no-repeat;width: 100%;height: 135px;"
+                align="center">
+                <tr>
+                    <td>
+                        <ul style="list-style: none;float: left;margin:0 10px;padding:0;">
+                            <li
+                                style="display: inline-block;padding: 20px ; font-size: 12px;margin-top: 15px;position: absolute;">
+                                Copyright © kstverse.com</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </td>
     </tr>
-    </table>
-    <table width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center">
-    <tr>
-    <td colspan="2"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/Help_for_trainers.jpg" alt="" width="100%" height="200"></td>
-    </tr>
-    </table>
-    <table width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center">
-    <tr>
-    <td colspan="2">
-    <p style="padding:30px 10px">Autodidact makes the search for a trainer easier for students. So, by coming on this platform you will be able to maximize your reach to professional who need guidance and other skill enhancement programs. It also helps Companies find you. It makes it easier for them to look for professionals with expertise.</p></td>
-    </tr>
-    <tr><td colspan="2" align="center"><h1>Hello ${data.firstname}, Thank you for your order!</h1></td></tr>
-    <tr><td colspan="2"><h2 style="color:#0f79aa;">Transaction Details:</h2></td></tr>
-    <tr><td colspan="2">
-    <p>Transaction ID: <b>${data.razorpayPaymentId}</b></p>
-    <p>Order Amount: <b>${data.currency} ${data.amount / 100}</b></p>
-    <p>Order ID: <b>${_.get(data, "razorpayOrderId")}</b></p>
-    </td></tr>
-    </table>
-    <table width="600" cellspacing="" cellpadding="5" border="0" bgcolor="#ffffff" align="center" style="border: 1px solid black;border-collapse: collapse; margin:30px 10px;">
-    <tr>
-    <th align="center" style="border: 1px solid black;border-collapse: collapse;">Items Description</th>
-    <th align="center" style="border: 1px solid black;border-collapse: collapse;">Price</th>
-    </tr>
-    <tr>
-    <td align="center" style="border: 1px solid black;border-collapse: collapse;">
-    <p>${_.get(data, "description")}<p>
-    </td>
-    <td align="center" style="border: 1px solid black;border-collapse: collapse;">${data.currency} ${data.amount / 100}</td>
-    </tr>
-    </table>
-    
-    <table width="600" cellspacing="0" cellpadding="0" border="0" style="background-color:#dc3016 !important; color:#fff;" align="center">
-    <tr>
-    <td><ul style="list-style: none;float: left;margin:0 10px;padding:0;">
-    <li style="display: inline-block;padding: 15px 5px ;">Copyright © 2022 AD</li>
-    <li style="display: inline-block;padding: 15px 5px;"><a href="http://demo.knowledgesynonyms.com/adnew/terms" style="color:#fff;">Terms</a></li>
-    <li style="display: inline-block;padding:15px 5px;"><a href="http://demo.knowledgesynonyms.com/adnew/privacy-policy" style="color:#fff;">Privacy Policy</a></li>
-    
-    </ul></td>
-    <td>
-    <ul style="list-style: none;float: right;margin:0 10px;padding:0;">
-    <li style="display: inline-block;padding: 15px 5px;"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/fb.png" alt=""></li>
-    <li style="display: inline-block;padding: 15px 5px;"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/in.png" alt=""></li>
-    <li style="display: inline-block;padding: 15px 5px;"><img src="http://demo.knowledgesynonyms.com/adnew/pub/media/twitter.png" alt=""></li>
-    </ul>
-    </td>
-    </tr>
-    </table>
-    
-    </td>
-    </tr>
-    </table>`;
+</table>`;
 
     return html;
   }
