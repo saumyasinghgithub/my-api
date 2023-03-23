@@ -442,7 +442,12 @@ module.exports = () => {
     routeWrapper(req, res, true, (token) => new TModel.TrainerSlider().list({ whereStr: `user_id=${token.data.id}` }));
   });
   router.get("/events", function (req, res, next) {
-    routeWrapper(req, res, true, (token) => new TModel.TrainerEvents().list({ whereStr: `user_id=${token.data.id}` }));
+    routeWrapper(req, res, true, (token) =>
+      new TModel.TrainerEvents().list({
+        fields: "*, (select count(id) FROM trainer_event_participants WHERE type='event' AND trainer_event_id=trainer_events.id) participants",
+        whereStr: `user_id=${token.data.id}`,
+      })
+    );
   });
   router.put("/events", function (req, res, next) {
     routeWrapper(req, res, true, (token) => new TModel.TrainerEvents().processEvents(req.body, req.files, token.data.id));
