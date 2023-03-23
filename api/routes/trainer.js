@@ -441,6 +441,12 @@ module.exports = () => {
   router.get("/sliders", function (req, res, next) {
     routeWrapper(req, res, true, (token) => new TModel.TrainerSlider().list({ whereStr: `user_id=${token.data.id}` }));
   });
+  router.get("/events", function (req, res, next) {
+    routeWrapper(req, res, true, (token) => new TModel.TrainerEvents().list({ whereStr: `user_id=${token.data.id}` }));
+  });
+  router.put("/imageevents", function (req, res, next) {
+    routeWrapper(req, res, true, (token) => new TModel.TrainerEvents().processEvents(req.body, req.files, token.data.id));
+  });
   router.delete("/delslider/:id", function (req, res, next) {
     routeWrapper(req, res, true, (token) => {
       return new TModel.TrainerSlider().delete(req.params.id);

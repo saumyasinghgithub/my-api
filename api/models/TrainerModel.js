@@ -1084,6 +1084,91 @@ class TrainerSlider extends TrainerBase {
   }
 }
 
+class TrainerEvents extends TrainerBase {
+  table = "trainer_events";
+
+  processEvents(data, files, user_id) {
+    let ids = _.compact(_.values(data.id));
+    if (_.isArray(ids) && ids.length > 0) {
+      let sql = "DELETE FROM " + this.table + " WHERE user_id=" + user_id + " AND id NOT IN (" + ids.join(",") + ")";
+      return this.db.run(sql).then(() => this.saveTheSlides(data, files, user_id));
+    } else {
+      return this.saveTheSlides(data, files, user_id);
+    }
+  }
+
+  saveTheSlides(data, files, user_id) {
+    let idx = -1,
+      keys = _.keys(data.id);
+    return new Promise((resolve, reject) => {
+      const saveSlide = () => {
+        idx++;
+        if (idx >= keys.length) {
+          resolve({ success: true, message: "Slides saved successfully!" });
+        } else {
+          this.slidersave(
+            {
+              user_id: user_id,
+              id: data.id[keys[idx]],
+              event_short_desc: data.event_short_desc[keys[idx]],
+              old_event_img: data.old_event_img[keys[idx]],
+            },
+            _.get(files, `event_img_${idx}`, false)
+          )
+            .then(saveSlide)
+            .catch(saveSlide);
+        }
+      };
+
+      saveSlide();
+    });
+  }
+
+  slidersave(data, image) {
+    let frmdata = _.pick(data, ["user_id", "event_short_desc"]);
+
+    if (image) {
+      return this.uploadImage(data, image, "event").then((fname) => {
+        frmdata["event_img"] = fname;
+        if (data.id > 0) {
+          return super.edit(frmdata, data.id);
+        } else {
+          return super.add(frmdata);
+        }
+      });
+    } else {
+      return super.edit(frmdata, data.id);
+    }
+  }
+
+  edit(data, files, user_id) {
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
+    frmdata["user_id"] = user_id;
+    const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
+    frmdata["slug"] = slugify(spath, {
+      remove: /[*#+~.()'"!:@]/g,
+      lower: true,
+    });
+    return this.uploadImage(data, _.get(files, "profile_image", false), "profile")
+      .then((fname) => {
+        frmdata["profile_image"] = fname;
+        return this.uploadImage(data, _.get(files, "award_image", false), "award");
+      })
+      .then((fname) => {
+        frmdata["award_image"] = fname;
+        return this.uploadImage(data, _.get(files, "base_image", false), "base");
+      })
+      .then((fname) => {
+        frmdata["base_image"] = fname;
+        if (data.id > 0) {
+          return super.edit(frmdata, data.id);
+        } else {
+          return super.add(frmdata);
+        }
+      });
+  }
+}
+
 module.exports = {
   TrainerAward,
   TrainerCalib,
@@ -1103,5 +1188,6 @@ module.exports = {
   TrainerSocial,
   TrainerSubscribe,
   TrainerSlider,
-  TrainersBlog
+  TrainersBlog,
+  TrainerEvents
 };
