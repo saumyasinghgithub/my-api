@@ -452,14 +452,16 @@ module.exports = () => {
       return new TModel.TrainerSlider().delete(req.params.id);
     });
   });
-  router.get('/event-participant', function (req, res, next) {
+  router.get("/event-participant", function (req, res, next) {
     routeWrapper(req, res, true, (token) => {
       return new TModel.TrainerEvents().list(req.params.id);
     });
   });
-  router.post('/addevent-participant', function (req, res, next) {
+  router.post("/event-participant", function (req, res, next) {
     routeWrapper(req, res, true, (token) => {
-      return new TModel.TrainerEventParticipants().add(req.params.id);
+      let data = _.pick(req.body, ["name", "email", "type"]);
+      data["trainer_event_id"] = data.type === "event" ? req.body.trainer_event_id : 0;
+      return new TModel.TrainerEventParticipants().add(data);
     });
   });
   return router;
