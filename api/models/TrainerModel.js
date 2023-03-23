@@ -634,7 +634,17 @@ class TrainerSearch extends TrainerBase {
       })
       .then((slides) => {
         tData.slides = slides.data;
-        return tData;
+        //return tData;
+        let whereParamsEvents = { where: { featured: '1' } };
+        return new TrainerEvents().list({
+          ...whereParamsEvents,
+          sortBy: "updated_at",
+          sortDir: "DESC",
+        })
+        .then((events) => {
+          tData.events = events.data;
+          return tData;
+        })
       });
   }
 
@@ -1170,6 +1180,20 @@ class TrainerEvents extends TrainerBase {
   }
 }
 
+class TrainerEventParticipants extends TrainerBase {
+  table = "trainer_event_participants";
+  add(data) {
+    console.log(data);
+    data.trainer_event_id = data.trainer_event_id;
+    data.name = data.name;
+    data.email = data.email;
+    data.type = data.type;
+    return super.add(data).then((res) => {
+      return res;
+    });
+  }
+}
+
 module.exports = {
   TrainerAward,
   TrainerCalib,
@@ -1191,4 +1215,5 @@ module.exports = {
   TrainerSlider,
   TrainersBlog,
   TrainerEvents,
+  TrainerEventParticipants
 };

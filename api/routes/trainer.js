@@ -452,5 +452,15 @@ module.exports = () => {
       return new TModel.TrainerSlider().delete(req.params.id);
     });
   });
+  router.get('/event-participant', function (req, res, next) {
+    routeWrapper(req, res, true, (token) => {
+      return new TModel.TrainerEvents().list(req.params.id);
+    });
+  });
+  router.post('/addevent-participant', function (req, res, next) {
+    routeWrapper(req, res, true, (token) => {
+      return new TModel.TrainerEventParticipants().add(req.params.id);
+    });
+  });
   return router;
 };
