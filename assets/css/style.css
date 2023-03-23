@@ -1582,11 +1582,18 @@ footer.footer.footerFixed {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 999;
+    font-family: 'segoe UI';
+}
+
+.subsmessage {
+    color: green;
 }
 
 
-
-
+.align-center {
+    align-items: center;
+}
 
 
 
@@ -3058,10 +3065,18 @@ button.navbar-toggler h4 {
     transform: scale(1);
 }
 
-.footerFixed {
+/* .footerFixed {
     position: fixed;
     bottom: 0px;
     width: 100%;
+} */
+.Footermail {
+    font-weight: 600;
+    font-family: 'segoe UI';
+}
+
+.Footermail a {
+    color: #7a7a7a;
 }
 
 
@@ -4438,13 +4453,18 @@ div.drum-wrapper .inner {
 }
 
 footer.footer.footerFixed {
-    color: #fff;
-    background: black;
-    z-index: 9;
+    color: #7a7a7a;
+    background: #f1f1f1;
+    z-index: 999;
 }
 
 footer.footer ul li a {
-    color: #ffffff !important;
+    color: #7a7a7a !important;
+}
+
+.footerdesign {
+    padding-top: 100px;
+    padding-bottom: 100px;
 }
 
 .trainersignup {
@@ -5614,6 +5634,7 @@ min-width:150px;
     .nav-link {
         display: block;
         padding: 0.1rem 1rem;
+        font-size: 14px;
     }
 }
 
@@ -5946,7 +5967,7 @@ button:not(:disabled) {
 }
 
 ul.ulDesign li {
-    list-style: disc;
+    list-style: none;
 }
 
 .objHeading {
@@ -6013,11 +6034,11 @@ ul.ulDesign li {
     max-width: 100%;
     width: 100%;
     margin: auto;
-    padding-top: 60px;
+    padding-top: 100px;
     padding-bottom: 60px;
     font-size: 16px;
     font-family: 'segoe UI';
-    color: #4f5052;
+    color: #7a7a7a;
 }
 
 .landingFloatVideo {
@@ -6032,16 +6053,22 @@ ul.ulDesign li {
 .landingHeading {
     position: relative;
     font-size: 32px;
-    margin-bottom: 30px;
+    /* margin-bottom: 30px; */
     font-family: 'Segoe UI';
     font-weight: bold;
+}
+
+.landingHeading.OurCourse {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /* .landingHeading span {
     color: #0855BC;
 } */
 
-.landingHeading:after {
+/* .landingHeading:after {
     content: '';
     width: 100px;
     position: absolute;
@@ -6049,7 +6076,7 @@ ul.ulDesign li {
     left: 0;
     bottom: -11px;
     background: #4f5052;
-}
+} */
 
 .landingsubHeading {
     position: relative;
@@ -6094,6 +6121,68 @@ ul.ulDesign li {
     color: #0f79aa;
 }
 
+.HomeExploreCourse button {
+    border: 1px solid #ffffff;
+    font-size: 18px;
+    color: #0f79aa !important;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 12px;
+    background-color: transparent;
+}
+
+.HomeExploreCourse button a {
+    color: #0f79aa !important;
+}
+
+.HomeExploreCourse a:hover {
+    text-decoration: none;
+    color: #0f79aa;
+}
+
+.HomeExploreCourse a:active,
+.HomeExploreCourse a:focus {
+    color: #0f79aa;
+}
+
+.HomeRegister button {
+    border: 0;
+    font-size: 18px;
+    color: #0f79aa !important;
+    padding: 0px !important;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-align: center;
+    /* border-radius: 12px; */
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid #a3a3a3;
+    background-color: transparent;
+}
+
+.HomeRegister button a {
+    color: #0f79aa !important;
+}
+
+.SubmitHomeSubscribe button:hover,
+.SubmitHomeSubscribe button:active {
+    background-color: transparent !important;
+    border-bottom: 1px solid #a3a3a3 !important;
+    border: 0;
+}
+
+.HomeRegister a:hover {
+    text-decoration: none;
+    color: #0f79aa;
+}
+
+.HomeRegister a:active,
+.HomeRegister a:focus {
+    color: #0f79aa;
+}
+
+
 .blogImg img {
     /* width: 100%; */
     width: 289px;
@@ -6121,13 +6210,13 @@ ul.ulDesign li {
 
 .UpEventText h3 {
     font-size: 30px;
-    padding-bottom: 20px;
+    padding-bottom: 30px;
     color: #0855BC;
 }
 
 .UpEventText h4 {
     font-size: 25px;
-    padding-bottom: 15px;
+    padding-bottom: 35px;
 }
 
 .UpEventText h4~div {
@@ -6184,6 +6273,7 @@ ul.ulDesign li {
     display: block;
     justify-content: center;
     padding-top: 30px;
+    padding-bottom: 40px;
     gap: 20px;
 }
 
@@ -6213,13 +6303,28 @@ ul.ulDesign li {
 .SubsInputBox input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #000;
+    border: 1px solid #7a7a7a;
     background: #ffff;
 }
 
 .landingBlogBox .joinNowBtn {
     text-align: center;
     padding-top: 80px;
+}
+
+.carousel-indicators {
+    bottom: -8%;
+}
+
+.carousel-inner {
+    overflow: visible;
+}
+
+.carousel-indicators li {
+    background-color: #0f79aa;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
 @media only screen and (max-width: 1450px) {
@@ -6231,7 +6336,7 @@ ul.ulDesign li {
     }
 
     .landingSlider {
-        padding-top: 80px;
+        padding-top: 115px;
         padding-bottom: 80px;
     }
 }
@@ -6287,7 +6392,7 @@ ul.ulDesign li {
     }
 
     .landingSlider {
-        padding-top: 69px;
+        padding-top: 90px;
         padding-bottom: 40px;
     }
 
@@ -6335,9 +6440,139 @@ ul.ulDesign li {
     line-height: 20px;
     overflow: hidden;
 }
-.LoginPage{
+
+.LoginPage {
     max-width: inherit;
 }
+
 .loginWraps {
     padding: inherit;
+}
+
+.SiteLoader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transform: -webkit-translate(-50%, -50%);
+    transform: -moz-translate(-50%, -50%);
+    transform: -ms-translate(-50%, -50%);
+    z-index: 999;
+}
+
+#navbarTogglerDemo01 .nav-item {
+    position: relative;
+
+}
+
+#navbarTogglerDemo01 .nav-item:after {
+    content: "";
+    display: block;
+    width: 2px;
+    align-items: center;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    right: 0;
+    top: 21px;
+    position: absolute;
+}
+
+#navbarTogglerDemo01 .nav-item:last-child:after {
+    display: none;
+}
+
+.homecourses {
+    border: 3px solid #CAD0F1;
+    background-color: white;
+}
+
+.homecoursedescription {
+    height: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.HomeCourseTitle {
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 36px;
+    min-height: 150px;
+}
+
+.HomeMainCourses {
+    background-color: #E7EBFF;
+}
+
+.HomeTraining {
+    background-image: url(../images/training2.jpg);
+    background-repeat: no-repeat;
+    width: 100%;
+    background-size: cover;
+}
+
+.homeobjective {
+    font-size: 18px;
+}
+
+.HomeJoinNow button {
+    border: 0;
+    border-bottom: 1px solid #a3a3a3;
+}
+
+.MainOurCourses {
+    padding-left: 30px;
+}
+
+.footerline {
+    position: relative;
+
+}
+
+.footerline:after {
+    content: "";
+    display: block;
+    width: 2px;
+    align-items: center;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    right: 0;
+    top: 10px;
+    position: absolute;
+}
+
+.footerline:last-child:after {
+    display: none;
+}
+
+@media only screen and (max-width: 1024px) {
+    .homecoursedescription {
+        height: 110px;
+    }
+}
+
+@media (max-width:768px) {
+    #navbarTogglerDemo01 .nav-item:after {
+        top: 16px !important;
+    }
+
+    .MainOurCourses {
+        padding-left: 0px;
+        padding-top: 30px;
+    }
+
+    .UpEventText {
+        padding-top: 30px;
+    }
+}
+
+@media (max-width:767px) {
+    #navbarTogglerDemo01 .nav-item:after {
+        display: none;
+    }
+
+    .homecoursedescription {
+        height: 90px;
+    }
 }
