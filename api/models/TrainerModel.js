@@ -1091,41 +1091,42 @@ class TrainerEvents extends TrainerBase {
     let ids = _.compact(_.values(data.id));
     if (_.isArray(ids) && ids.length > 0) {
       let sql = "DELETE FROM " + this.table + " WHERE user_id=" + user_id + " AND id NOT IN (" + ids.join(",") + ")";
-      return this.db.run(sql).then(() => this.saveTheSlides(data, files, user_id));
+      return this.db.run(sql).then(() => this.saveTheEvents(data, files, user_id));
     } else {
-      return this.saveTheSlides(data, files, user_id);
+      return this.saveTheEvents(data, files, user_id);
     }
   }
 
-  saveTheSlides(data, files, user_id) {
+  saveTheEvents(data, files, user_id) {
     let idx = -1,
       keys = _.keys(data.id);
     return new Promise((resolve, reject) => {
-      const saveSlide = () => {
+      const saveEvent = () => {
         idx++;
         if (idx >= keys.length) {
-          resolve({ success: true, message: "Slides saved successfully!" });
+          resolve({ success: true, message: "Events saved successfully!" });
         } else {
-          this.slidersave(
+          this.eventsave(
             {
               user_id: user_id,
               id: data.id[keys[idx]],
               event_short_desc: data.event_short_desc[keys[idx]],
               old_event_img: data.old_event_img[keys[idx]],
+              featured: keys[idx] === data.featured ? 1 : 0,
             },
             _.get(files, `event_img_${idx}`, false)
           )
-            .then(saveSlide)
-            .catch(saveSlide);
+            .then(saveEvent)
+            .catch(saveEvent);
         }
       };
 
-      saveSlide();
+      saveEvent();
     });
   }
 
-  slidersave(data, image) {
-    let frmdata = _.pick(data, ["user_id", "event_short_desc"]);
+  eventsave(data, image) {
+    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured"]);
 
     if (image) {
       return this.uploadImage(data, image, "event").then((fname) => {
@@ -1189,5 +1190,5 @@ module.exports = {
   TrainerSubscribe,
   TrainerSlider,
   TrainersBlog,
-  TrainerEvents
+  TrainerEvents,
 };
