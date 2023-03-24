@@ -323,6 +323,15 @@ module.exports = () => {
     });
   });
 
+  router.get("/about/:slug", function (req, res) {
+    routeWrapper(req, res, false, () => {
+      return new TModel.TrainerAbout()
+        .bySlug(req.params.slug)
+        .then((tData) => ({ ...tData, success: true }))
+        .catch((e) => ({ success: false, message: e.message }));
+    });
+  });
+
   router.get("/profile/:slug", function (req, res) {
     routeWrapper(req, res, false, () => {
       return new TModel.TrainerSearch()
