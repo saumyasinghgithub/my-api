@@ -301,7 +301,7 @@ button.owl-next {
 footer.footer ul {
     list-style: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 14px;
     height: auto;
 }
 
@@ -4639,12 +4639,14 @@ div.drum-wrapper figure {
 
 .contact .field input,
 .contact .field textarea {
-    padding: 3% 2%;
+    padding: 3% 3%;
     border-radius: 5px;
 }
 
 .contact .field textarea {
     height: 119px;
+    border-radius: 2px !important;
+    border: 2px solid #ababab !important;
 }
 
 .contact input[type="text"],
@@ -6546,6 +6548,97 @@ ul.ulDesign li {
     display: none;
 }
 
+.JoinNowModal .modal-header,
+.JoinNowModal .modal-footer {
+    border: 0;
+    padding-top: 3rem;
+}
+
+.JoinNowModal .modal-footer {
+    padding-bottom: 3rem;
+}
+
+.JoinNowModal .modal-body {
+    padding: 0rem 5rem 5rem;
+}
+
+.JoinNowModal .btn-primary {
+    display: block !important;
+}
+
+.JoinButtonModal button:hover {
+    background: transparent;
+}
+
+.JoinNowModal .form-control {
+    border: 1px solid #7a7a7a;
+}
+
+.Contactus {
+    font-size: 32px;
+
+}
+
+.contactPage,
+.ContactForm {
+    font-family: 'segoe UI';
+}
+
+.ContactForm input {
+    height: 45px !important;
+    border-radius: 2px !important;
+    border: 2px solid #ababab !important;
+}
+
+
+.Contactemail a {
+    color: #4f5052;
+}
+
+.ContactDetails {
+    padding-left: 25px;
+}
+
+.ContactSubscribe {
+    margin-bottom: 0px !important;
+}
+
+.ContactDetails .SubsInputBox {
+    padding-top: 30px;
+
+}
+
+.ContactDetails .SubsInputBox .contactSubs {
+    width: 100%;
+    display: contents;
+}
+
+.ContactDetails .SubsInputBox .contactSubs .HomeRegister {
+    width: 100%;
+}
+
+.ContactDetails .SubsInputBox .contactSubs .HomeRegister button {
+    text-align: end;
+    width: 100%;
+    margin-top: 15px;
+}
+
+/* .BlogEvents {
+    border: 1px solid #7a7a7a;
+} */
+
+.BlogEventImg {
+    padding-left: 25px;
+}
+
+.BlogPaddingright {
+    padding-right: 25px;
+}
+
+/* .blogborder {
+    border-right: 2px solid #7a7a7a;
+} */
+
 @media only screen and (max-width: 1024px) {
     .homecoursedescription {
         height: 110px;
@@ -6564,6 +6657,18 @@ ul.ulDesign li {
 
     .UpEventText {
         padding-top: 30px;
+    }
+
+    .blogborder {
+        border-right: 0px;
+    }
+
+    .BlogEventImg {
+        padding-left: 0px;
+    }
+
+    .BlogPaddingright {
+        padding-right: 0px;
     }
 }
 
