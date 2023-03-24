@@ -192,13 +192,15 @@ class TrainerAbout extends TrainerBase {
   table = "trainer_about";
 
   edit(data, files, user_id) {
-    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings", "phone", "email", "company"]);
     frmdata["user_id"] = user_id;
     const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
-    frmdata["slug"] = slugify(spath, {
-      remove: /[*#+~.()'"!:@]/g,
-      lower: true,
-    });
+    if (_.isEmpty(frmdata["slug"])) {
+      frmdata["slug"] = slugify(spath, {
+        remove: /[*#+~.()'"!:@]/g,
+        lower: true,
+      });
+    }
     return this.uploadImage(data, _.get(files, "profile_image", false), "profile")
       .then((fname) => {
         frmdata["profile_image"] = fname;
@@ -210,6 +212,10 @@ class TrainerAbout extends TrainerBase {
       })
       .then((fname) => {
         frmdata["base_image"] = fname;
+        return this.uploadImage(data, _.get(files, "logo_image", false), "logo");
+      })
+      .then((fname) => {
+        frmdata["logo_image"] = fname;
         if (data.id > 0) {
           return super.edit(frmdata, data.id);
         } else {
@@ -600,6 +606,15 @@ class TrainerSearch extends TrainerBase {
       })
       .then((courses) => {
         tData.courses = courses;
+        let whereParamsEvents = { where: { ...whereParams.where, featured: "1" } };
+        return new TrainerEvents().list({
+          ...whereParamsEvents,
+          sortBy: "updated_at",
+          sortDir: "DESC",
+        });
+      })
+      .then(({ data }) => {
+        tData.events = data;
         return tData;
       });
   }
@@ -634,7 +649,18 @@ class TrainerSearch extends TrainerBase {
       })
       .then((slides) => {
         tData.slides = slides.data;
-        return tData;
+        //return tData;
+        let whereParamsEvents = { where: { ...whereParams.where, featured: "1" } };
+        return new TrainerEvents()
+          .list({
+            ...whereParamsEvents,
+            sortBy: "updated_at",
+            sortDir: "DESC",
+          })
+          .then((events) => {
+            tData.events = events.data;
+            return tData;
+          });
       });
   }
 
@@ -1084,6 +1110,99 @@ class TrainerSlider extends TrainerBase {
   }
 }
 
+class TrainerEvents extends TrainerBase {
+  table = "trainer_events";
+
+  processEvents(data, files, user_id) {
+    let ids = _.compact(_.values(data.id));
+    if (_.isArray(ids) && ids.length > 0) {
+      let sql = "DELETE FROM " + this.table + " WHERE user_id=" + user_id + " AND id NOT IN (" + ids.join(",") + ")";
+      return this.db.run(sql).then(() => this.saveTheEvents(data, files, user_id));
+    } else {
+      return this.saveTheEvents(data, files, user_id);
+    }
+  }
+
+  saveTheEvents(data, files, user_id) {
+    let idx = -1,
+      keys = _.keys(data.id);
+    return new Promise((resolve, reject) => {
+      const saveEvent = () => {
+        idx++;
+        if (idx >= keys.length) {
+          resolve({ success: true, message: "Events saved successfully!" });
+        } else {
+          this.eventsave(
+            {
+              user_id: user_id,
+              id: data.id[keys[idx]],
+              heading: data.heading[keys[idx]],
+              sub_heading: data.sub_heading[keys[idx]],
+              event_on: data.event_on[keys[idx]],
+              event_short_desc: data.event_short_desc[keys[idx]],
+              old_event_img: data.old_event_img[keys[idx]],
+              featured: keys[idx] === data.featured ? 1 : 0,
+            },
+            _.get(files, `event_img_${idx}`, false)
+          )
+            .then(saveEvent)
+            .catch(saveEvent);
+        }
+      };
+
+      saveEvent();
+    });
+  }
+
+  eventsave(data, image) {
+    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured", "heading", "sub_heading", "event_on"]);
+
+    if (image) {
+      return this.uploadImage(data, image, "event").then((fname) => {
+        frmdata["event_img"] = fname;
+        if (data.id > 0) {
+          return super.edit(frmdata, data.id);
+        } else {
+          return super.add(frmdata);
+        }
+      });
+    } else {
+      return super.edit(frmdata, data.id);
+    }
+  }
+
+  edit(data, files, user_id) {
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
+    frmdata["user_id"] = user_id;
+    const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
+    frmdata["slug"] = slugify(spath, {
+      remove: /[*#+~.()'"!:@]/g,
+      lower: true,
+    });
+    return this.uploadImage(data, _.get(files, "profile_image", false), "profile")
+      .then((fname) => {
+        frmdata["profile_image"] = fname;
+        return this.uploadImage(data, _.get(files, "award_image", false), "award");
+      })
+      .then((fname) => {
+        frmdata["award_image"] = fname;
+        return this.uploadImage(data, _.get(files, "base_image", false), "base");
+      })
+      .then((fname) => {
+        frmdata["base_image"] = fname;
+        if (data.id > 0) {
+          return super.edit(frmdata, data.id);
+        } else {
+          return super.add(frmdata);
+        }
+      });
+  }
+}
+
+class TrainerEventParticipants extends TrainerBase {
+  table = "trainer_event_participants";
+}
+
 module.exports = {
   TrainerAward,
   TrainerCalib,
@@ -1103,5 +1222,7 @@ module.exports = {
   TrainerSocial,
   TrainerSubscribe,
   TrainerSlider,
-  TrainersBlog
+  TrainersBlog,
+  TrainerEvents,
+  TrainerEventParticipants,
 };

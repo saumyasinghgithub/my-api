@@ -323,6 +323,15 @@ module.exports = () => {
     });
   });
 
+  router.get("/about/:slug", function (req, res) {
+    routeWrapper(req, res, false, () => {
+      return new TModel.TrainerAbout()
+        .bySlug(req.params.slug)
+        .then((tData) => ({ ...tData, success: true }))
+        .catch((e) => ({ success: false, message: e.message }));
+    });
+  });
+
   router.get("/profile/:slug", function (req, res) {
     routeWrapper(req, res, false, () => {
       return new TModel.TrainerSearch()
@@ -441,9 +450,32 @@ module.exports = () => {
   router.get("/sliders", function (req, res, next) {
     routeWrapper(req, res, true, (token) => new TModel.TrainerSlider().list({ whereStr: `user_id=${token.data.id}` }));
   });
+  router.get("/events", function (req, res, next) {
+    routeWrapper(req, res, true, (token) =>
+      new TModel.TrainerEvents().list({
+        fields: "*, (select count(id) FROM trainer_event_participants WHERE type='event' AND trainer_event_id=trainer_events.id) participants",
+        whereStr: `user_id=${token.data.id}`,
+      })
+    );
+  });
+  router.put("/events", function (req, res, next) {
+    routeWrapper(req, res, true, (token) => new TModel.TrainerEvents().processEvents(req.body, req.files, token.data.id));
+  });
   router.delete("/delslider/:id", function (req, res, next) {
     routeWrapper(req, res, true, (token) => {
       return new TModel.TrainerSlider().delete(req.params.id);
+    });
+  });
+  router.get("/event-participant", function (req, res, next) {
+    routeWrapper(req, res, true, (token) => {
+      return new TModel.TrainerEvents().list(req.params.id);
+    });
+  });
+  router.post("/event-participant", function (req, res, next) {
+    routeWrapper(req, res, true, (token) => {
+      let data = _.pick(req.body, ["name", "email", "type"]);
+      data["trainer_event_id"] = data.type === "event" ? req.body.trainer_event_id : 0;
+      return new TModel.TrainerEventParticipants().add(data);
     });
   });
   return router;
