@@ -195,10 +195,12 @@ class TrainerAbout extends TrainerBase {
     let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
     frmdata["user_id"] = user_id;
     const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
-    frmdata["slug"] = slugify(spath, {
-      remove: /[*#+~.()'"!:@]/g,
-      lower: true,
-    });
+    if (_.isEmpty(frmdata["slug"])) {
+      frmdata["slug"] = slugify(spath, {
+        remove: /[*#+~.()'"!:@]/g,
+        lower: true,
+      });
+    }
     return this.uploadImage(data, _.get(files, "profile_image", false), "profile")
       .then((fname) => {
         frmdata["profile_image"] = fname;
@@ -600,6 +602,15 @@ class TrainerSearch extends TrainerBase {
       })
       .then((courses) => {
         tData.courses = courses;
+        let whereParamsEvents = { where: { ...whereParams.where, featured: "1" } };
+        return new TrainerEvents().list({
+          ...whereParamsEvents,
+          sortBy: "updated_at",
+          sortDir: "DESC",
+        });
+      })
+      .then(({ data }) => {
+        tData.events = data;
         return tData;
       });
   }
@@ -635,7 +646,7 @@ class TrainerSearch extends TrainerBase {
       .then((slides) => {
         tData.slides = slides.data;
         //return tData;
-        let whereParamsEvents = { where: { featured: "1" } };
+        let whereParamsEvents = { where: { ...whereParams.where, featured: "1" } };
         return new TrainerEvents()
           .list({
             ...whereParamsEvents,
@@ -1121,6 +1132,9 @@ class TrainerEvents extends TrainerBase {
             {
               user_id: user_id,
               id: data.id[keys[idx]],
+              heading: data.heading[keys[idx]],
+              sub_heading: data.sub_heading[keys[idx]],
+              event_on: data.event_on[keys[idx]],
               event_short_desc: data.event_short_desc[keys[idx]],
               old_event_img: data.old_event_img[keys[idx]],
               featured: keys[idx] === data.featured ? 1 : 0,
@@ -1137,7 +1151,7 @@ class TrainerEvents extends TrainerBase {
   }
 
   eventsave(data, image) {
-    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured"]);
+    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured", "heading", "sub_heading", "event_on"]);
 
     if (image) {
       return this.uploadImage(data, image, "event").then((fname) => {
