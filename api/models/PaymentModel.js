@@ -173,7 +173,7 @@ class PaymentModel extends BaseModel {
                     <td colspan="0">
                         <p
                             style="padding:10px 0px 40px 0px;text-align: center;line-height: 1.3rem;font-size: 14px;color: #4f5052;">
-                            Autodidact makes the search for a trainer easier for students. So, by coming on this
+                            TVerse makes the search for a trainer easier for students. So, by coming on this
                             platform you will be able to maximize your reach to professional who need guidance and other
                             skill enhancement programs. It also helps Companies find you. It makes it easier for them to
                             look for professionals with expertise.</p>
