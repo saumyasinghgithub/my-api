@@ -130,6 +130,7 @@ class CourseRating extends BaseModel{
   getRatingByCourses(cids){
     let ratings = {};
     cids.forEach(id => ratings[id]={rating:0, ratings: 0});
+    if(cids.length === 0) cids[0] = -1 ;
     return new Promise((resolve,reject)=>{
       this.db.run('SELECT course_id,AVG(rating) as rating,COUNT(id) as ratings FROM  ' + this.table + ' WHERE course_id IN ('+cids.join(',')+') GROUP BY course_id')
       .then(res => {

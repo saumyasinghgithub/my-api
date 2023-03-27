@@ -6566,6 +6566,10 @@ ul.ulDesign li {
     display: block !important;
 }
 
+.JoinNowModal .btn-primary:active {
+    background: transparent !important;
+}
+
 .JoinButtonModal button:hover {
     background: transparent;
 }
@@ -6651,6 +6655,11 @@ ul.ulDesign li {
 
 .PaymentSuccess {
     font-family: 'segoe UI';
+}
+
+.nav-item a {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 600;
 }
 
 @media only screen and (max-width: 1024px) {
