@@ -1921,6 +1921,7 @@ ul.profile-socail-icon {
 
 ul.profile-socail-icon li {
     display: inline-block;
+    padding: 0px 3px;
 }
 
 ul.profile-socail-icon li img {
@@ -6660,6 +6661,10 @@ ul.ulDesign li {
 .nav-item a {
     color: rgba(0, 0, 0, 0.5);
     font-weight: 600;
+}
+
+.ViewCourseImg {
+    background-position: top;
 }
 
 @media only screen and (max-width: 1024px) {
