@@ -329,20 +329,21 @@ class TrainerCourse extends TrainerBase {
     let frmdata = _.pick(data, [
       "user_id",
       "name",
-      "sku",
+      //"sku",
       "short_description",
       "description",
       "learn_brief",
       "requirements",
-      "stock_qnty",
+      //"stock_qnty",
       "course_image",
       "level",
       "language",
       "duration",
-      "lectures",
+      //"lectures",
     ]);
     frmdata["user_id"] = user_id;
     frmdata["slug"] = slugify(frmdata.name, { remove: /[*#+~.()'"!:@]/g }, { lower: true });
+    frmdata["sku"] = slugify(frmdata.name, { remove: /[*#+~.()'"!:@]/g }, { lower: true }).substring(0,200);
     return this.uploadImage(data, _.get(files, "course_image", false), "courses").then((fname) => {
       frmdata["course_image"] = fname;
       if (parseInt(data.id) > 0) {
