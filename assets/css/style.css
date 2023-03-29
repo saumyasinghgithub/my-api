@@ -5246,6 +5246,12 @@ div.drum-wrapper figure {
     min-width: 103px !important;
 }
 
+.my-course .rdt_TableCol:nth-child(9),
+.my-course .rdt_TableCell:nth-child(9) {
+    max-width: 150px !important;
+    min-width: 160px !important;
+}
+
 .my-course .bg-primary {
     margin-right: 5px;
     color: white;
@@ -5324,6 +5330,14 @@ min-width:150px;
     padding: 10px 16px;
 
 }*/
+
+/* .my-course .rdt_TableCol:nth-child(3),
+.my-course .rdt_TableCell:nth-child(3) {
+    max-width: 310px;
+    min-width: 300px;
+    padding: 10px 16px;
+
+} */
 
 .dtqzBx div:first-child {
     white-space: break-spaces !important;
