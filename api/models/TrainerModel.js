@@ -193,7 +193,7 @@ class TrainerAbout extends TrainerBase {
   table = "trainer_about";
 
   edit(data, files, user_id) {
-    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings", "phone", "email", "company"]);
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings", "phone", "email", "company","company_url"]);
     frmdata["user_id"] = user_id;
     const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
     if (_.isEmpty(frmdata["slug"])) {
