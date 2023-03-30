@@ -1009,7 +1009,7 @@ class TrainerSocial extends TrainerBase {
 class TrainerSubscribe extends TrainerBase {
   table = "subscription";
   subscribe(data) {
-    return super.add(data)
+    return this.add(data)
     .then(res => {
       if(res.success){        
           return Emailer.sendEmail({

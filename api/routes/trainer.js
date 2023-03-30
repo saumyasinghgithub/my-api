@@ -436,11 +436,11 @@ module.exports = () => {
   });
 
   router.post("/subscribe", function (req, res, next) {
-    routeWrapper(req, res, true, (token) => new TModel.TrainerSubscribe().subscribe(_.pick(req.body,['email','trainerUrl'])));
+    routeWrapper(req, res, false, () => new TModel.TrainerSubscribe().subscribe(_.pick(req.body,['email','trainerUrl'])));
   });
 
   router.post("/subscribers", function (req, res, next) {
-    routeWrapper(req, res, true, (token) => new TModel.TrainerSubscribe().subscribers(req.body));
+    routeWrapper(req, res, false, () => new TModel.TrainerSubscribe().subscribers(req.body));
   });
 
   router.put("/imagesliders", function (req, res, next) {
