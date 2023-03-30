@@ -7,6 +7,7 @@ const PAModel = require("./PAModel");
 const CourseModel = require("./CourseModel");
 const MoodleAPI = require("./MoodleAPI");
 const moment = require("moment");
+const Emailer = require('./EmailModel');
 
 class TrainerBase extends BaseModel {
   addMulti(data) {
@@ -1008,11 +1009,33 @@ class TrainerSocial extends TrainerBase {
 class TrainerSubscribe extends TrainerBase {
   table = "subscription";
   subscribe(data) {
-    data.email = data.email;
-    data.trainerUrl = data.trainerUrl;
-    return super.add(data).then((res) => {
-      return res;
-    });
+    return super.add(data)
+    .then(res => {
+      if(res.success){        
+          return Emailer.sendEmail({
+            to: process.env.CONTACT_FORM_EMAIL,
+            subject: `Subscription Form`,
+            html: this.subscriptionFormEmail({...data, email:data.email})
+          })
+          .then(() => {
+            return {success:true,message:"Thank You for subscribing with us !"} ;
+          })
+        }else{
+          return res;
+        }
+    })
+  }
+
+  subscriptionFormEmail(data){
+    let html = `<p>Hi ${data.email},</p>
+    <p>Thank You for subscribing with us !</p>
+    <p>TVerse team will connect shortly</p>
+    <p>Your Captured Data:</p>
+    <p>Email: <b>${data.email}</b></p>
+    Thank You.<br />
+    By TVerse Admin`;
+
+    return html;
   }
 
   subscribers(data) {
@@ -1020,7 +1043,9 @@ class TrainerSubscribe extends TrainerBase {
     data.trainerUrl = data.trainerUrl;
     let whereParams = { where: { email: data.email, trainerUrl: data.trainerUrl } };
     return this.list(whereParams).then((res) => {
-      return res.data;
+      if(res.data.length > 0){ 
+        return {success:true,message:"You have already subscribed with us !"} ;
+      }
     });
   }
 }
