@@ -1325,6 +1325,7 @@ header.header.fixed-top.whiteHeader {
 header.header.fixed-top.whiteHeader a.navbar-brand {
     color: #58585a;
     margin-top: 4px;
+    font-family: 'segoe UI';
 }
 
 .breadcrumb {
@@ -2357,6 +2358,7 @@ span.AboutawardYear {
 
 .freeResouces.lineANimation {
     margin-bottom: 30px;
+    font-family: 'segoe UI';
 }
 
 .knowledgeImg {
@@ -6226,6 +6228,10 @@ ul.ulDesign li {
     padding-bottom: 20px;
 }
 
+.UpEventText {
+    font-family: 'segoe UI';
+}
+
 .UpEventText h3 {
     font-size: 30px;
     padding-bottom: 10px;
@@ -6480,7 +6486,7 @@ ul.ulDesign li {
 
 #navbarTogglerDemo01 .nav-item {
     position: relative;
-
+    font-family: 'segoe UI';
 }
 
 #navbarTogglerDemo01 .nav-item:after {
@@ -6680,6 +6686,10 @@ ul.ulDesign li {
 
 .ViewCourseImg {
     background-position: top;
+}
+
+.faq {
+    font-family: 'segoe UI';
 }
 
 @media only screen and (max-width: 1024px) {
