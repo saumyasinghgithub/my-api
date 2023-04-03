@@ -3118,7 +3118,7 @@ button.navbar-toggler h4 {
 }
 
 .dropdown-toggle img {
-    width: 10px;
+    width: 60%;
 }
 
 .searchBOxwhite .dropdown-toggle {
@@ -3126,9 +3126,36 @@ button.navbar-toggler h4 {
     border-bottom: 1px solid #fff;
 }
 
-.search-panel:hover .dropdown-menu {
-    display: block;
+.Dropdown-Helps:hover .dropdown-menu {
+    /* display: block; */
     box-shadow: 0 2px 20px #0d222238;
+    width: 10rem !important;
+}
+
+.Dropdown-Helps .dropdown-menu {
+    width: 10rem !important;
+}
+
+.Dropdown-Help:hover .dropdown-menu {
+    /* display: block; */
+    box-shadow: 0 2px 20px #0d222238;
+    width: 13rem !important;
+}
+
+.Dropdown-Help .dropdown-menu {
+    width: 13rem !important;
+}
+
+.Dropdown-Help .dropdown-menu .HelpDropdown h4:hover {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.Dropdown-Help .dropdown-menu .HelpDropdown:hover h4 {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.HelpDropdown {
+    padding: 8px 10px !important;
 }
 
 .cardInfoBox span.textBold {
@@ -6691,6 +6718,27 @@ ul.ulDesign li {
 .faq {
     font-family: 'segoe UI';
 }
+
+.HelpDropdown a {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+.HelpDropdown:hover {
+    color: rgba(0, 0, 0, 0.5);
+    text-decoration: none;
+    font-weight: 600;
+    background-color: transparent;
+}
+
+.HelpDropdown a:hover {
+    color: rgba(0, 0, 0, 0.7);
+    text-decoration: none;
+    font-weight: 600;
+    background-color: transparent;
+}
+
+
 
 @media only screen and (max-width: 1024px) {
     .homecoursedescription {
