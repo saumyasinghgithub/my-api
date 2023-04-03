@@ -290,9 +290,10 @@ class UserModel extends BaseModel {
   }
 
   newUserEmail(data) {
+    const trainerUrl = 'https://dr-susan-davis.kstverse.com/login';
     let html = `<p>Hi ${data.firstname} (${data.role}),</p>
     <p>Welcome to ${process.env.APP_NAME}.</p>
-    <p>You can use the following credetials to <a href="${process.env.APP_URL}/login">login to your ${data.role} area</a></p>
+    <p>You can use the following credetials to <a href="${trainerUrl}">login to your ${data.role} area</a></p>
     <p>Username: <b>${data.email}</b></p>
     <p>Password: <b>${data.origpass}</b></p>
     <p>Please do not share your credentials to avoid sensitive data breach.</p>
