@@ -1157,6 +1157,7 @@ p {
 
 .cardInfoBox {
     margin-bottom: 20px;
+    line-height: 30px;
 }
 
 .courseWrapper {
@@ -3146,6 +3147,10 @@ button.navbar-toggler h4 {
     width: 13rem !important;
 }
 
+.Dropdown-Help .dropdown-menu li {
+    width: 100%;
+}
+
 .Dropdown-Help .dropdown-menu .HelpDropdown h4:hover {
     color: rgba(0, 0, 0, 0.7);
 }
@@ -3160,6 +3165,12 @@ button.navbar-toggler h4 {
 
 .cardInfoBox span.textBold {
     font-family: 'segoe UI';
+    font-weight: 700;
+}
+
+.CourseDetailsHr {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .searchBOx .dropdown-item.active,
@@ -4014,6 +4025,7 @@ h2.subheading {
         top: 40% !important;
         left: 10% !important;
     }
+
 
     /*------------------------css for Wish List page open ------------------------*/
     .WishList .col-md-8 {
@@ -4959,7 +4971,8 @@ div.drum-wrapper figure {
 }
 
 .circleBox.selected {
-    background-color: #f3ac1b69 !important;
+    background-color: #ffffff !important;
+    /* background-color: #f3ac1b69 !important; */
 }
 
 
@@ -5407,7 +5420,11 @@ min-width:150px;
     }
 
     .navbar-nav {
-        margin-top: 2px;
+        margin-top: 4px;
+    }
+
+    .container {
+        max-width: 390px;
     }
 }
 
@@ -5773,7 +5790,7 @@ button:not(:disabled) {
     }
 
     .trainernewheader .navbar-nav li {
-        padding: 0px 6px 0px 6px;
+        padding: 0px 10px 0px 6px;
         font-size: 16px;
     }
 
@@ -6738,7 +6755,13 @@ ul.ulDesign li {
     background-color: transparent;
 }
 
+.nav-item.profile_toggle {
+    padding: 0px;
+}
 
+.Headingpara {
+    font-weight: 400;
+}
 
 @media only screen and (max-width: 1024px) {
     .homecoursedescription {
@@ -6771,6 +6794,51 @@ ul.ulDesign li {
     .BlogPaddingright {
         padding-right: 0px;
     }
+
+    .HomeTraining {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(../images/training2.jpg);
+    }
+
+    .text-white-Join {
+        color: white;
+    }
+
+    .HomeJoinNow button {
+        color: white !important;
+    }
+
+    .Dropdown-Helps button {
+        padding: 5px 0px;
+    }
+
+    img.shoppingIcon {
+        margin-right: 0;
+    }
+
+    .Dropdown-Help a {
+        padding: 5px 0px;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .Dropdown-Helps .dropdown-toggle img {
+        width: 80%;
+    }
+
+    .profile_toggle img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .Dropdown-Help .dropdown-menu li {
+        padding: 8px 10px;
+    }
+
+    .carousel-indicators {
+        bottom: -20%;
+    }
 }
 
 @media (max-width:767px) {
@@ -6780,5 +6848,51 @@ ul.ulDesign li {
 
     .homecoursedescription {
         height: 90px;
+    }
+}
+
+@media(min-width:381px) and (max-width:450px) {
+    .tooglebuttonheader {
+        margin-top: -60px;
+        margin-left: 32%;
+    }
+}
+
+@media(min-width:219px) and (max-width:380px) {
+    .Dropdown-Helps button {
+        padding: 0;
+    }
+
+    img.shoppingIcon {
+        margin-right: 0;
+    }
+
+    .Dropdown-Help a {
+        padding: 0;
+    }
+
+    .navbar-light .navbar-toggler-icon {
+        height: 20px;
+        width: 20px;
+    }
+
+    .tooglebuttonheader {
+        margin-left: 36%;
+    }
+
+    .container {
+        max-width: 300px;
+    }
+
+    .carousel-indicators {
+        bottom: -50px;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .footerline:after {
+        display: none;
     }
 }
