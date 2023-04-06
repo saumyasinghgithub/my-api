@@ -7022,6 +7022,10 @@ ul.ulDesign li {
     .JoinNowModal .modal-body {
         padding: 0rem 2rem 4rem;
     }
+
+    .homecoursedescription {
+        height: 112px;
+    }
 }
 
 @media (max-width:767px) {
