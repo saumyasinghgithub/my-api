@@ -4170,6 +4170,14 @@ h2.subheading {
     position: relative;
     counter-increment: step;
     margin-top: 18px;
+    font-size: 24px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.AD-help {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 400;
+    word-wrap: break-word;
 }
 
 /* *************************end css zigzag for timeline******************************* */
@@ -4397,6 +4405,24 @@ div.drum-wrapper .inner {
 
     .profile_menu {
         top: 0;
+    }
+
+    .PaymentBtn a {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .PaymentBtn button {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .PaymentBtn .EnrolNowOrder {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
     }
 }
 
@@ -4654,12 +4680,28 @@ div.drum-wrapper figure {
 }
 
 .faq li:before {
-    content: counter(step, decimal-leading-zero);
+    /* content: counter(step, decimal-leading-zero);
     position: absolute;
     left: 0;
     top: -8px;
     font-size: 30px;
+    font-weight: bold; */
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 4px;
+    font-size: 18px;
     font-weight: bold;
+    background: #63d5ab;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+    /* margin-bottom: 15px; */
+    border-radius: 50px;
 }
 
 .listdecimal {
@@ -6773,10 +6815,10 @@ ul.ulDesign li {
     border-color: #e3ab04;
 }
 
-.EnrolNowOrder:hover {
+/* .EnrolNowOrder:hover {
     background-color: #cf9c03;
     border-color: #cf9c03;
-}
+} */
 
 .PaymentSuccess {
     font-family: 'segoe UI';
@@ -6837,6 +6879,33 @@ ul.ulDesign li {
 
 .TrainerActionButton2 {
     text-align: right;
+}
+
+.successheading {
+    font-size: 32px;
+    margin-left: 35px;
+    color: #037a03;
+    font-weight: 400;
+}
+
+.PaymntSteps {
+    font-size: 32px;
+    color: #0f79aa !important;
+    font-weight: 400;
+}
+
+.ShowCoursePay li {
+    list-style-type: decimal;
+    font-size: 23px;
+}
+
+.Sucesmsgimg img {
+    width: 125px;
+    height: 115px;
+}
+
+.PaymtOrderdet {
+    font-size: 25px;
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1024px) {
@@ -7092,7 +7161,23 @@ ul.ulDesign li {
         width: 100%;
     }
 
+    .successheading {
+        margin-left: 0px;
+        font-size: 25px;
+    }
 
+    .Sucesmsgimg img {
+        width: 85px;
+        height: 80px;
+    }
+
+    .faq li {
+        font-size: 16px;
+    }
+
+    .PaymtOrderdet {
+        font-size: 20px;
+    }
 }
 
 @media(min-width:381px) and (max-width:450px) {
