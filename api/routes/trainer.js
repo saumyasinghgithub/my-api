@@ -214,7 +214,7 @@ module.exports = () => {
   router.get("/my-library", function (req, res) {
     routeWrapper(req, res, true, (token) => {
       if (isTrainer(token.data)) {
-        return new TModel.TrainersBlog().findBy({ fname: "user_id", fvalue: token.data.id }).then((res) => ({ success: true, data: res[0] }));
+        return new TModel.TrainerLibrary().findBy({ fname: "user_id", fvalue: token.data.id }).then((res) => ({ success: true, data: res[0] }));
       } else {
         throw { message: "Permission Denied!" };
       }
