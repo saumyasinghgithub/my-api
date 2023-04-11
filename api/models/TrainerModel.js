@@ -193,6 +193,7 @@ class TrainerAbout extends TrainerBase {
   table = "trainer_about";
 
   edit(data, files, user_id) {
+    //console.log(data);
     let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings", "phone", "email", "company","company_url"]);
     frmdata["user_id"] = user_id;
     const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
@@ -330,7 +331,7 @@ class TrainerCourse extends TrainerBase {
     let frmdata = _.pick(data, [
       "user_id",
       "name",
-      //"sku",
+      "sku",
       "short_description",
       "description",
       "learn_brief",

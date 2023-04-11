@@ -7,6 +7,8 @@ const Emailer = require("./EmailModel");
 const RoleModel = require("./RoleModel");
 const TModel = require("./TrainerModel");
 const MoodleAPI = require("./MoodleAPI");
+const fs = require("fs");
+const path = require("path");
 
 class UserModel extends BaseModel {
   table = "users";
@@ -41,6 +43,16 @@ class UserModel extends BaseModel {
                   validTill: moment().add(1, "hours").unix(),
                 });
                 ret = { ...ret, userData: _.omit(res[0], ["password"]) };
+                let fpath;
+                if(ret.userData.role_id === process.env.STUDENT_ROLE){
+                  fpath = path.resolve('public','uploads', 'student','base',ret.userData.base_image);
+                } else {
+                  fpath = path.resolve('public','uploads','base',ret.userData.base_image);
+                }
+                if(!fs.existsSync(fpath)){
+                  ret.userData.base_image = 'default.png';
+                }
+                //path.join(ret.userData.base_image);
                 resolve(ret);
               };
 
