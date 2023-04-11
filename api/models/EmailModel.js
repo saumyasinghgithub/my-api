@@ -19,6 +19,7 @@ class Emailer{
  
     var mailOptions = {
       from: process.env.DEFAULT_EMAIL_FROM,
+      replyTo:"susan@rescuern.com",
       to: 'surojit19@gmail.com',
       subject: 'LOG FROM KS',
       html: 'Log coming in',
