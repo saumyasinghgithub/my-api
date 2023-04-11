@@ -4,7 +4,7 @@ cfg.config({path: path.join(__dirname,'..','.env')});
 
 const nodemailer = require('nodemailer');
 const nodemailerSendgrid = require('nodemailer-sendgrid');
-
+const _  = require('lodash');
 class Emailer{
 
   transport = null;
@@ -16,7 +16,7 @@ class Emailer{
   }
 
   sendEmail(opts={}){
-
+ 
     var mailOptions = {
       from: process.env.DEFAULT_EMAIL_FROM,
       to: 'surojit19@gmail.com',
@@ -24,6 +24,11 @@ class Emailer{
       html: 'Log coming in',
       ...opts
     };
+    mailOptions.to= _.uniq(mailOptions.to.split(','));
+    if(!_.isUndefined(mailOptions.cc)) {
+      mailOptions.cc = _.filter(mailOptions.cc.split(','), c => !mailOptions.to.includes(c)).join(',');
+    }
+    mailOptions.to = mailOptions.to.join(',');
 
     return new Promise((resolve,reject) => {
     
