@@ -5314,7 +5314,7 @@ div.drum-wrapper figure {
 .my-course .rdt_TableCol:nth-child(3),
 .my-course .rdt_TableCell:nth-child(3) {
     /* max-width: 90px !important;*/
-    min-width: 85px !important;
+    min-width: 130px !important;
 }
 
 .my-course .rdt_TableCol:nth-child(4),
@@ -5338,7 +5338,7 @@ div.drum-wrapper figure {
 .my-course .rdt_TableCol:nth-child(7),
 .my-course .rdt_TableCell:nth-child(7) {
     max-width: 15px !important;
-    min-width: 103px !important;
+    min-width: 130px !important;
 }
 
 .my-course .rdt_TableCol:nth-child(9),
