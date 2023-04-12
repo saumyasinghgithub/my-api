@@ -237,7 +237,7 @@ class UserModel extends BaseModel {
 
     return (
       this.checkUnique("email", data.email)
-        // .then(() => this.checkUnique('email',data.email))
+        .then(() => this.checkUnique('mobile',data.mobile))
         .then(() => new RoleModel().find(data.role))
         .then((rec) => {
           roleName = rec.title;
@@ -295,7 +295,7 @@ class UserModel extends BaseModel {
       ])
       .then((res) => {
         if (_.get(res, "length", 0) > 0) {
-          throw { message: `${fld} ${val} already exists.. Aborting..` };
+          throw { message: `This is a duplicate entry for ${fld} ${val} Aborting..` };
         }
         return true;
       });
