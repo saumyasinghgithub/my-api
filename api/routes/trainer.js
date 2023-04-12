@@ -304,6 +304,7 @@ module.exports = () => {
   });
 
   router.put("/course-resources", function (req, res, next) {
+    //for adding course resource
     routeWrapper(req, res, true, (token) => {
       if (isTrainer(token.data)) {
         return new TModel.TrainerCourseResource().edit(req.body);
