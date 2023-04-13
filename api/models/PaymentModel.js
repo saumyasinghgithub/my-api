@@ -157,7 +157,7 @@ class PaymentModel extends BaseModel {
                 style="background-image: url('https://kstverse.com/header.png') !important; height:206px; color:#fff;background-size: cover;width: 100%;background-repeat: no-repeat;padding: 60px;"
                 align="center">
                 <tr>
-                    <td colspan="0" style="font-size: 18px;">T V E R S E <br><br>
+                    <td colspan="0" style="font-size: 18px;"> RescueRN <br><br>
                         
                     </td>
                 </tr>

@@ -76,7 +76,7 @@ class StudentAbout extends StudentBase {
 
   edit(data,files,user_id){
     
-    let frmdata = _.pick(data,['firstname','middlename','lastname','slug','industry','qualification','interested_field','country','linkedin','facebook','youtube','twitter','biography']);
+    let frmdata = _.pick(data,['firstname','middlename','lastname','industry','qualification','interested_field','country','linkedin','facebook','youtube','twitter','biography']);
     frmdata['user_id'] = user_id;
     const spath = frmdata.firstname + ' ' + frmdata.lastname + ' ' + user_id;
     frmdata['slug'] = slugify(spath,{remove: /[*#+~.()'"!:@]/g, lower: true});
