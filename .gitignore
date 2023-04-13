@@ -3,3 +3,5 @@ api/public/uploads/
 package-lock.json
 api/public/uploads.zip
 !api/public/uploads/logo/default.png
+!api/public/uploads/student/base/default.png
+!api/public/uploads/base/default.png
