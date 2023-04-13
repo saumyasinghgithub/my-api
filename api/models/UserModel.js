@@ -44,10 +44,10 @@ class UserModel extends BaseModel {
                 });
                 ret = { ...ret, userData: _.omit(res[0], ["password"]) };
                 let fpath;
-                if(((ret.userData.role_id).toString()) === process.env.STUDENT_ROLE){
-                  fpath = path.resolve('public','uploads', 'student','base',ret.userData.base_image);
+                if(ret.userData.role_id === process.env.STUDENT_ROLE){
+                  fpath = path.resolve('public','uploads', 'student','base',_.get(ret,'userData.base_image',''));
                 } else {
-                  fpath = path.resolve('public','uploads','base',ret.userData.base_image);
+                  fpath = path.resolve('public','uploads','base',_.get(ret,'userData.base_image',''));
                 }
                 if(!fs.existsSync(fpath)){
                   ret.userData.base_image = 'default.png';
