@@ -7,6 +7,7 @@ const Emailer = require("./EmailModel");
 const RoleModel = require("./RoleModel");
 const TModel = require("./TrainerModel");
 const MoodleAPI = require("./MoodleAPI");
+const SModel = require('../models/StudentModel');
 const fs = require("fs");
 const path = require("path");
 
@@ -282,7 +283,12 @@ class UserModel extends BaseModel {
                   })
                   .then(finalEmail);
               } else {
-                return finalEmail();
+                return new SModel.StudentAbout()
+                  .add({
+                    ..._.pick(data, ["firstname", "middlename", "lastname"]),
+                    user_id: res.insertId,
+                  })
+                .then(finalEmail);
               }
             });
           } else {
