@@ -3,5 +3,5 @@ api/public/uploads/*/*
 
 !api/public/uploads/base/default.png
 !api/public/uploads/student/base
-api/public/uploads/student/base/*
+!api/public/uploads/student/base/*
 !api/public/uploads/student/base/default.png
