@@ -417,7 +417,7 @@ class TrainerCourse extends TrainerBase {
       return new MoodleAPI().updateCourse({
         id: data.mid,
         fullname: data.name,
-        shortname: data.sku,
+        shortname: data.name,
         summary: data.short_description,
       });
     } else {
