@@ -401,6 +401,35 @@ class PaymentModel extends BaseModel {
         return ret;
       });
   }
+  listorders(params) {
+    let ret = { success: false };
+    //console.log(params.where.user_id);
+    //console.log("SELECT payments.id as payment_id,payments.user_id as payment_user_id,courses.slug as courseSlug FROM payments INNER JOIN courses ON JSON_EXTRACT(payments.items, '$[0].course') = courses.id WHERE payments.user_id ="+params.where.user_id);
+    return this.db
+      .run("SELECT COUNT(DISTINCT(" + this.pk + ")) as total FROM payments WHERE payments.user_id =" + params.where.user_id)
+      .then((res) => {
+        if (res) {
+          ret["pageInfo"] = {
+            hasMore: res[0].total - parseInt(_.get(params, "start", 0)) > parseInt(_.get(params, "limit", this.pageLimit)),
+            total: res[0].total,
+          };
+        } else {
+          throw { message: "SQL failed!" };
+        }
+      })
+      .then(() => {
+        return this.db.run("SELECT payments.*,courses.slug as courseSlug FROM payments INNER JOIN courses ON JSON_EXTRACT(payments.items, '$[0].course') = courses.id WHERE payments.user_id ="+params.where.user_id);
+      })
+      .then((res) => {
+        if (res) {
+          ret["success"] = true;
+          ret["data"] = res;
+        } else {
+          ret["error"] = "No data found";
+        }
+        return ret;
+      });
+  }
 }
 
 module.exports = PaymentModel;

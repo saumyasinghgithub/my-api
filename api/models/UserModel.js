@@ -330,7 +330,7 @@ class UserModel extends BaseModel {
   sendForgotPasswordEmail(userData) {
     return Emailer.sendEmail({
       to: userData.email,
-      subject: `${process.env.APP_NAME}::RESET YOUR PASSWORD`,
+      subject: `RescueRN Academy::RESET YOUR PASSWORD`,
       html: this.forgotPasswordEmail({
         name: userData.firstname + " " + userData.lastname,
         token: userData.token,

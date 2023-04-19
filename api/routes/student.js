@@ -40,6 +40,15 @@ module.exports = () => {
       .catch(e => ({success: false, message: e.message}))
     })
   });
+  router.get('/my-orders', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      return (new PaymentModel()).listorders({...req.query, where: {user_id: token.data.id}})
+      .then(oData => {
+        return ({...oData, success: true});
+      })
+      .catch(e => ({success: false, message: e.message}))
+    })
+  });
 
   router.get('/my-enrollments', function (req, res) {
     routeWrapper(req,res, true, (token) => {
