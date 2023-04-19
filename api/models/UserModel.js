@@ -339,8 +339,8 @@ class UserModel extends BaseModel {
   }
 
   forgotPasswordEmail({ name, token }) {
-    let html = `<p>Hi ${name}),</p>
-    <p>${process.env.APP_NAME}.</p>
+    let html = `<p>Hi ${name},</p>
+    <p>RescueRN</p>
     <p>We have processed your request to reset your password.</p>
     <p><a href="${process.env.APP_URL}/resetpass/${token}">Click here</a> to reset your password</p>
     <p>Click Here ${process.env.APP_URL}/resetpass/${token}</p>
