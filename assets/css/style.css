@@ -58,7 +58,7 @@ li {
 }
 
 a.navbar-brand {
-    font-size: 25px;
+    font-size: 20px;
     color: #fff;
     float: left;
 }
@@ -1325,7 +1325,7 @@ header.header.fixed-top.whiteHeader {
 
 header.header.fixed-top.whiteHeader a.navbar-brand {
     color: #58585a;
-    margin-top: 4px;
+    margin-top: 8px;
     font-family: 'segoe UI';
 }
 
