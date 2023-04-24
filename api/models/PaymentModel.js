@@ -7,6 +7,7 @@ const StudentEnrollmentModel = require("./StudentEnrollmentModel");
 const Emailer = require("./EmailModel");
 const UserModel = require("./UserModel");
 const MoodleAPI = require("./MoodleAPI");
+const CourseModel = require("./CourseModel");
 
 class PaymentModel extends BaseModel {
   table = "payments";
@@ -190,10 +191,10 @@ class PaymentModel extends BaseModel {
                     <td colspan="2" style="padding:30px 0px;font-size: 14px;color: #4f5052;">
                         <p><b>Transaction ID:</b> &nbsp;&nbsp;&nbsp;&nbsp; ${data.razorpayPaymentId}</p>
                         <p style="padding:15px 0px"><b>Order Amount:</b> &nbsp;&nbsp;&nbsp;&nbsp; ${data.currency}
-                            ${data.amount/100}</p>
+                            ${data.amount / 100}</p>
                         <p><b>Order ID:</b>
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            ${_.get(data, 'razorpayOrderId')}</p>
+                            ${_.get(data, "razorpayOrderId")}</p>
                     </td>
                 </tr>
             </table>
@@ -209,11 +210,11 @@ class PaymentModel extends BaseModel {
                 </tr>
                 <tr>
                     <td align="left" style="border-collapse: collapse; padding: 18px;font-size: 14px;color: #4f5052;">
-                        <p>${_.get(data, 'description')}
+                        <p>${_.get(data, "description")}
                         <p>
                     </td>
                     <td align="right" style="padding: 18px;border-collapse: collapse;font-size: 14px;color: #4f5052;">
-                        ${data.currency} ${data.amount/100}</td>
+                        ${data.currency} ${data.amount / 100}</td>
                 </tr>
                 <tr>
                     <td align="left"
@@ -222,7 +223,7 @@ class PaymentModel extends BaseModel {
                         <p>
                     </td>
                     <td align="right" style="padding: 18px;border-collapse: collapse;font-size: 14px;color: #4f5052;">
-                        <strong>${data.currency} ${data.amount/100}</strong></td>
+                        <strong>${data.currency} ${data.amount / 100}</strong></td>
                 </tr>
             </table>
             <table width="650" cellspacing="0" cellpadding="0" border="0"
@@ -405,30 +406,17 @@ class PaymentModel extends BaseModel {
     let ret = { success: false };
     //console.log(params.where.user_id);
     //console.log("SELECT payments.id as payment_id,payments.user_id as payment_user_id,courses.slug as courseSlug FROM payments INNER JOIN courses ON JSON_EXTRACT(payments.items, '$[0].course') = courses.id WHERE payments.user_id ="+params.where.user_id);
-    return this.db
-      .run("SELECT COUNT(DISTINCT(" + this.pk + ")) as total FROM payments WHERE payments.user_id =" + params.where.user_id)
-      .then((res) => {
-        if (res) {
-          ret["pageInfo"] = {
-            hasMore: res[0].total - parseInt(_.get(params, "start", 0)) > parseInt(_.get(params, "limit", this.pageLimit)),
-            total: res[0].total,
-          };
-        } else {
-          throw { message: "SQL failed!" };
-        }
-      })
-      .then(() => {
-        return this.db.run("SELECT payments.*,courses.slug as courseSlug FROM payments INNER JOIN courses ON JSON_EXTRACT(payments.items, '$[0].course') = courses.id WHERE payments.user_id ="+params.where.user_id);
-      })
-      .then((res) => {
-        if (res) {
-          ret["success"] = true;
-          ret["data"] = res;
-        } else {
-          ret["error"] = "No data found";
-        }
-        return ret;
-      });
+    return super.list(params).then((rec) => {
+      if (rec.success) {
+        const cids = _.uniq(_.flattenDeep(_.map(rec.data, (i) => _.map(JSON.parse(i.items), (i) => i.course))));
+        return new CourseModel().list({ fields: "id,slug", whereStr: `id IN (${cids.join(",")})` }).then((res) => {
+          if (res.success) {
+            rec["slugs"] = res.data;
+          }
+          return rec;
+        });
+      }
+    });
   }
 }
 
