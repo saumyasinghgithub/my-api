@@ -45,6 +45,7 @@ app.use("/blog", require("./routes/blog")());
 app.use("/sales", require("./routes/sales")());
 app.use("/role", require("./routes/role")());
 app.use("/contact", require("./routes/contact")());
+app.use("/settings",require("./routes/settings")());
 app.use("/", require("./routes/api")());
 
 const port = _.get(process.env, "PORT", 3000);
