@@ -341,6 +341,14 @@ module.exports = () => {
         .catch((e) => ({ success: false, message: e.message }));
     });
   });
+  router.get("/profiledata/:slug", function (req, res) {
+    routeWrapper(req, res, false, () => {
+      return new TModel.TrainerSearch()
+        .profiledata(req.params)
+        .then((tData) => ({ ...tData, success: true }))
+        .catch((e) => ({ success: false, message: e.message }));
+    });
+  });
 
   router.get("/landing/:slug", function (req, res) {
     routeWrapper(req, res, false, () => {

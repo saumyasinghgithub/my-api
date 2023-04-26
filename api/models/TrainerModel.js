@@ -621,6 +621,16 @@ class TrainerSearch extends TrainerBase {
         return tData;
       });
   }
+  profiledata({ slug }) {
+    let tData = {};
+    let whereParams = { where: { slug: slug } };
+    return new TrainerAbout()
+      .list(whereParams)
+      .then(({ data }) => {
+        tData.about = _.get(data, "0", {});
+        return tData.about;
+      });
+  }
 
   landing({ slug }) {
     let tData = {};
