@@ -5960,9 +5960,18 @@ button:not(:disabled) {
 
 @media (max-width:767px) {
     .headingtext {
-        font-size: 36px !important;
+        font-size: 34px !important;
         line-height: 32px;
         width: 100% !important;
+    }
+
+    .MobileHeader {
+        font-size: 30px !important;
+    }
+
+    .mobileaddDetails {
+        position: relative;
+        top: -10px;
     }
 
     .profileDetailRating {
@@ -7033,6 +7042,10 @@ ul.ulDesign li {
     text-decoration: underline;
 }
 
+select.form-control {
+    text-transform: capitalize;
+}
+
 @media only screen and (min-width: 992px) and (max-width: 1024px) {
     .homecoursedescription {
         height: 110px;
@@ -7249,13 +7262,23 @@ ul.ulDesign li {
         font-size: 16px;
     }
 
+    .HomeRegister {
+        text-align: end;
+    }
+
+    .HomeJoinNow button {
+        text-align: end !important;
+    }
+
     .HeaderNavigation {
         display: flex;
         align-items: center;
     }
 
     .footerline:after {
-        display: none;
+        display: block;
+        top: 3px;
+        right: -5px;
     }
 
     .libraryTitle {
@@ -7360,7 +7383,7 @@ ul.ulDesign li {
     }
 
     .footerline:after {
-        display: none;
+        display: block;
     }
 
     .JoinNowModal .modal-body {
