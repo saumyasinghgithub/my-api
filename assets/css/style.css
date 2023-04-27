@@ -7402,3 +7402,8 @@ select.form-control {
 
 
 }
+.disclaimer{
+    margin-left: 0% !important;
+    width: 100% !important;
+    text-align:left;
+}
