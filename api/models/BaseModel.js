@@ -118,8 +118,6 @@ class BaseModel {
   }
 
   edit(data, pkval = "") {
-    console.log("save---data" + data);
-
     let sql = `UPDATE ${this.table} SET`;
 
     sql += _.keys(data)

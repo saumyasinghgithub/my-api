@@ -5,7 +5,6 @@ const SettingsModel = require('../models/SettingsModel');
 
 module.exports = () => {
     router.get('/site-settings', function (req, res) {
-        console.log('hello');
         routeWrapper(req,res, true, (token) => (new SettingsModel()).getsiteData(req.body,token.data.id))
     });
     router.post('/site-settings', function (req, res) {

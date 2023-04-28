@@ -1174,6 +1174,7 @@ class TrainerEvents extends TrainerBase {
               user_id: user_id,
               id: data.id[keys[idx]],
               heading: data.heading[keys[idx]],
+              cta: data.cta[keys[idx]],
               sub_heading: data.sub_heading[keys[idx]],
               event_on: data.event_on[keys[idx]],
               event_short_desc: data.event_short_desc[keys[idx]],
@@ -1192,7 +1193,7 @@ class TrainerEvents extends TrainerBase {
   }
 
   eventsave(data, image) {
-    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured", "heading", "sub_heading", "event_on"]);
+    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured", "heading", "cta","sub_heading", "event_on"]);
 
     if (image) {
       return this.uploadImage(data, image, "event").then((fname) => {
