@@ -150,7 +150,6 @@ class SettingsModel extends BaseModel {
     console.log(files);
     console.log(user_id);
     let frmdata = _.pick(data, [
-      "id",
       "company_name",
       "site_title",
       "contact_phone",
