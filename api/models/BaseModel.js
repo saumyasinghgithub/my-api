@@ -97,6 +97,7 @@ class BaseModel {
   }
 
   add(data) {
+    console.log(data);
     let sql = "INSERT INTO " + this.table;
     sql += "(" + _.keys(data).join(",") + ") VALUES ( ";
     sql += new Array(_.keys(data).length).fill("?").join(",") + ")";

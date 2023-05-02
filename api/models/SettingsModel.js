@@ -149,6 +149,7 @@ class SettingsModel extends BaseModel {
     console.log(data);
     console.log(files);
     console.log(user_id);
+    frmdata["trainer_id"] = user_id;
     let frmdata = _.pick(data, [
       "company_name",
       "site_title",
@@ -156,8 +157,7 @@ class SettingsModel extends BaseModel {
       "contact_email",
       "copywrite_text",
       "contact_address",
-    ]);
-    frmdata["trainer_id"] = user_id;
+    ]);    
     return this.uploadImage(data, _.get(files, "logo", false), "logo").then(
       (fname) => {
         frmdata["logo"] = fname;

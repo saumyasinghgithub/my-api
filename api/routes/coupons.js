@@ -15,7 +15,7 @@ module.exports = () => {
         routeWrapper(req,res, true, () => (new CouponsModel()).add(req.body));
     });
     router.get('/list', function (req, res) {
-        routeWrapper(req, res, true, (token) => (new CouponsModel()).list());
+        routeWrapper(req, res, true, (token) => (new CouponsModel()).getAllCoupons());
     });
     router.delete('/:id', function (req, res, next) {
         routeWrapper(req,res, true, () => (new CouponsModel()).delete(req.params.id));  
