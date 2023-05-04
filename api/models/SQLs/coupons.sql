@@ -12,3 +12,4 @@ CREATE TABLE `trainer_coupons` (
 ALTER TABLE `trainer_coupons` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
 
 
+ALTER TABLE `trainer_coupons` ADD UNIQUE(`coupon_code`);
