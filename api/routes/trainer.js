@@ -345,7 +345,7 @@ module.exports = () => {
     routeWrapper(req, res, false, () => {
       return new TModel.TrainerSearch()
         .profiledata(req.params)
-        .then((tData) => ({ ...tData, success: true }))
+        .then((tData) => ({ data: tData, success: true }))
         .catch((e) => ({ success: false, message: e.message }));
     });
   });
@@ -445,7 +445,7 @@ module.exports = () => {
   });
 
   router.post("/subscribe", function (req, res, next) {
-    routeWrapper(req, res, false, (token) => new TModel.TrainerSubscribe().subscribe(_.pick(req.body,['email','trainerUrl'])));
+    routeWrapper(req, res, false, (token) => new TModel.TrainerSubscribe().subscribe(_.pick(req.body, ["email", "trainerUrl"])));
   });
 
   router.post("/subscribers", function (req, res, next) {
