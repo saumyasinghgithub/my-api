@@ -336,7 +336,7 @@ module.exports = () => {
   router.get("/profile/:slug", function (req, res) {
     routeWrapper(req, res, false, () => {
       return new TModel.TrainerSearch()
-        .profile(req.params)
+        .profile({ ...req.params, ...req.query })
         .then((tData) => ({ ...tData, success: true }))
         .catch((e) => ({ success: false, message: e.message }));
     });
