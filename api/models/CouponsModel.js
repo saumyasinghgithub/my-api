@@ -5,6 +5,11 @@ class CouponsModel extends BaseModel {
   table = "trainer_coupons";
   pageLimit = 10;
 
+  add(data) {
+    data.course_ids = _.isArray(data.course_ids) ? data.course_ids.map((c) => parseInt(c)).join(",") : data.course_ids;
+    return super.add(data);
+  }
+
   edit(data, pkval = "") {
     data.course_ids = _.isArray(data.course_ids) ? data.course_ids.map((c) => parseInt(c)).join(",") : data.course_ids;
     return super.edit(data, pkval);

@@ -313,11 +313,31 @@ class PaymentModel extends BaseModel {
   }
 
   sales(userData) {
-    let refine = "";
+    let refine = " WHERE payments.is_complete = 1";
     let ary = [];
     let ret = { success: false };
+    let tableName =
+      "payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id";
+
+    if (!_.isEmpty(userData.where.startDate)) {
+      refine += " AND (payments.created_at >= ?)";
+      ary.push(userData.where.startDate);
+    }
+    if (!_.isEmpty(userData.where.endDate)) {
+      refine += " AND (payments.created_at <= ?)";
+      ary.push(userData.where.endDate);
+    }
+    if (!_.isEmpty(userData.where.customer)) {
+      refine += ` AND (users.email like '%${userData.where.customer}%')`;
+    }
+
+    if (isTrainer(userData.user_id)) {
+      refine += ` AND JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?)`;
+      ary.push(userData.user_id);
+    }
+
     return this.db
-      .run("SELECT COUNT(DISTINCT(" + this.pk + ")) as total FROM " + this.table + refine, ary)
+      .run("SELECT COUNT(DISTINCT(payments." + this.pk + ")) as total FROM " + tableName + refine, ary)
       .then((res) => {
         if (res) {
           ret["pageInfo"] = {
@@ -329,23 +349,14 @@ class PaymentModel extends BaseModel {
         }
       })
       .then(() => {
-        refine += " WHERE";
-        if (_.get(userData.where.startDate, "where", false) && _.get(userData.where.endDate, "where", false)) {
-          refine += " (payments.created_at BETWEEN ? AND ?) AND ";
-          ary.push(_.get(userData.where.startDate, "where", this.sortBy));
-          ary.push(_.get(userData.where.endDate, "where", this.sortBy));
-        }
-        if (isTrainer(userData.userData)) {
-          refine += ` JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?) AND `;
-          ary.push(_.get(userData.user_id, "where", userData.user_id));
-        }
-        refine += " payments.is_complete = 1 ORDER BY ? ? LIMIT ?,?";
-        ary.push(_.get(userData, "sortBy", this.sortBy));
+        refine += " ORDER BY ? ? LIMIT ?,?";
+        ary.push(_.get(userData, "sortBy", "payments." + this.sortBy));
         ary.push(_.get(userData, "sortDir", this.sortDir));
         ary.push(parseInt(_.get(userData, "start", 0)));
         ary.push(parseInt(_.get(userData, "limit", this.pageLimit)));
         return this.db.run(
-          `SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, courses.name FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id` +
+          `SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, courses.name FROM ` +
+            tableName +
             refine,
           ary
         );
