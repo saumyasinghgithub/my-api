@@ -1,6 +1,9 @@
 const axios = require("axios");
 const _ = require("lodash");
 const moment = require("moment");
+const cfg = require("dotenv");
+const path = require("path");
+cfg.config({ path: path.join(__dirname, "..", ".env") });
 
 //=== Base class
 class MoodleAPIBase {
@@ -11,9 +14,9 @@ class MoodleAPIBase {
   password = null;
 
   constructor(domain = null) {
-    this.domain = "https://lms.kstverse.com"; //domain;
-    this.username = "apiuser";
-    this.password = "APIUser@1234";
+    this.domain = process.env.LMS_DOMAIN; //domain;
+    this.username = process.env.LMS_USER;
+    this.password = process.env.LMS_PWD;
     this.api = `${this.domain}/webservice/rest/server.php`;
   }
 
