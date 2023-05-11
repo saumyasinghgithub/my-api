@@ -65,3 +65,8 @@ ALTER TABLE `trainer_events`
 ADD `heading` VARCHAR(255) NULL AFTER `id`, 
 ADD `sub_heading` VARCHAR(255) NULL AFTER `heading`, 
 ADD `event_on` DATETIME NULL AFTER `sub_heading`;
+
+
+
+
+ALTER TABLE `trainer_events` ADD `cta` VARCHAR(255) NULL DEFAULT NULL AFTER `heading`;

@@ -1,0 +1,1 @@
+ALTER TABLE `trainer_about` ADD `company_url` VARCHAR(500) NOT NULL AFTER `company`;

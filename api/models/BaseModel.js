@@ -82,7 +82,7 @@ class BaseModel {
         ary.push(_.get(params, "sortDir", this.sortDir));
         ary.push(parseInt(_.get(params, "start", 0)));
         ary.push(parseInt(_.get(params, "limit", this.pageLimit)));
-        //console.log('SELECT ' + _.get(params,'fields','*') + ' FROM ' + this.table + refine, ary);
+        console.log("SELECT " + _.get(params, "fields", "*") + " FROM " + this.table + refine, ary);
         return this.db.run("SELECT " + _.get(params, "fields", "*") + " FROM " + this.table + refine, ary);
       })
       .then((res) => {
@@ -97,7 +97,6 @@ class BaseModel {
   }
 
   add(data) {
-    console.log("entering there");
     let sql = "INSERT INTO " + this.table;
     sql += "(" + _.keys(data).join(",") + ") VALUES ( ";
     sql += new Array(_.keys(data).length).fill("?").join(",") + ")";
@@ -105,7 +104,11 @@ class BaseModel {
       let ret = { success: false };
       if (res) {
         ret["success"] = true;
-        ret["message"] = "Record added, ID = " + res.insertId;
+        if (data.type === "event") {
+          ret["message"] = "Thank you for registering!";
+        } else {
+          ret["message"] = "Welcome aboard, now you are a part of our resuscitation movement!";
+        }
         ret["insertId"] = res.insertId;
       } else {
         ret["error"] = "Failed to add Record.";
@@ -115,8 +118,6 @@ class BaseModel {
   }
 
   edit(data, pkval = "") {
-    console.log("save---data" + data);
-
     let sql = `UPDATE ${this.table} SET`;
 
     sql += _.keys(data)

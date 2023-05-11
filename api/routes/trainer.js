@@ -214,7 +214,7 @@ module.exports = () => {
   router.get("/my-library", function (req, res) {
     routeWrapper(req, res, true, (token) => {
       if (isTrainer(token.data)) {
-        return new TModel.TrainersBlog().findBy({ fname: "user_id", fvalue: token.data.id }).then((res) => ({ success: true, data: res[0] }));
+        return new TModel.TrainerLibrary().findBy({ fname: "user_id", fvalue: token.data.id }).then((res) => ({ success: true, data: res[0] }));
       } else {
         throw { message: "Permission Denied!" };
       }
@@ -304,6 +304,7 @@ module.exports = () => {
   });
 
   router.put("/course-resources", function (req, res, next) {
+    //for adding course resource
     routeWrapper(req, res, true, (token) => {
       if (isTrainer(token.data)) {
         return new TModel.TrainerCourseResource().edit(req.body);
@@ -335,8 +336,16 @@ module.exports = () => {
   router.get("/profile/:slug", function (req, res) {
     routeWrapper(req, res, false, () => {
       return new TModel.TrainerSearch()
-        .profile(req.params)
+        .profile({ ...req.params, ...req.query })
         .then((tData) => ({ ...tData, success: true }))
+        .catch((e) => ({ success: false, message: e.message }));
+    });
+  });
+  router.get("/profiledata/:slug", function (req, res) {
+    routeWrapper(req, res, false, () => {
+      return new TModel.TrainerSearch()
+        .profiledata(req.params)
+        .then((tData) => ({ data: tData, success: true }))
         .catch((e) => ({ success: false, message: e.message }));
     });
   });
@@ -436,11 +445,11 @@ module.exports = () => {
   });
 
   router.post("/subscribe", function (req, res, next) {
-    routeWrapper(req, res, true, (token) => new TModel.TrainerSubscribe().subscribe({ email: req.body.email, trainerUrl: req.body.trainerUrl }));
+    routeWrapper(req, res, false, (token) => new TModel.TrainerSubscribe().subscribe(_.pick(req.body, ["email", "trainerUrl"])));
   });
 
-  router.get("/subscribers", function (req, res, next) {
-    routeWrapper(req, res, true, (token) => new TModel.TrainerSubscribe().subscribers(req.query));
+  router.post("/subscribers", function (req, res, next) {
+    routeWrapper(req, res, false, (token) => new TModel.TrainerSubscribe().subscribers(req.body));
   });
 
   router.put("/imagesliders", function (req, res, next) {

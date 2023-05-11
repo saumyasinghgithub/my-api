@@ -46,6 +46,19 @@ module.exports = () => {
     );
   });
 
+  router.get('/student-list', function (req, res) {
+    routeWrapper(req,res, true, (token) => {
+      let data = {};
+      return (new UserModel()).list({where: {role_id: process.env.STUDENT_ROLE},limit: 99999})
+      .then(rec => {
+        data['list'] = rec.data;
+        data['success'] = true;
+        return data;
+      })
+      .catch(e => ({success: false, message: e.message}))
+    },true)
+  });
+
   router.post("/add", function (req, res, next) {
     routeWrapper(req, res, false, () =>
       new UserModel().add(

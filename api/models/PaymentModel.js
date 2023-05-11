@@ -7,6 +7,7 @@ const StudentEnrollmentModel = require("./StudentEnrollmentModel");
 const Emailer = require("./EmailModel");
 const UserModel = require("./UserModel");
 const MoodleAPI = require("./MoodleAPI");
+const CourseModel = require("./CourseModel");
 
 class PaymentModel extends BaseModel {
   table = "payments";
@@ -157,7 +158,7 @@ class PaymentModel extends BaseModel {
                 style="background-image: url('https://kstverse.com/header.png') !important; height:206px; color:#fff;background-size: cover;width: 100%;background-repeat: no-repeat;padding: 60px;"
                 align="center">
                 <tr>
-                    <td colspan="0" style="font-size: 18px;">T V E R S E <br><br>
+                    <td colspan="0" style="font-size: 18px;"> RescueRN <br><br>
                         
                     </td>
                 </tr>
@@ -173,7 +174,7 @@ class PaymentModel extends BaseModel {
                     <td colspan="0">
                         <p
                             style="padding:10px 0px 40px 0px;text-align: center;line-height: 1.3rem;font-size: 14px;color: #4f5052;">
-                            Autodidact makes the search for a trainer easier for students. So, by coming on this
+                            TVerse makes the search for a trainer easier for students. So, by coming on this
                             platform you will be able to maximize your reach to professional who need guidance and other
                             skill enhancement programs. It also helps Companies find you. It makes it easier for them to
                             look for professionals with expertise.</p>
@@ -190,10 +191,10 @@ class PaymentModel extends BaseModel {
                     <td colspan="2" style="padding:30px 0px;font-size: 14px;color: #4f5052;">
                         <p><b>Transaction ID:</b> &nbsp;&nbsp;&nbsp;&nbsp; ${data.razorpayPaymentId}</p>
                         <p style="padding:15px 0px"><b>Order Amount:</b> &nbsp;&nbsp;&nbsp;&nbsp; ${data.currency}
-                            ${data.amount/100}</p>
+                            ${data.amount / 100}</p>
                         <p><b>Order ID:</b>
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            ${_.get(data, 'razorpayOrderId')}</p>
+                            ${_.get(data, "razorpayOrderId")}</p>
                     </td>
                 </tr>
             </table>
@@ -209,11 +210,11 @@ class PaymentModel extends BaseModel {
                 </tr>
                 <tr>
                     <td align="left" style="border-collapse: collapse; padding: 18px;font-size: 14px;color: #4f5052;">
-                        <p>${_.get(data, 'description')}
+                        <p>${_.get(data, "description")}
                         <p>
                     </td>
                     <td align="right" style="padding: 18px;border-collapse: collapse;font-size: 14px;color: #4f5052;">
-                        ${data.currency} ${data.amount/100}</td>
+                        ${data.currency} ${data.amount / 100}</td>
                 </tr>
                 <tr>
                     <td align="left"
@@ -222,7 +223,7 @@ class PaymentModel extends BaseModel {
                         <p>
                     </td>
                     <td align="right" style="padding: 18px;border-collapse: collapse;font-size: 14px;color: #4f5052;">
-                        <strong>${data.currency} ${data.amount/100}</strong></td>
+                        <strong>${data.currency} ${data.amount / 100}</strong></td>
                 </tr>
             </table>
             <table width="650" cellspacing="0" cellpadding="0" border="0"
@@ -312,11 +313,31 @@ class PaymentModel extends BaseModel {
   }
 
   sales(userData) {
-    let refine = "";
+    let refine = " WHERE payments.is_complete = 1";
     let ary = [];
     let ret = { success: false };
+    let tableName =
+      "payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id";
+
+    if (!_.isEmpty(userData.where.startDate)) {
+      refine += " AND (payments.created_at >= ?)";
+      ary.push(userData.where.startDate);
+    }
+    if (!_.isEmpty(userData.where.endDate)) {
+      refine += " AND (payments.created_at <= ?)";
+      ary.push(userData.where.endDate);
+    }
+    if (!_.isEmpty(userData.where.customer)) {
+      refine += ` AND (users.email like '%${userData.where.customer}%')`;
+    }
+
+    if (isTrainer(userData.user_id)) {
+      refine += ` AND JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?)`;
+      ary.push(userData.user_id);
+    }
+
     return this.db
-      .run("SELECT COUNT(DISTINCT(" + this.pk + ")) as total FROM " + this.table + refine, ary)
+      .run("SELECT COUNT(DISTINCT(payments." + this.pk + ")) as total FROM " + tableName + refine, ary)
       .then((res) => {
         if (res) {
           ret["pageInfo"] = {
@@ -328,23 +349,14 @@ class PaymentModel extends BaseModel {
         }
       })
       .then(() => {
-        refine += " WHERE";
-        if (_.get(userData.where.startDate, "where", false) && _.get(userData.where.endDate, "where", false)) {
-          refine += " (payments.created_at BETWEEN ? AND ?) AND ";
-          ary.push(_.get(userData.where.startDate, "where", this.sortBy));
-          ary.push(_.get(userData.where.endDate, "where", this.sortBy));
-        }
-        if (isTrainer(userData.userData)) {
-          refine += ` JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?) AND `;
-          ary.push(_.get(userData.user_id, "where", userData.user_id));
-        }
-        refine += " payments.is_complete = 1 ORDER BY ? ? LIMIT ?,?";
-        ary.push(_.get(userData, "sortBy", this.sortBy));
+        refine += " ORDER BY ? ? LIMIT ?,?";
+        ary.push(_.get(userData, "sortBy", "payments." + this.sortBy));
         ary.push(_.get(userData, "sortDir", this.sortDir));
         ary.push(parseInt(_.get(userData, "start", 0)));
         ary.push(parseInt(_.get(userData, "limit", this.pageLimit)));
         return this.db.run(
-          `SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, courses.name FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id` +
+          `SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, courses.name FROM ` +
+            tableName +
             refine,
           ary
         );
@@ -400,6 +412,22 @@ class PaymentModel extends BaseModel {
         }
         return ret;
       });
+  }
+  listorders(params) {
+    let ret = { success: false };
+    //console.log(params.where.user_id);
+    //console.log("SELECT payments.id as payment_id,payments.user_id as payment_user_id,courses.slug as courseSlug FROM payments INNER JOIN courses ON JSON_EXTRACT(payments.items, '$[0].course') = courses.id WHERE payments.user_id ="+params.where.user_id);
+    return super.list(params).then((rec) => {
+      if (rec.success) {
+        const cids = _.uniq(_.flattenDeep(_.map(rec.data, (i) => _.map(JSON.parse(i.items), (i) => i.course))));
+        return new CourseModel().list({ fields: "id,slug", whereStr: `id IN (${cids.join(",")})` }).then((res) => {
+          if (res.success) {
+            rec["slugs"] = res.data;
+          }
+          return rec;
+        });
+      }
+    });
   }
 }
 

@@ -7,6 +7,9 @@ const Emailer = require("./EmailModel");
 const RoleModel = require("./RoleModel");
 const TModel = require("./TrainerModel");
 const MoodleAPI = require("./MoodleAPI");
+const SModel = require('../models/StudentModel');
+const fs = require("fs");
+const path = require("path");
 
 class UserModel extends BaseModel {
   table = "users";
@@ -41,6 +44,22 @@ class UserModel extends BaseModel {
                   validTill: moment().add(1, "hours").unix(),
                 });
                 ret = { ...ret, userData: _.omit(res[0], ["password"]) };
+                let fpath;
+                //console.log(ret.userData);
+                if(_.isEmpty(ret.userData.base_image)) {
+                  ret.userData.base_image = 'default.png';
+                }
+                else{
+                  if(((ret.userData.role_id).toString()) === process.env.STUDENT_ROLE){
+                    fpath = path.resolve('public','uploads', 'student','base',_.get(ret,'userData.base_image',''));
+                  } else {
+                    fpath = path.resolve('public','uploads','base',_.get(ret,'userData.base_image',''));
+                  }
+                  if(!fs.existsSync(fpath)){
+                    ret.userData.base_image = 'default.png';
+                  }
+                }
+                //path.join(ret.userData.base_image);
                 resolve(ret);
               };
 
@@ -225,7 +244,7 @@ class UserModel extends BaseModel {
 
     return (
       this.checkUnique("email", data.email)
-        // .then(() => this.checkUnique('email',data.email))
+        .then(() => this.checkUnique('mobile',data.mobile))
         .then(() => new RoleModel().find(data.role))
         .then((rec) => {
           roleName = rec.title;
@@ -265,7 +284,12 @@ class UserModel extends BaseModel {
                   })
                   .then(finalEmail);
               } else {
-                return finalEmail();
+                return new SModel.StudentAbout()
+                  .add({
+                    ..._.pick(data, ["firstname", "middlename", "lastname"]),
+                    user_id: res.insertId,
+                  })
+                .then(finalEmail);
               }
             });
           } else {
@@ -283,16 +307,17 @@ class UserModel extends BaseModel {
       ])
       .then((res) => {
         if (_.get(res, "length", 0) > 0) {
-          throw { message: `${fld} ${val} already exists.. Aborting..` };
+          throw { message: `This is a duplicate entry for ${fld} ${val} Aborting..` };
         }
         return true;
       });
   }
 
   newUserEmail(data) {
+    const trainerUrl = 'https://dr-susan-davis.kstverse.com/login';
     let html = `<p>Hi ${data.firstname} (${data.role}),</p>
     <p>Welcome to ${process.env.APP_NAME}.</p>
-    <p>You can use the following credetials to <a href="${process.env.APP_URL}/login">login to your ${data.role} area</a></p>
+    <p>You can use the following credentials to <a href="${trainerUrl}">login to your student area.</a></p>
     <p>Username: <b>${data.email}</b></p>
     <p>Password: <b>${data.origpass}</b></p>
     <p>Please do not share your credentials to avoid sensitive data breach.</p>
@@ -305,7 +330,7 @@ class UserModel extends BaseModel {
   sendForgotPasswordEmail(userData) {
     return Emailer.sendEmail({
       to: userData.email,
-      subject: `${process.env.APP_NAME}::RESET YOUR PASSWORD`,
+      subject: `RescueRN Academy::RESET YOUR PASSWORD`,
       html: this.forgotPasswordEmail({
         name: userData.firstname + " " + userData.lastname,
         token: userData.token,
@@ -314,8 +339,8 @@ class UserModel extends BaseModel {
   }
 
   forgotPasswordEmail({ name, token }) {
-    let html = `<p>Hi ${name}),</p>
-    <p>${process.env.APP_NAME}.</p>
+    let html = `<p>Hi ${name},</p>
+    <p>RescueRN</p>
     <p>We have processed your request to reset your password.</p>
     <p><a href="${process.env.APP_URL}/resetpass/${token}">Click here</a> to reset your password</p>
     <p>Click Here ${process.env.APP_URL}/resetpass/${token}</p>

@@ -58,7 +58,7 @@ li {
 }
 
 a.navbar-brand {
-    font-size: 25px;
+    font-size: 20px;
     color: #fff;
     float: left;
 }
@@ -1157,6 +1157,7 @@ p {
 
 .cardInfoBox {
     margin-bottom: 20px;
+    line-height: 30px;
 }
 
 .courseWrapper {
@@ -1324,7 +1325,8 @@ header.header.fixed-top.whiteHeader {
 
 header.header.fixed-top.whiteHeader a.navbar-brand {
     color: #58585a;
-    margin-top: 4px;
+    margin-top: 8px;
+    font-family: 'segoe UI';
 }
 
 .breadcrumb {
@@ -1921,6 +1923,7 @@ ul.profile-socail-icon {
 
 ul.profile-socail-icon li {
     display: inline-block;
+    padding: 0px 3px;
 }
 
 ul.profile-socail-icon li img {
@@ -1934,7 +1937,7 @@ ul.profile-socail-icon li img {
 }
 
 .awardTextWrapper {
-    padding-bottom: 40px;
+    padding: 0px 15px 40px 15px;
 }
 
 .headingtext {
@@ -2262,7 +2265,7 @@ span.AboutawardYear {
     padding: 80px 0;
 } */
 .aboutMe-pr0fle {
-    padding: 60px 0;
+    padding: 60px 15px;
 }
 
 .proflextext {
@@ -2319,6 +2322,7 @@ span.AboutawardYear {
 .serviceHeading {
     display: inline-block;
     position: relative;
+    width: 100%;
 }
 
 .subHeading:before {
@@ -2355,6 +2359,7 @@ span.AboutawardYear {
 
 .freeResouces.lineANimation {
     margin-bottom: 30px;
+    font-family: 'segoe UI';
 }
 
 .knowledgeImg {
@@ -3054,7 +3059,7 @@ button.navbar-toggler h4 {
 
 .inline-photo {
     opacity: 1;
-    transform: scale(0.9);
+    transform: scale(0.96);
     transition: transform 4s .25s cubic-bezier(0, 1, .3, 1),
         opacity .3s .25s ease-out;
     will-change: transform, opacity;
@@ -3114,7 +3119,7 @@ button.navbar-toggler h4 {
 }
 
 .dropdown-toggle img {
-    width: 10px;
+    width: 80%;
 }
 
 .searchBOxwhite .dropdown-toggle {
@@ -3122,13 +3127,54 @@ button.navbar-toggler h4 {
     border-bottom: 1px solid #fff;
 }
 
-.search-panel:hover .dropdown-menu {
-    display: block;
+.Dropdown-Helps:hover .dropdown-menu {
+    /* display: block; */
     box-shadow: 0 2px 20px #0d222238;
+    width: 10rem !important;
+}
+
+.Dropdown-Helps .dropdown-menu {
+    width: 10rem !important;
+}
+
+.Dropdown-Help:hover .dropdown-menu {
+    /* display: block; */
+    box-shadow: 0 2px 20px #0d222238;
+    width: 13rem !important;
+}
+
+.Dropdown-Help .dropdown-menu {
+    width: 13rem !important;
+}
+
+.Dropdown-Help .dropdown-menu li {
+    width: 100%;
+}
+
+.Dropdown-Help .dropdown-menu .HelpDropdown h4:hover {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.Dropdown-Help .dropdown-menu .HelpDropdown:hover h4 {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.Dropdown-Help a {
+    padding: 10px 0;
+}
+
+.HelpDropdown {
+    padding: 8px 10px !important;
 }
 
 .cardInfoBox span.textBold {
     font-family: 'segoe UI';
+    font-weight: 700;
+}
+
+.CourseDetailsHr {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .searchBOx .dropdown-item.active,
@@ -3984,6 +4030,10 @@ h2.subheading {
         left: 10% !important;
     }
 
+    .awardTextWrapper {
+        padding: 30px 15px !important;
+    }
+
     /*------------------------css for Wish List page open ------------------------*/
     .WishList .col-md-8 {
         max-width: 100%;
@@ -4103,7 +4153,7 @@ h2.subheading {
 .AD-help h1 {
     margin-bottom: 0px;
     margin-top: 30px;
-    margin-left: 40px;
+    /* margin-left: 40px; */
 }
 
 .AD-help p {
@@ -4114,12 +4164,30 @@ h2.subheading {
     list-style: none;
     counter-reset: li;
 } */
+.HelpStudent li {
+    clear: both;
+    padding-left: 50px;
+    position: relative;
+    counter-increment: step;
+    margin-top: 18px;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
 .faq li {
     clear: both;
     padding-left: 50px;
     position: relative;
     counter-increment: step;
     margin-top: 18px;
+    font-size: 24px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.AD-help {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 400;
+    word-wrap: break-word;
 }
 
 /* *************************end css zigzag for timeline******************************* */
@@ -4347,6 +4415,24 @@ div.drum-wrapper .inner {
 
     .profile_menu {
         top: 0;
+    }
+
+    .PaymentBtn a {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .PaymentBtn button {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .PaymentBtn .EnrolNowOrder {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 5px;
     }
 }
 
@@ -4592,9 +4678,9 @@ div.drum-wrapper figure {
 }
 
 .alert {
-    padding: 0.3rem 0.5rem !important;
-    width: 80% !important;
-    margin-left: 10% !important;
+    padding: 0.6rem 0.5rem !important;
+    width: 90% !important;
+    margin-left: 5% !important;
     text-align: center;
 }
 
@@ -4603,21 +4689,66 @@ div.drum-wrapper figure {
     font-weight: bold;
 }
 
-.faq li:before {
+.HelpStudent li::before {
     content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0px;
+    font-size: 30px;
+    font-weight: bold;
+    justify-content: center;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+    margin-bottom: 15px;
+    border-radius: 50px;
+}
+
+.faq li:before {
+    /* content: counter(step, decimal-leading-zero);
     position: absolute;
     left: 0;
     top: -8px;
     font-size: 30px;
+    font-weight: bold; */
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 4px;
+    font-size: 18px;
     font-weight: bold;
+    background: #63d5ab;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+    /* margin-bottom: 15px; */
+    border-radius: 50px;
 }
 
 .listdecimal {
     list-style: decimal !important;
 }
 
+.HelpStudent ol li {
+    list-style: decimal !important;
+}
+
 .faq ol li {
     list-style: decimal !important;
+}
+
+
+.HelpStudent ol {
+    list-style-position: outside;
+    margin: 0px;
+    padding: 0px 0px 0px 15px;
 }
 
 .faq ol {
@@ -4626,11 +4757,22 @@ div.drum-wrapper figure {
     padding: 0px 0px 0px 15px;
 }
 
+.HelpStudent ol li {
+    list-style: decimal;
+    margin: 0px;
+    padding: 0px;
+    counter-increment: none;
+}
+
 .faq ol li {
     list-style: decimal;
     margin: 0px;
     padding: 0px;
     counter-increment: none;
+}
+
+.HelpStudent ol li:before {
+    content: none;
 }
 
 .faq ol li:before {
@@ -4657,11 +4799,11 @@ div.drum-wrapper figure {
 .contact input[type="number"],
 .contact input[type="datetime"],
 .contact input[type="email"] {
-    border: 1px solid #444648;
+    border: 1px solid #ced4da;
     background: transparent;
     border-radius: 5px;
     font-style: italic;
-    height: 30px;
+    height: calc(1.5em + 0.75rem + 2px);
     box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     font-size: 16px;
@@ -4809,7 +4951,11 @@ div.drum-wrapper figure {
 
     .headingtext {
         font-size: 32px !important;
-        width: 60% !important;
+        width: 90% !important;
+    }
+
+    .profileContent .awardTextWrapper {
+        padding: 0px !important;
     }
 
     .bio-data-body {
@@ -4928,7 +5074,8 @@ div.drum-wrapper figure {
 }
 
 .circleBox.selected {
-    background-color: #f3ac1b69 !important;
+    background-color: #ffffff !important;
+    /* background-color: #f3ac1b69 !important; */
 }
 
 
@@ -5217,7 +5364,7 @@ div.drum-wrapper figure {
 .my-course .rdt_TableCol:nth-child(3),
 .my-course .rdt_TableCell:nth-child(3) {
     /* max-width: 90px !important;*/
-    min-width: 85px !important;
+    min-width: 130px !important;
 }
 
 .my-course .rdt_TableCol:nth-child(4),
@@ -5235,13 +5382,19 @@ div.drum-wrapper figure {
 .my-course .rdt_TableCol:nth-child(6),
 .my-course .rdt_TableCell:nth-child(6) {
     max-width: 110px !important;
-    min-width: 108px !important;
+    min-width: 130px !important;
 }
 
 .my-course .rdt_TableCol:nth-child(7),
 .my-course .rdt_TableCell:nth-child(7) {
     max-width: 15px !important;
-    min-width: 103px !important;
+    min-width: 130px !important;
+}
+
+.my-course .rdt_TableCol:nth-child(9),
+.my-course .rdt_TableCell:nth-child(9) {
+    max-width: 150px !important;
+    min-width: 160px !important;
 }
 
 .my-course .bg-primary {
@@ -5323,6 +5476,14 @@ min-width:150px;
 
 }*/
 
+/* .my-course .rdt_TableCol:nth-child(3),
+.my-course .rdt_TableCell:nth-child(3) {
+    max-width: 310px;
+    min-width: 300px;
+    padding: 10px 16px;
+
+} */
+
 .dtqzBx div:first-child {
     white-space: break-spaces !important;
 }
@@ -5362,7 +5523,30 @@ min-width:150px;
     }
 
     .navbar-nav {
-        margin-top: 2px;
+        margin-top: 4px !important;
+        margin: auto;
+    }
+
+    .HeaderNavUl {
+        margin-right: 0px;
+    }
+
+    .HeaderNavUl .shoppingIcon {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .navbar-toggler {
+        font-size: 16px;
+    }
+
+    .HeaderNavigation {
+        display: flex;
+        align-items: center;
+    }
+
+    .container {
+        max-width: 390px;
     }
 }
 
@@ -5602,7 +5786,7 @@ min-width:150px;
 
 @media (max-width: 767px) {
     .tooglebuttonheader {
-        margin-top: -43px;
+        margin-top: -45px;
         margin-left: 32%;
 
     }
@@ -5728,22 +5912,30 @@ button:not(:disabled) {
     }
 
     .trainernewheader .navbar-nav li {
-        padding: 0px 6px 0px 6px;
+        padding: 0px 10px 0px 6px;
         font-size: 16px;
     }
 
     .headingtext {
         font-size: 16px !important;
         margin-top: 10px !important;
-        width: 40% !important;
+        width: 70% !important;
+    }
+
+    .serviceHeading .headingtext {
+        margin-top: 40px !important;
     }
 
     .profileDetailRating {
-        width: 35%;
+        width: 45%;
     }
 
     .joindetails {
         display: none;
+    }
+
+    .headingtext {
+        line-height: 18px !important;
     }
 }
 
@@ -5768,9 +5960,39 @@ button:not(:disabled) {
 
 @media (max-width:767px) {
     .headingtext {
-        font-size: 40px !important;
+        font-size: 34px !important;
         line-height: 32px;
         width: 100% !important;
+    }
+
+    .MobileHeader {
+        font-size: 30px !important;
+    }
+
+    .mobileaddDetails {
+        position: relative;
+        top: -10px;
+    }
+
+    .profileDetailRating {
+        width: 100%;
+    }
+
+    .profileFollowList {
+        margin-top: 10px !important;
+    }
+
+    .aboutMe-pr0fle {
+        padding: 0px 15px !important;
+    }
+
+    .profileTabQu .nav li {
+        width: 100%;
+        margin-top: 15px !important;
+    }
+
+    .headingtext {
+        line-height: 45px !important;
     }
 }
 
@@ -6210,15 +6432,19 @@ ul.ulDesign li {
     padding-bottom: 20px;
 }
 
+.UpEventText {
+    font-family: 'segoe UI';
+}
+
 .UpEventText h3 {
     font-size: 30px;
-    padding-bottom: 30px;
+    padding-bottom: 10px;
     color: #0855BC;
 }
 
 .UpEventText h4 {
     font-size: 25px;
-    padding-bottom: 35px;
+    padding-bottom: 15px;
 }
 
 .UpEventText h4~div {
@@ -6315,7 +6541,7 @@ ul.ulDesign li {
 }
 
 .carousel-indicators {
-    bottom: -8%;
+    bottom: -15%;
 }
 
 .carousel-inner {
@@ -6399,7 +6625,7 @@ ul.ulDesign li {
     }
 
     .carousel-indicators {
-        bottom: -20px;
+        bottom: -35%;
     }
 
     .blogText h3~div {
@@ -6464,7 +6690,7 @@ ul.ulDesign li {
 
 #navbarTogglerDemo01 .nav-item {
     position: relative;
-
+    font-family: 'segoe UI';
 }
 
 #navbarTogglerDemo01 .nav-item:after {
@@ -6566,6 +6792,10 @@ ul.ulDesign li {
     display: block !important;
 }
 
+.JoinNowModal .btn-primary:active {
+    background: transparent !important;
+}
+
 .JoinButtonModal button:hover {
     background: transparent;
 }
@@ -6639,13 +6869,329 @@ ul.ulDesign li {
     border-right: 2px solid #7a7a7a;
 } */
 
-@media only screen and (max-width: 1024px) {
+.EnrolNowOrder {
+    background-color: #e3ab04;
+    border-color: #e3ab04;
+}
+
+/* .EnrolNowOrder:hover {
+    background-color: #cf9c03;
+    border-color: #cf9c03;
+} */
+
+.PaymentSuccess {
+    font-family: 'segoe UI';
+}
+
+.nav-item a {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+.ViewCourseImg {
+    background-position: top;
+}
+
+.HelpStudent {
+    font-family: 'segoe UI';
+    padding-left: 0px;
+}
+
+.faq {
+    font-family: 'segoe UI';
+    padding-left: 0px;
+}
+
+.HelpDropdown a {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+.HelpDropdown:hover {
+    color: rgba(0, 0, 0, 0.5);
+    text-decoration: none;
+    font-weight: 600;
+    background-color: transparent;
+}
+
+.HelpDropdown a:hover {
+    color: rgba(0, 0, 0, 0.7);
+    text-decoration: none;
+    font-weight: 600;
+    background-color: transparent;
+}
+
+.nav-item.profile_toggle {
+    padding: 0px;
+}
+
+.Headingpara {
+    font-weight: 400;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.editTrainerdetails {
+    margin-top: 15px;
+}
+
+.carouselslider {
+    padding-bottom: 120px;
+}
+
+.TrainerActionButton2 {
+    text-align: right;
+}
+
+.successheading {
+    font-size: 32px;
+    margin-left: 35px;
+    color: #037a03;
+    font-weight: 400;
+}
+
+.PaymntSteps {
+    font-size: 32px;
+    color: #0f79aa !important;
+    font-weight: 400;
+}
+
+.ShowCoursePay li {
+    list-style-type: decimal;
+    font-size: 23px;
+}
+
+.Sucesmsgimg img {
+    width: 125px;
+    height: 115px;
+}
+
+.PaymtOrderdet {
+    font-size: 25px;
+}
+
+.LoginStudent {
+    padding: 1em 4em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #0f79aa;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+}
+
+.LoginStudent a {
+    color: #fff;
+    font-family: 'segoe UI';
+}
+
+.LoginStudent:hover {
+    background-color: #fff;
+    box-shadow: 0px 15px 20px rgba(15, 121, 170, 0.4);
+    color: #0f79aa;
+    transform: translateY(-5px);
+    text-decoration: none;
+}
+
+.LoginStudent:hover a {
+    color: #0f79aa;
+}
+
+.LoginStudent a:hover {
+    color: #0f79aa;
+}
+
+.LoginStudent:active {
+    transform: translateY(-1px);
+}
+
+.d-inline-flex {
+    margin: auto;
+    display: inline-flex;
+    align-items: center;
+}
+
+.Cart-fa-eye {
+    color: #4f5052;
+}
+
+.LPriceInfoBoxCart .fa:hover {
+    transform: scale(1.1);
+}
+
+.orderitemscolor ul li a {
+    color: #4f5052;
+    text-decoration: underline;
+}
+
+.orderitemscolor ul li a:hover {
+    color: #4f5052;
+    text-decoration: none;
+}
+
+.awardTextWrapper .awardTextInner a {
+    color: #4f5052;
+    text-decoration: underline;
+}
+
+select.form-control {
+    text-transform: capitalize;
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1024px) {
     .homecoursedescription {
         height: 110px;
+    }
+
+    img.shoppingIcon {
+        margin-right: 0;
+    }
+
+    .Dropdown-Help a {
+        padding: 5px 0px;
+    }
+
+    .profile_toggle img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .Dropdown-Helps button {
+        padding: 5px 0px;
+    }
+
+    .TrainerActionButton2 {
+        text-align: right;
+    }
+}
+
+@media (min-width: 769px) and (max-width:991px) {
+    .navbar-nav {
+        margin-top: 4px !important;
+        margin: auto;
+    }
+
+    .TrainerActionButton2 {
+        text-align: right;
+    }
+}
+
+@media (min-width: 768px) and (max-width:991px) {
+    #navbarTogglerDemo01 .nav-item:after {
+        top: 19px !important;
+    }
+
+    .MainOurCourses {
+        padding-left: 0px;
+        padding-top: 30px;
+    }
+
+    .UpEventText {
+        padding-top: 30px;
+    }
+
+    .blogborder {
+        border-right: 0px;
+    }
+
+    .BlogEventImg {
+        padding-left: 0px;
+    }
+
+    .BlogPaddingright {
+        padding-right: 0px;
+    }
+
+    .HomeTraining {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(../images/training2.jpg);
+    }
+
+    .text-white-Join {
+        color: white;
+    }
+
+    .HomeJoinNow button {
+        color: white !important;
+    }
+
+
+    .Dropdown-Helps button {
+        padding: 5px 0px;
+    }
+
+    img.shoppingIcon {
+        margin-right: 0;
+    }
+
+    .Dropdown-Help a {
+        padding: 5px 0px;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .Dropdown-Helps .dropdown-toggle img {
+        width: 80%;
+    }
+
+    .profile_toggle img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .Dropdown-Help .dropdown-menu li {
+        padding: 8px 10px;
+    }
+
+    .carousel-indicators {
+        bottom: -30%;
+    }
+
+    .navbar-nav {
+        /* margin-top: 4px !important; */
+        margin: auto;
+    }
+
+    .HeaderNavUl {
+        margin-right: 0px;
+    }
+
+    .HeaderNavUl .shoppingIcon {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .navbar-toggler {
+        font-size: 16px;
+    }
+
+    .TrainerActionButton2 {
+        text-align: right;
     }
 }
 
 @media (max-width:768px) {
+    .HomeTraining {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(../images/training2.jpg);
+    }
+
+    .text-white-Join {
+        color: white;
+    }
+
+    .HomeJoinNow button {
+        color: white !important;
+    }
+
     #navbarTogglerDemo01 .nav-item:after {
         top: 16px !important;
     }
@@ -6670,6 +7216,23 @@ ul.ulDesign li {
     .BlogPaddingright {
         padding-right: 0px;
     }
+
+    .navbar-nav {
+        /* margin-top: 4px !important; */
+        margin: auto;
+    }
+
+    .TrainerActionButton2 {
+        text-align: right;
+    }
+
+    .JoinNowModal .modal-body {
+        padding: 0rem 2rem 4rem;
+    }
+
+    .homecoursedescription {
+        height: 112px;
+    }
 }
 
 @media (max-width:767px) {
@@ -6680,4 +7243,167 @@ ul.ulDesign li {
     .homecoursedescription {
         height: 90px;
     }
+
+    .navbar-nav {
+        margin-top: 4px !important;
+        margin: auto;
+    }
+
+    .HeaderNavUl {
+        margin-right: 0px;
+    }
+
+    .HeaderNavUl .shoppingIcon {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .navbar-toggler {
+        font-size: 16px;
+    }
+
+    .HomeRegister {
+        text-align: end;
+    }
+
+    .HomeJoinNow button {
+        text-align: end !important;
+    }
+
+    .HeaderNavigation {
+        display: flex;
+        align-items: center;
+    }
+
+    .footerline:after {
+        display: block;
+        top: 3px;
+        right: -5px;
+    }
+
+    .libraryTitle {
+        margin-top: 20px;
+    }
+
+    .textBoxCard {
+        padding: 0px 15px;
+    }
+
+    footer.footer ul.footerRight li {
+        padding: 5px 0px 0px 7px !important;
+    }
+
+    .ContactDetails {
+        padding-left: 0;
+    }
+
+    .carouselslider {
+        padding-bottom: 70px;
+    }
+
+    .TrainerActionButton {
+        width: 100%;
+    }
+
+    .TrainerActionButton2 {
+        width: 100%;
+    }
+
+    .successheading {
+        margin-left: 0px;
+        font-size: 25px;
+    }
+
+    .Sucesmsgimg img {
+        width: 85px;
+        height: 80px;
+    }
+
+    .faq li {
+        font-size: 16px;
+    }
+
+    .PaymtOrderdet {
+        font-size: 20px;
+    }
+}
+
+@media(min-width:381px) and (max-width:450px) {
+    .tooglebuttonheader {
+        margin-top: -55px;
+        margin-left: 32%;
+    }
+
+    .JoinNowModal .modal-body {
+        padding: 0rem 1rem 4rem;
+    }
+
+    .navbar-toggler-icon {
+        width: 1.2em;
+        height: 1.2em;
+    }
+}
+
+@media(min-width:219px) and (max-width:380px) {
+    .Dropdown-Helps button {
+        padding: 0;
+    }
+
+    img.shoppingIcon {
+        margin-right: 0;
+    }
+
+    .Dropdown-Help a {
+        padding: 0;
+    }
+
+    .navbar-light .navbar-toggler-icon {
+        height: 18px;
+        width: 18px;
+    }
+
+    .tooglebuttonheader {
+        margin-left: 36%;
+    }
+
+    .container {
+        max-width: 300px;
+    }
+
+    .serviceWrapper {
+        padding: 0px;
+    }
+
+    .carousel-indicators {
+        bottom: -45%;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .footerline:after {
+        display: block;
+    }
+
+    .JoinNowModal .modal-body {
+        padding: 0rem 2rem 2rem;
+    }
+
+    .JoinNowModal .modal-header,
+    .JoinNowModal .modal-footer {
+        border: 0;
+        padding-top: 1rem;
+    }
+
+    .HomeExploreCourse button {
+        font-size: 16px;
+    }
+
+
+}
+.disclaimer{
+    margin-left: 0% !important;
+    width: 100% !important;
+    text-align:left;
 }
