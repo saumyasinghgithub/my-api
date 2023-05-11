@@ -313,11 +313,11 @@ class PaymentModel extends BaseModel {
   }
 
   sales(userData) {
-    let refine = " WHERE payments.is_complete = 1";
-    let ary = [];
+    let refine = " WHERE payments.is_complete = 1 AND courses.user_id=?";
+    let ary = [userData.user_id];
     let ret = { success: false };
     let tableName =
-      "payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id";
+      "payments INNER JOIN users ON payments.user_id = users.id INNER JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id";
 
     if (!_.isEmpty(userData.where.startDate)) {
       refine += " AND (payments.created_at >= ?)";
@@ -329,11 +329,6 @@ class PaymentModel extends BaseModel {
     }
     if (!_.isEmpty(userData.where.customer)) {
       refine += ` AND (users.email like '%${userData.where.customer}%')`;
-    }
-
-    if (isTrainer(userData.user_id)) {
-      refine += ` AND JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?)`;
-      ary.push(userData.user_id);
     }
 
     return this.db
