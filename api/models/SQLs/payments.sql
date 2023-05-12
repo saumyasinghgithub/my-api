@@ -56,3 +56,5 @@ ALTER TABLE `payments`
 ALTER TABLE `payments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
+
+ALTER TABLE `payments` ADD `coupon_id` INT(11) NULL AFTER `dump`;

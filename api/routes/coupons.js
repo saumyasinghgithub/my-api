@@ -23,7 +23,7 @@ module.exports = () => {
   });
 
   router.post("/fetch", function (req, res, next) {
-    routeWrapper(req, res, true, () =>
+    routeWrapper(req, res, true, (token) =>
       new CouponsModel()
         .list({
           whereStr: `coupon_code='${req.body.coupon}'`,
@@ -38,7 +38,21 @@ module.exports = () => {
             ) {
               return { success: false, message: "Coupon code expired" };
             }
-            return { success: true, data: res.data[0] };
+
+            if (res.data[0].usage_limit) {
+              return new CouponsModel().db
+                .run(`SELECT count(1) as total FROM payments WHERE is_complete=1 AND user_id=${token.data.id} AND coupon_id=${res.data[0].id}`)
+                .then((pyt) => {
+                  let alreadyUsed = parseInt(_.get(pyt, "0.total", 0));
+                  if (alreadyUsed < parseInt(res.data[0].usage_limit)) {
+                    return { success: true, data: res.data[0] };
+                  } else {
+                    return { success: false, message: "Coupon exhausted!" };
+                  }
+                });
+            } else {
+              return { success: true, data: res.data[0] };
+            }
           } else {
             return { success: false, message: "Invalid Coupon code!" };
           }
