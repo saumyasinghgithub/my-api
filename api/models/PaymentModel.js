@@ -32,13 +32,15 @@ class PaymentModel extends BaseModel {
           );
 
           if (ret.success) {
+            let couponData = _.pick(orderData.notes, _.compact(_.map(orderData.notes, (o, i) => (i.indexOf("coupon_") > -1 ? i : false))));
             this.add({
               user_id: orderData.user_id,
               payment_id: orderData.razorpayPaymentId,
               items: orderData.notes.cartItems,
               currency: orderData.currency,
               amount: orderData.amount / 100,
-              dump: JSON.stringify(_.pick(orderData, ["name", "description", "razorpayOrderId"])),
+              dump: JSON.stringify({ ..._.pick(orderData, ["name", "description", "razorpayOrderId"]), ...couponData }),
+              coupon_id: _.get(couponData, "coupon_id", null),
               is_complete: true,
             })
               .then((res) => {

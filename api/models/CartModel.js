@@ -68,6 +68,38 @@ class CartModel extends BaseModel {
     });
   }
 
+  getCouponDiscount(coupon, cartData) {
+    let disAmount = 0;
+    let cartTotalPrice = parseInt(_.sum(cartData.map((d) => d.price)));
+
+    const courseDiscountAmount = (cid, price) => {
+      let disAmount = 0;
+
+      if (coupon.course_ids.split(",").includes(cid.toString())) {
+        disAmount = coupon.coupon_type === 1 ? (price * coupon.discount_value) / 100 : price > coupon.discount_value ? coupon.discount_value : price;
+      }
+      return disAmount;
+    };
+
+    if (coupon) {
+      if (_.isEmpty(coupon.course_ids)) {
+        disAmount =
+          coupon.coupon_type === 1
+            ? (cartTotalPrice * coupon.discount_value) / 100
+            : cartTotalPrice > coupon.discount_value
+            ? coupon.discount_value
+            : cartTotalPrice;
+      } else {
+        disAmount = _.reduce(
+          cartData.map((cData) => courseDiscountAmount(cData.course_id, cData.price)),
+          (sum, n) => sum + n,
+          0
+        );
+      }
+    }
+    return parseFloat(disAmount);
+  }
+
   generateOrder({ action, coupon_id, user_id }) {
     let rPay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY,
@@ -75,31 +107,43 @@ class CartModel extends BaseModel {
     });
 
     let coupon = false;
+    let cartData = [];
+    let order = { notes: {} };
 
     return this.applyCoupon(coupon_id, user_id)
       .then((couponData) => {
         coupon = couponData;
-        console.log(coupon);
-        process.exit();
+        return this.getCartData({ user_id: user_id });
       })
-      .then(() => this.getCartData({ user_id: user_id }))
       .then((data) => {
-        let order = {
-          amount: parseInt(_.sum(data.map((d) => d.price))) * 100, // cents to USD
+        cartData = data;
+        return this.getCouponDiscount(coupon, cartData);
+      })
+      .then((couponAmount) => {
+        order = {
+          ...order,
+          amount: parseInt(_.sum(cartData.map((d) => d.price)) - couponAmount) * 100, // cents to USD
           currency: process.env.RAZORPAY_CURRENCY,
           receipt: `AD#${user_id}-${moment().format("YYYYMMDDHHmmss")}`,
-          notes: {},
         };
 
         let cartItems = [];
 
-        data.forEach((d) => {
+        cartData.forEach((d) => {
           let cres = JSON.parse(d.course_resources);
           cartItems.push({ id: d.id, course: parseInt(d.course_id), resources: cres.map((cr) => cr.id) });
           order.notes[`cart_${d.id}`] = d.name + "||" + cres.map((cr) => cr.type).join("||");
         });
-
         order.notes["cartItems"] = JSON.stringify(cartItems);
+
+        if (couponAmount > 0) {
+          order.notes["coupon_id"] = coupon.id;
+          order.notes["coupon_code"] = coupon.coupon_code;
+          order.notes["coupon_course_ids"] = coupon.course_ids;
+          order.notes["coupon_type"] = coupon.coupon_type;
+          order.notes["coupon_value"] = coupon.coupon_value;
+          order.notes["coupon_amount"] = parseFloat(couponAmount).toFixed(2);
+        }
 
         return rPay.orders.create(order);
       })
@@ -111,7 +155,7 @@ class CartModel extends BaseModel {
             currency: orderData.currency,
             amount: orderData.amount,
             name: `Bundle Course - ${Object.values(orderData.notes).length}`,
-            description: Object.values(_.omit(orderData.notes, ["cartItems"])).join(" AND "),
+            description: _.compact(_.map(orderData.notes, (v, i) => (i.indexOf("cart_") > -1 ? v : false))).join(" AND "),
             notes: orderData.notes,
             order_id: orderData.id,
           },
