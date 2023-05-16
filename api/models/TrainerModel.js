@@ -194,7 +194,7 @@ class TrainerAbout extends TrainerBase {
 
   edit(data, files, user_id) {
     //console.log(data);
-    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings", "phone", "email", "company", "company_url"]);
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
     frmdata["user_id"] = user_id;
     const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
     if (_.isEmpty(frmdata["slug"])) {
@@ -214,10 +214,6 @@ class TrainerAbout extends TrainerBase {
       })
       .then((fname) => {
         frmdata["base_image"] = fname;
-        return this.uploadImage(data, _.get(files, "logo_image", false), "logo");
-      })
-      .then((fname) => {
-        frmdata["logo_image"] = fname;
         if (data.id > 0) {
           return super.edit(frmdata, data.id);
         } else {
