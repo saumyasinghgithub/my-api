@@ -6,37 +6,24 @@ const fs = require("fs");
 
 class SettingsModel extends BaseModel {
   table = "settings";
-  pageLimit = 10;
+  updated_at = true;
 
-  getsiteData(siteData, user_id) {
-    console.log("I am here");
+  getsiteData({ trainer_id }) {
     let ret = { type: "default" };
-    return new Promise((resolve, reject) => {
-      this.db
-        .run(`SELECT settings.* FROM settings WHERE settings.trainer_id = ?`, [user_id])
-        .then((data) => {
-          if (data.length === 0) {
-            console.log("default value will come !");
-            return new Promise((resolve, reject) => {
-              this.db
-                .run(`SELECT settings.* FROM settings WHERE settings.id = 1`)
-                .then((newdata) => {
-                  ret["type"] = "default";
-                  ret["data"] = newdata;
-                })
-                .catch((err) => {})
-                .finally(() => resolve(ret));
-            });
-          } else {
-            console.log("trainer value will come !");
-            ret["type"] = "trainer";
-            ret["data"] = data;
-          }
-        })
-        .catch()
-        .finally(() => resolve(ret));
+    return this.db.run(`SELECT settings.* FROM settings WHERE settings.trainer_id = ? OR id=1`, [trainer_id]).then((data) => {
+      data.map((d) => {
+        if (d.id === 1) {
+          ret["type"] = "default";
+          ret["data"] = { ...d };
+        } else {
+          ret["type"] = "trainer";
+          ret["data"] = { ...d };
+        }
+      });
+      return { success: true, data: { ...ret } };
     });
   }
+
   siteData(siteData) {
     let ret = { type: "default", success: false };
     return new Promise((resolve, reject) => {
@@ -137,26 +124,36 @@ class SettingsModel extends BaseModel {
       fs.unlinkSync(fpath);
     }
   }
-  editsiteData(data, files, user_id) {
-    data["trainer_id"] = user_id;
-    let frmdata = _.pick(data, ["company_name", "site_title", "contact_phone", "contact_email", "copywrite_text", "contact_address"]);
-    return this.uploadImage(data, _.get(files, "logo", false), "logo").then((fname) => {
-      data["logo"] = fname;
-      if (data.id > 0) {
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-        const day = String(currentDate.getDate()).padStart(2, "0");
-        const hours = String(currentDate.getHours()).padStart(2, "0");
-        const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-        const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        data["updated_at"] = formattedDate;
-        return super.edit(data, data.id);
-      } else {
-        return super.add(data);
-      }
-    });
+
+  save(data, files, user_id) {
+    let dbData = _.pick(data, ["company_name", "company_url", "contact_email", "contact_address", "contact_phone", "copyright_text"]);
+
+    const uploader = (fldname) => {
+      return new Promise((resolve, reject) => {
+        this.uploadImage(data, _.get(files, fldname, false), fldname).then((fname) => {
+          if (_.get(data, `delete${fldname}`, "0") === "1") {
+            let oldfname = _.get(data, `old_${fldname}`, "");
+            this.deleteImage(fldname, oldfname);
+            resolve(oldfname === fname ? "" : fname);
+          } else {
+            resolve(fname);
+          }
+        });
+      });
+    };
+
+    return uploader("logo")
+      .then((fname) => (dbData["logo"] = fname))
+      .then(() => uploader("favicon"))
+      .then((fname) => (dbData["favicon"] = fname))
+      .then(() => this.findBy({ fname: "trainer_id", fvalue: user_id }))
+      .then((res) => {
+        if (res.length > 0) {
+          return super.edit(dbData, res[0].id);
+        } else {
+          super.add(dbData);
+        }
+      });
   }
 }
 
