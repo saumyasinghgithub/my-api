@@ -3,4 +3,6 @@ CREATE TABLE `settings` (`id` INT(11) NOT NULL AUTO_INCREMENT , `trainer_id` INT
 ALTER TABLE `settings` CHANGE `copywrite_text` `copyright_text` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
 ALTER TABLE `settings` ADD `favicon` VARCHAR(255) NULL AFTER `logo`;
 ALTER TABLE `settings` CHANGE `site_title` `company_url` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+ALTER TABLE `settings` ADD `preferred_trainers` BOOLEAN NOT NULL DEFAULT TRUE AFTER `copyright_text`, 
+                        ADD `preferred_courses` BOOLEAN NOT NULL DEFAULT TRUE AFTER `preferred_trainers`;
 

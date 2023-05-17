@@ -128,6 +128,10 @@ class SettingsModel extends BaseModel {
   save(data, files, user_id) {
     let dbData = _.pick(data, ["company_name", "company_url", "contact_email", "contact_address", "contact_phone", "copyright_text"]);
 
+    dbData["preferred_trainers"] = _.get(data, "preferred_trainers", false);
+    dbData["preferred_courses"] = _.get(data, "preferred_courses", false);
+    dbData["trainer_id"] = user_id;
+
     const uploader = (fldname) => {
       return new Promise((resolve, reject) => {
         this.uploadImage(data, _.get(files, fldname, false), fldname).then((fname) => {
@@ -151,7 +155,7 @@ class SettingsModel extends BaseModel {
         if (res.length > 0) {
           return super.edit(dbData, res[0].id);
         } else {
-          super.add(dbData);
+          return super.add(dbData);
         }
       });
   }

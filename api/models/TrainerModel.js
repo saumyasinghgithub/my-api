@@ -5,6 +5,7 @@ const path = require("path");
 const slugify = require("slugify");
 const PAModel = require("./PAModel");
 const CourseModel = require("./CourseModel");
+const SettingsModel = require("./SettingsModel");
 const MoodleAPI = require("./MoodleAPI");
 const moment = require("moment");
 const Emailer = require("./EmailModel");
@@ -745,6 +746,13 @@ class TrainerSearch extends TrainerBase {
           ...ud,
           rating: _.omit(ratings[ud.user_id], "trainer_id"),
         }));
+        return this.fetchSiteSettings(user_ids);
+      })
+      .then((sitesettings) => {
+        ret.data = ret.data.map((ud) => ({
+          ...ud,
+          sitesetting: _.omit(_.get(_.filter(sitesettings, { trainer_id: ud.user_id }), "0", []), "trainer_id"),
+        }));
         return this.fetchCourses(user_ids);
       })
       .then((courses) => {
@@ -789,6 +797,15 @@ class TrainerSearch extends TrainerBase {
       whereStr: `user_id IN (${user_ids.join(",")})`,
       fields: "firstname,lastname,base_image,profile_image,user_id,slug",
     });
+  }
+
+  fetchSiteSettings(user_ids) {
+    return new SettingsModel()
+      .list({
+        whereStr: `trainer_id IN (${user_ids.join(",")})`,
+        fields: "trainer_id,preferred_trainers,preferred_courses",
+      })
+      .then((res) => res.data);
   }
 
   fetchCalibs(user_ids, calibs) {
