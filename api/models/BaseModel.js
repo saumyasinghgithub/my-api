@@ -77,11 +77,9 @@ class BaseModel {
         }
       })
       .then(() => {
-        refine += " ORDER BY ? ? LIMIT ?,?";
-        ary.push(_.get(params, "sortBy", this.sortBy));
-        ary.push(_.get(params, "sortDir", this.sortDir));
-        ary.push(parseInt(_.get(params, "start", 0)));
-        ary.push(parseInt(_.get(params, "limit", this.pageLimit)));
+        refine += ` ORDER BY ${_.get(params, "sortBy", this.sortBy)} ${_.get(params, "sortDir", this.sortDir)} LIMIT ${parseInt(
+          _.get(params, "start", 0)
+        )},${parseInt(_.get(params, "limit", this.pageLimit))}`;
         console.log("SELECT " + _.get(params, "fields", "*") + " FROM " + this.table + refine, ary);
         return this.db.run("SELECT " + _.get(params, "fields", "*") + " FROM " + this.table + refine, ary);
       })

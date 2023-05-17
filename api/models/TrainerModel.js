@@ -626,15 +626,13 @@ class TrainerSearch extends TrainerBase {
           return new TrainerEvents()
             .list({
               ...whereParamsEvents,
-              sortBy: "updated_at",
+              sortBy: "created_at",
               sortDir: "DESC",
             })
             .then(({ data }) => (tData.events = data));
         }
       })
-      .then(() => {
-        return tData;
-      });
+      .then(() => tData);
   }
   profiledata({ slug }) {
     return this.profile({ slug: slug, mode: ["about"] }).then((tdata) => tdata.about);
