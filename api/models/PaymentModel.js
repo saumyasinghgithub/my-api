@@ -6,6 +6,7 @@ const { isTrainer } = require("../routes/apiutils");
 const StudentEnrollmentModel = require("./StudentEnrollmentModel");
 const Emailer = require("./EmailModel");
 const UserModel = require("./UserModel");
+const SettingsModel = require("./SettingsModel");
 const MoodleAPI = require("./MoodleAPI");
 const CourseModel = require("./CourseModel");
 
@@ -50,7 +51,8 @@ class PaymentModel extends BaseModel {
               })
               .then(() => this.updateCartItems(JSON.parse(orderData.notes.cartItems)))
               .then(() => this.enrollStudents(orderData.user_id, JSON.parse(orderData.notes.cartItems)))
-              .then(() => this.notifyPayment2User(orderData))
+              .then(() => this.getSingleTrainerSetting(JSON.parse(orderData.notes.cartItems)))
+              .then((sitesetting) => this.notifyPayment2User(orderData, sitesetting))
               .then(() => resolve(ret))
               .catch(reject);
           }
@@ -65,6 +67,17 @@ class PaymentModel extends BaseModel {
         resolve(ret);
       }
     });
+  }
+
+  getSingleTrainerSetting(citems = []) {
+    let courseids = _.uniq(_.flatMapDeep(_.map(citems, (item) => parseInt(item.course))));
+    return new CourseModel()
+      .list({ fields: "user_id", whereStr: `id IN (${courseids.join(",")})` })
+      .then((res) => {
+        let trainerids = _.uniq(_.flatMapDeep(_.map(res.data, (d) => d.user_id)));
+        return new SettingsModel().getsiteData({ trainer_id: trainerids.length === 1 ? trainerids[0] : 0 });
+      })
+      .then((res) => res.data.data);
   }
 
   getOrdertData({ id, user_id }) {
@@ -139,18 +152,18 @@ class PaymentModel extends BaseModel {
     });
   }
 
-  notifyPayment2User(orderData) {
+  notifyPayment2User(orderData, sitesetting) {
     new UserModel().find(orderData.user_id).then((udata) => {
       return Emailer.sendEmail({
         to: udata.email,
-        cc: "rajeshs@knowledgesynonyms.com, surojitb@knowledgesynonyms.com",
-        subject: `${process.env.APP_NAME} Order Confirmation Email  `,
-        html: this.paymentEmail({ ...orderData, ...udata }),
+        cc: _.get(sitesetting, "contact_email", process.env.DEFAULT_EMAIL_TO),
+        subject: `${_.get(sitesetting, "company_name", process.env.APP_NAME)} Order Confirmation Email  `,
+        html: this.paymentEmail({ ...orderData, ...udata }, sitesetting),
       });
     });
   }
 
-  paymentEmail(data) {
+  paymentEmail(data, sitesetting) {
     let dData = data.dump;
     let html = `<table width="650px" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center"
     style="box-shadow: 2px 2px 10px 5px #D5D8DC; font-family: Arial, Helvetica, sans-serif;">
@@ -160,7 +173,7 @@ class PaymentModel extends BaseModel {
                 style="background-image: url('https://kstverse.com/header.png') !important; height:206px; color:#fff;background-size: cover;width: 100%;background-repeat: no-repeat;padding: 60px;"
                 align="center">
                 <tr>
-                    <td colspan="0" style="font-size: 18px;"> RescueRN <br><br>
+                    <td colspan="0" style="font-size: 18px;"> ${_.get(sitesetting, "company_name", process.env.APP_NAME)} <br><br>
                         
                     </td>
                 </tr>
@@ -176,7 +189,11 @@ class PaymentModel extends BaseModel {
                     <td colspan="0">
                         <p
                             style="padding:10px 0px 40px 0px;text-align: center;line-height: 1.3rem;font-size: 14px;color: #4f5052;">
-                            TVerse makes the search for a trainer easier for students. So, by coming on this
+                            ${_.get(
+                              sitesetting,
+                              "company_name",
+                              process.env.APP_NAME
+                            )} makes the search for a trainer easier for students. So, by coming on this
                             platform you will be able to maximize your reach to professional who need guidance and other
                             skill enhancement programs. It also helps Companies find you. It makes it easier for them to
                             look for professionals with expertise.</p>
@@ -236,7 +253,7 @@ class PaymentModel extends BaseModel {
                         <ul style="list-style: none;float: left;margin:0 10px;padding:0;">
                             <li
                                 style="display: inline-block;padding: 20px ; font-size: 12px;margin-top: 15px;position: absolute;">
-                                Copyright © kstverse.com</li>
+                                Copyright © ${_.get(sitesetting, "copyright_text", process.env.APP_URL)}</li>
                         </ul>
                     </td>
                 </tr>
