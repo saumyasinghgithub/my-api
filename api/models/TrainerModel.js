@@ -5,9 +5,10 @@ const path = require("path");
 const slugify = require("slugify");
 const PAModel = require("./PAModel");
 const CourseModel = require("./CourseModel");
+const SettingsModel = require("./SettingsModel");
 const MoodleAPI = require("./MoodleAPI");
 const moment = require("moment");
-const Emailer = require('./EmailModel');
+const Emailer = require("./EmailModel");
 
 class TrainerBase extends BaseModel {
   addMulti(data) {
@@ -194,7 +195,7 @@ class TrainerAbout extends TrainerBase {
 
   edit(data, files, user_id) {
     //console.log(data);
-    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings", "phone", "email", "company","company_url"]);
+    let frmdata = _.pick(data, ["firstname", "middlename", "lastname", "slug", "biography", "trainings"]);
     frmdata["user_id"] = user_id;
     const spath = frmdata.firstname + " " + frmdata.lastname + " " + user_id;
     if (_.isEmpty(frmdata["slug"])) {
@@ -214,10 +215,6 @@ class TrainerAbout extends TrainerBase {
       })
       .then((fname) => {
         frmdata["base_image"] = fname;
-        return this.uploadImage(data, _.get(files, "logo_image", false), "logo");
-      })
-      .then((fname) => {
-        frmdata["logo_image"] = fname;
         if (data.id > 0) {
           return super.edit(frmdata, data.id);
         } else {
@@ -345,7 +342,7 @@ class TrainerCourse extends TrainerBase {
     ]);
     frmdata["user_id"] = user_id;
     frmdata["slug"] = slugify(frmdata.name, { remove: /[*#+~.()'"!:@]/g }, { lower: true });
-    frmdata["sku"] = slugify(frmdata.name, { remove: /[*#+~.()'"!:@]/g }, { lower: true }).substring(0,200);
+    frmdata["sku"] = slugify(frmdata.name, { remove: /[*#+~.()'"!:@]/g }, { lower: true }).substring(0, 200);
     return this.uploadImage(data, _.get(files, "course_image", false), "courses").then((fname) => {
       frmdata["course_image"] = fname;
       if (parseInt(data.id) > 0) {
@@ -537,8 +534,8 @@ class TrainerCourseResource extends TrainerBase {
 class TrainerSearch extends TrainerBase {
   table = "trainer_calibrations";
 
-  profile({ slug }) {
-    let tData = {};
+  profile({ slug, mode = ["all"] }) {
+    let tData = { total: {} };
     let whereParams = { where: { slug: slug } };
     return new TrainerAbout()
       .list(whereParams)
@@ -546,90 +543,100 @@ class TrainerSearch extends TrainerBase {
         tData.about = _.get(data, "0", {});
         if (_.get(tData, "about.id", false)) {
           whereParams = { where: { user_id: tData.about.user_id } };
-          return new TrainerRating().getRatingByTrainer(tData.about.user_id);
+          if (mode.includes("all") || mode.includes("rating")) {
+            return new TrainerRating().getRatingByTrainer(tData.about.user_id).then((rating) => (tData.rating = rating));
+          }
         } else {
           throw { message: "No such trainer found" };
         }
       })
-      .then((rating) => {
-        tData.rating = rating;
-        return this.myTotalStudents(tData.about.user_id);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("students")) {
+          return this.myTotalStudents(tData.about.user_id).then((totalStudent) => (tData.total.students = totalStudent));
+        }
       })
-      .then((totalStudent) => {
-        tData.total = { students: totalStudent, courses: 0 };
-        return new TrainerCourse().totalCourses(tData.about.user_id);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("courses")) {
+          return new TrainerCourse().totalCourses(tData.about.user_id).then((totalCourse) => (tData.total.courses = totalCourse));
+        }
       })
-      .then((totalCourse) => {
-        tData.total.courses = totalCourse;
-        return new TrainerAward().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("awards")) {
+          return new TrainerAward().list(whereParams).then(({ data }) => (tData.awards = data));
+        }
       })
-      .then(({ data }) => {
-        tData.awards = data;
-        return new TrainerServices().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("services")) {
+          return new TrainerServices().list(whereParams).then(({ data }) => (tData.service = _.get(data, "0", {})));
+        }
       })
-      .then(({ data }) => {
-        tData.service = _.get(data, "0", {});
-        return new TrainerCalib().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("calibs")) {
+          return new TrainerCalib().list(whereParams).then(({ data }) => (tData.calibs = data));
+        }
       })
-      .then(({ data }) => {
-        tData.calibs = data;
-        return new TrainerAcademic().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("academics")) {
+          return new TrainerAcademic().list(whereParams).then(({ data }) => (tData.academics = data));
+        }
       })
-      .then(({ data }) => {
-        tData.academics = data;
-        return new TrainerExp().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("experiences")) {
+          return new TrainerExp().list(whereParams).then(({ data }) => (tData.experiences = data));
+        }
       })
-      .then(({ data }) => {
-        tData.experiences = data;
-        return new TrainerKnowledge().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("knowledge")) {
+          return new TrainerKnowledge().list(whereParams).then(({ data }) => (tData.knowledge = data));
+        }
       })
-      .then(({ data }) => {
-        tData.knowledge = data;
-        return new TrainerBlog().list({
-          ...whereParams,
-          sortBy: "updated_at",
-          sortDir: "DESC",
-        });
+      .then(() => {
+        if (mode.includes("all") || mode.includes("blogs")) {
+          return new TrainerBlog()
+            .list({
+              ...whereParams,
+              sortBy: "updated_at",
+              sortDir: "DESC",
+            })
+            .then(({ data }) => (tData.blogs = parseInt(_.get(data, "length", 0)) > 0 ? data : []));
+        }
       })
-      .then(({ data }) => {
-        tData.blogs = parseInt(_.get(data, "length", 0)) > 0 ? data : [];
-        return new TrainerCommunity().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("community")) {
+          return new TrainerCommunity().list(whereParams).then(({ data }) => (tData.community = _.get(data, "0", {})));
+        }
       })
-      .then(({ data }) => {
-        tData.community = _.get(data, "0", {});
-        return new TrainerLibrary().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("library")) {
+          return new TrainerLibrary().list(whereParams).then(({ data }) => (tData.library = _.get(data, "0", {})));
+        }
       })
-      .then(({ data }) => {
-        tData.library = _.get(data, "0", {});
-        return new TrainerSocial().list(whereParams);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("social")) {
+          return new TrainerSocial().list(whereParams).then(({ data }) => (tData.social = _.get(data, "0", {})));
+        }
       })
-      .then(({ data }) => {
-        tData.social = _.get(data, "0", {});
-        return new CourseModel().getByTrainer(tData.about.user_id);
+      .then(() => {
+        if (mode.includes("all") || mode.includes("courses")) {
+          return new CourseModel().getByTrainer(tData.about.user_id).then((courses) => (tData.courses = courses));
+        }
       })
-      .then((courses) => {
-        tData.courses = courses;
-        let whereParamsEvents = { where: { ...whereParams.where, featured: "1" } };
-        return new TrainerEvents().list({
-          ...whereParamsEvents,
-          sortBy: "updated_at",
-          sortDir: "DESC",
-        });
+      .then(() => {
+        if (mode.includes("all") || mode.includes("events")) {
+          let whereParamsEvents = { where: { ...whereParams.where, featured: "1" } };
+          return new TrainerEvents()
+            .list({
+              ...whereParamsEvents,
+              sortBy: "created_at",
+              sortDir: "DESC",
+            })
+            .then(({ data }) => (tData.events = data));
+        }
       })
-      .then(({ data }) => {
-        tData.events = data;
-        return tData;
-      });
+      .then(() => tData);
   }
   profiledata({ slug }) {
-    let tData = {};
-    let whereParams = { where: { slug: slug } };
-    return new TrainerAbout()
-      .list(whereParams)
-      .then(({ data }) => {
-        tData.about = _.get(data, "0", {});
-        return tData.about;
-      });
+    return this.profile({ slug: slug, mode: ["about"] }).then((tdata) => tdata.about);
   }
 
   landing({ slug }) {
@@ -739,6 +746,13 @@ class TrainerSearch extends TrainerBase {
           ...ud,
           rating: _.omit(ratings[ud.user_id], "trainer_id"),
         }));
+        return this.fetchSiteSettings(user_ids);
+      })
+      .then((sitesettings) => {
+        ret.data = ret.data.map((ud) => ({
+          ...ud,
+          sitesetting: _.omit(_.get(_.filter(sitesettings, { trainer_id: ud.user_id }), "0", []), "trainer_id"),
+        }));
         return this.fetchCourses(user_ids);
       })
       .then((courses) => {
@@ -783,6 +797,15 @@ class TrainerSearch extends TrainerBase {
       whereStr: `user_id IN (${user_ids.join(",")})`,
       fields: "firstname,lastname,base_image,profile_image,user_id,slug",
     });
+  }
+
+  fetchSiteSettings(user_ids) {
+    return new SettingsModel()
+      .list({
+        whereStr: `trainer_id IN (${user_ids.join(",")})`,
+        fields: "trainer_id,preferred_trainers,preferred_courses",
+      })
+      .then((res) => res.data);
   }
 
   fetchCalibs(user_ids, calibs) {
@@ -1020,24 +1043,22 @@ class TrainerSocial extends TrainerBase {
 class TrainerSubscribe extends TrainerBase {
   table = "subscription";
   subscribe(data) {
-    return this.add(data)
-    .then(res => {
-      if(res.success){        
-          return Emailer.sendEmail({
-            to: process.env.CONTACT_FORM_EMAIL,
-            subject: `Subscription Form`,
-            html: this.subscriptionFormEmail({...data, email:data.email})
-          })
-          .then(() => {
-            return {success:true,message:"Thank You for subscribing with us !"} ;
-          })
-        }else{
-          return res;
-        }
-    })
+    return this.add(data).then((res) => {
+      if (res.success) {
+        return Emailer.sendEmail({
+          to: process.env.CONTACT_FORM_EMAIL,
+          subject: `Subscription Form`,
+          html: this.subscriptionFormEmail({ ...data, email: data.email }),
+        }).then(() => {
+          return { success: true, message: "Thank You for subscribing with us !" };
+        });
+      } else {
+        return res;
+      }
+    });
   }
 
-  subscriptionFormEmail(data){
+  subscriptionFormEmail(data) {
     let html = `<p>Hi ${data.email},</p>
     <p>Thank You for subscribing with us !</p>
     <p>TVerse team will connect shortly</p>
@@ -1054,8 +1075,8 @@ class TrainerSubscribe extends TrainerBase {
     data.trainerUrl = data.trainerUrl;
     let whereParams = { where: { email: data.email, trainerUrl: data.trainerUrl } };
     return this.list(whereParams).then((res) => {
-      if(res.data.length > 0){ 
-        return {success:true,message:"You have already subscribed with us !"} ;
+      if (res.data.length > 0) {
+        return { success: true, message: "You have already subscribed with us !" };
       }
     });
   }
@@ -1193,7 +1214,7 @@ class TrainerEvents extends TrainerBase {
   }
 
   eventsave(data, image) {
-    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured", "heading", "cta","sub_heading", "event_on"]);
+    let frmdata = _.pick(data, ["user_id", "event_short_desc", "featured", "heading", "cta", "sub_heading", "event_on"]);
 
     if (image) {
       return this.uploadImage(data, image, "event").then((fname) => {

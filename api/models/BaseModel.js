@@ -77,12 +77,10 @@ class BaseModel {
         }
       })
       .then(() => {
-        refine += " ORDER BY ? ? LIMIT ?,?";
-        ary.push(_.get(params, "sortBy", this.sortBy));
-        ary.push(_.get(params, "sortDir", this.sortDir));
-        ary.push(parseInt(_.get(params, "start", 0)));
-        ary.push(parseInt(_.get(params, "limit", this.pageLimit)));
-        //console.log('SELECT ' + _.get(params,'fields','*') + ' FROM ' + this.table + refine, ary);
+        refine += ` ORDER BY ${_.get(params, "sortBy", this.sortBy)} ${_.get(params, "sortDir", this.sortDir)} LIMIT ${parseInt(
+          _.get(params, "start", 0)
+        )},${parseInt(_.get(params, "limit", this.pageLimit))}`;
+        console.log("SELECT " + _.get(params, "fields", "*") + " FROM " + this.table + refine, ary);
         return this.db.run("SELECT " + _.get(params, "fields", "*") + " FROM " + this.table + refine, ary);
       })
       .then((res) => {
@@ -97,7 +95,6 @@ class BaseModel {
   }
 
   add(data) {
-    console.log(data);
     let sql = "INSERT INTO " + this.table;
     sql += "(" + _.keys(data).join(",") + ") VALUES ( ";
     sql += new Array(_.keys(data).length).fill("?").join(",") + ")";
@@ -105,11 +102,11 @@ class BaseModel {
       let ret = { success: false };
       if (res) {
         ret["success"] = true;
-        if(data.type === 'event'){
+        if (data.type === "event") {
           ret["message"] = "Thank you for registering!";
         } else {
           ret["message"] = "Welcome aboard, now you are a part of our resuscitation movement!";
-        }        
+        }
         ret["insertId"] = res.insertId;
       } else {
         ret["error"] = "Failed to add Record.";

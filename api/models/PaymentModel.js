@@ -6,6 +6,7 @@ const { isTrainer } = require("../routes/apiutils");
 const StudentEnrollmentModel = require("./StudentEnrollmentModel");
 const Emailer = require("./EmailModel");
 const UserModel = require("./UserModel");
+const SettingsModel = require("./SettingsModel");
 const MoodleAPI = require("./MoodleAPI");
 const CourseModel = require("./CourseModel");
 
@@ -32,13 +33,15 @@ class PaymentModel extends BaseModel {
           );
 
           if (ret.success) {
+            let couponData = _.pick(orderData.notes, _.compact(_.map(orderData.notes, (o, i) => (i.indexOf("coupon_") > -1 ? i : false))));
             this.add({
               user_id: orderData.user_id,
               payment_id: orderData.razorpayPaymentId,
               items: orderData.notes.cartItems,
               currency: orderData.currency,
               amount: orderData.amount / 100,
-              dump: JSON.stringify(_.pick(orderData, ["name", "description", "razorpayOrderId"])),
+              dump: JSON.stringify({ ..._.pick(orderData, ["name", "description", "razorpayOrderId"]), ...couponData }),
+              coupon_id: _.get(couponData, "coupon_id", null),
               is_complete: true,
             })
               .then((res) => {
@@ -48,7 +51,8 @@ class PaymentModel extends BaseModel {
               })
               .then(() => this.updateCartItems(JSON.parse(orderData.notes.cartItems)))
               .then(() => this.enrollStudents(orderData.user_id, JSON.parse(orderData.notes.cartItems)))
-              .then(() => this.notifyPayment2User(orderData))
+              .then(() => this.getSingleTrainerSetting(JSON.parse(orderData.notes.cartItems)))
+              .then((sitesetting) => this.notifyPayment2User(orderData, sitesetting))
               .then(() => resolve(ret))
               .catch(reject);
           }
@@ -63,6 +67,17 @@ class PaymentModel extends BaseModel {
         resolve(ret);
       }
     });
+  }
+
+  getSingleTrainerSetting(citems = []) {
+    let courseids = _.uniq(_.flatMapDeep(_.map(citems, (item) => parseInt(item.course))));
+    return new CourseModel()
+      .list({ fields: "user_id", whereStr: `id IN (${courseids.join(",")})` })
+      .then((res) => {
+        let trainerids = _.uniq(_.flatMapDeep(_.map(res.data, (d) => d.user_id)));
+        return new SettingsModel().getsiteData({ trainer_id: trainerids.length === 1 ? trainerids[0] : 0 });
+      })
+      .then((res) => res.data.data);
   }
 
   getOrdertData({ id, user_id }) {
@@ -137,18 +152,18 @@ class PaymentModel extends BaseModel {
     });
   }
 
-  notifyPayment2User(orderData) {
+  notifyPayment2User(orderData, sitesetting) {
     new UserModel().find(orderData.user_id).then((udata) => {
       return Emailer.sendEmail({
         to: udata.email,
-        cc: "rajeshs@knowledgesynonyms.com, surojitb@knowledgesynonyms.com",
-        subject: `${process.env.APP_NAME} Order Confirmation Email  `,
-        html: this.paymentEmail({ ...orderData, ...udata }),
+        cc: _.get(sitesetting, "contact_email", process.env.DEFAULT_EMAIL_TO),
+        subject: `${_.get(sitesetting, "company_name", process.env.APP_NAME)} Order Confirmation Email  `,
+        html: this.paymentEmail({ ...orderData, ...udata }, sitesetting),
       });
     });
   }
 
-  paymentEmail(data) {
+  paymentEmail(data, sitesetting) {
     let dData = data.dump;
     let html = `<table width="650px" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center"
     style="box-shadow: 2px 2px 10px 5px #D5D8DC; font-family: Arial, Helvetica, sans-serif;">
@@ -158,7 +173,7 @@ class PaymentModel extends BaseModel {
                 style="background-image: url('https://kstverse.com/header.png') !important; height:206px; color:#fff;background-size: cover;width: 100%;background-repeat: no-repeat;padding: 60px;"
                 align="center">
                 <tr>
-                    <td colspan="0" style="font-size: 18px;"> RescueRN <br><br>
+                    <td colspan="0" style="font-size: 18px;"> ${_.get(sitesetting, "company_name", process.env.APP_NAME)} <br><br>
                         
                     </td>
                 </tr>
@@ -174,7 +189,11 @@ class PaymentModel extends BaseModel {
                     <td colspan="0">
                         <p
                             style="padding:10px 0px 40px 0px;text-align: center;line-height: 1.3rem;font-size: 14px;color: #4f5052;">
-                            TVerse makes the search for a trainer easier for students. So, by coming on this
+                            ${_.get(
+                              sitesetting,
+                              "company_name",
+                              process.env.APP_NAME
+                            )} makes the search for a trainer easier for students. So, by coming on this
                             platform you will be able to maximize your reach to professional who need guidance and other
                             skill enhancement programs. It also helps Companies find you. It makes it easier for them to
                             look for professionals with expertise.</p>
@@ -234,7 +253,7 @@ class PaymentModel extends BaseModel {
                         <ul style="list-style: none;float: left;margin:0 10px;padding:0;">
                             <li
                                 style="display: inline-block;padding: 20px ; font-size: 12px;margin-top: 15px;position: absolute;">
-                                Copyright © kstverse.com</li>
+                                Copyright © ${_.get(sitesetting, "copyright_text", process.env.APP_URL)}</li>
                         </ul>
                     </td>
                 </tr>
@@ -313,11 +332,26 @@ class PaymentModel extends BaseModel {
   }
 
   sales(userData) {
-    let refine = "";
-    let ary = [];
+    let refine = " WHERE payments.is_complete = 1 AND courses.user_id=?";
+    let ary = [userData.user_id];
     let ret = { success: false };
+    let tableName =
+      "payments INNER JOIN users ON payments.user_id = users.id INNER JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id";
+
+    if (!_.isEmpty(userData.where.startDate)) {
+      refine += " AND (payments.created_at >= ?)";
+      ary.push(userData.where.startDate);
+    }
+    if (!_.isEmpty(userData.where.endDate)) {
+      refine += " AND (payments.created_at <= ?)";
+      ary.push(userData.where.endDate);
+    }
+    if (!_.isEmpty(userData.where.customer)) {
+      refine += ` AND (users.email like '%${userData.where.customer}%')`;
+    }
+
     return this.db
-      .run("SELECT COUNT(DISTINCT(" + this.pk + ")) as total FROM " + this.table + refine, ary)
+      .run("SELECT COUNT(DISTINCT(payments." + this.pk + ")) as total FROM " + tableName + refine, ary)
       .then((res) => {
         if (res) {
           ret["pageInfo"] = {
@@ -329,23 +363,14 @@ class PaymentModel extends BaseModel {
         }
       })
       .then(() => {
-        refine += " WHERE";
-        if (_.get(userData.where.startDate, "where", false) && _.get(userData.where.endDate, "where", false)) {
-          refine += " (payments.created_at BETWEEN ? AND ?) AND ";
-          ary.push(_.get(userData.where.startDate, "where", this.sortBy));
-          ary.push(_.get(userData.where.endDate, "where", this.sortBy));
-        }
-        if (isTrainer(userData.userData)) {
-          refine += ` JSON_EXTRACT(payments.items,'$[0].course') IN (SELECT id FROM courses WHERE user_id=?) AND `;
-          ary.push(_.get(userData.user_id, "where", userData.user_id));
-        }
-        refine += " payments.is_complete = 1 ORDER BY ? ? LIMIT ?,?";
-        ary.push(_.get(userData, "sortBy", this.sortBy));
+        refine += " ORDER BY ? ? LIMIT ?,?";
+        ary.push(_.get(userData, "sortBy", "payments." + this.sortBy));
         ary.push(_.get(userData, "sortDir", this.sortDir));
         ary.push(parseInt(_.get(userData, "start", 0)));
         ary.push(parseInt(_.get(userData, "limit", this.pageLimit)));
         return this.db.run(
-          `SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, courses.name FROM payments LEFT JOIN users ON payments.user_id = users.id LEFT JOIN courses ON JSON_EXTRACT(payments.items,'$[0].course') = courses.id` +
+          `SELECT payments.id, payments.items,JSON_EXTRACT(payments.items,'$[0].course') AS courseID,users.firstname, users.middlename, users.lastname, payments.amount, payments.dump , JSON_EXTRACT(payments.dump,'$.razorpayOrderId') AS orderId,DATE_FORMAT(payments.created_at,"%Y-%m-%d") AS created_at, UNIX_TIMESTAMP(payments.created_at) AS timestampvalue, users.email, users.country, courses.name FROM ` +
+            tableName +
             refine,
           ary
         );
