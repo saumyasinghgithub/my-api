@@ -7,7 +7,7 @@ const Emailer = require("./EmailModel");
 const RoleModel = require("./RoleModel");
 const TModel = require("./TrainerModel");
 const MoodleAPI = require("./MoodleAPI");
-const SModel = require('../models/StudentModel');
+const SModel = require("../models/StudentModel");
 const fs = require("fs");
 const path = require("path");
 
@@ -26,63 +26,56 @@ class UserModel extends BaseModel {
     WHERE u.email = ? LIMIT 1`;
 
     return new Promise((resolve, reject) => {
-      this.db
-        .run(sqlQuery, [
-          process.env.TRAINER_ROLE,
-          process.env.TRAINER_ROLE,
-          data.user,
-        ])
-        .then((res) => {
-          if (res.length === 1) {
-            if (bcrypt.compareSync(data.pass, res[0]["password"])) {
-              const finallyResolve = () => {
-                ret["success"] = true;
-                ret["message"] = "Login successful!";
-                ret["token"] = apiutils.genToken({
-                  id: res[0].id,
-                  role_id: res[0].role_id,
-                  validTill: moment().add(1, "hours").unix(),
-                });
-                ret = { ...ret, userData: _.omit(res[0], ["password"]) };
-                let fpath;
-                //console.log(ret.userData);
-                if(_.isEmpty(ret.userData.base_image)) {
-                  ret.userData.base_image = 'default.png';
-                }
-                else{
-                  if(((ret.userData.role_id).toString()) === process.env.STUDENT_ROLE){
-                    fpath = path.resolve('public','uploads', 'student','base',_.get(ret,'userData.base_image',''));
-                  } else {
-                    fpath = path.resolve('public','uploads','base',_.get(ret,'userData.base_image',''));
-                  }
-                  if(!fs.existsSync(fpath)){
-                    ret.userData.base_image = 'default.png';
-                  }
-                }
-                //path.join(ret.userData.base_image);
-                resolve(ret);
-              };
-
-              if (parseInt(res[0]["moodle_id"]) > 0) {
-                finallyResolve();
+      this.db.run(sqlQuery, [process.env.TRAINER_ROLE, process.env.TRAINER_ROLE, data.user]).then((res) => {
+        if (res.length === 1) {
+          if (bcrypt.compareSync(data.pass, res[0]["password"])) {
+            const finallyResolve = () => {
+              ret["success"] = true;
+              ret["message"] = "Login successful!";
+              ret["token"] = apiutils.genToken({
+                id: res[0].id,
+                role_id: res[0].role_id,
+                validTill: moment().add(1, "hours").unix(),
+              });
+              ret = { ...ret, userData: _.omit(res[0], ["password"]) };
+              let fpath;
+              //console.log(ret.userData);
+              if (_.isEmpty(ret.userData.base_image)) {
+                ret.userData.base_image = "default.png";
               } else {
-                this.createMoodleUser({
-                  username: data.user.toLowerCase(),
-                  password: data.pass,
-                  firstname: res[0].firstname,
-                  lastname: res[0].lastname,
-                  email: data.user.toLowerCase(),
-                  id: res[0].id,
-                  role_id: res[0].role_id,
-                }).finally(finallyResolve);
+                if (ret.userData.role_id.toString() === process.env.STUDENT_ROLE) {
+                  fpath = path.resolve("public", "uploads", "student", "base", _.get(ret, "userData.base_image", ""));
+                } else {
+                  fpath = path.resolve("public", "uploads", "base", _.get(ret, "userData.base_image", ""));
+                }
+                if (!_.isEmpty(ret.userData.base_image) && !fs.existsSync(fpath)) {
+                  ret.userData.base_image = "default.png";
+                }
               }
-            } else {
+              //path.join(ret.userData.base_image);
               resolve(ret);
+            };
+
+            if (parseInt(res[0]["moodle_id"]) > 0) {
+              finallyResolve();
+            } else {
+              this.createMoodleUser({
+                username: data.user.toLowerCase(),
+                password: data.pass,
+                firstname: res[0].firstname,
+                lastname: res[0].lastname,
+                email: data.user.toLowerCase(),
+                id: res[0].id,
+                role_id: res[0].role_id,
+              }).finally(finallyResolve);
             }
           } else {
             resolve(ret);
           }
-        });
+        } else {
+          resolve(ret);
+        }
+      });
     });
   }
 
@@ -116,18 +109,13 @@ class UserModel extends BaseModel {
   resetPassword({ password, vpass }) {
     return new Promise((resolve, reject) => {
       if (vpass.success) {
-        this.edit(
-          { password: bcrypt.hashSync(password, 8) },
-          vpass.data.id
-        ).then((ret) => {
+        this.edit({ password: bcrypt.hashSync(password, 8) }, vpass.data.id).then((ret) => {
           if (ret.success) {
-            this.updateMoodleUser(vpass.data.id, { password: password }).then(
-              (updated) =>
-                resolve({
-                  success: true,
-                  message:
-                    "Your password has been updated! Please use new password to login!",
-                })
+            this.updateMoodleUser(vpass.data.id, { password: password }).then((updated) =>
+              resolve({
+                success: true,
+                message: "Your password has been updated! Please use new password to login!",
+              })
             );
           } else {
             resolve({
@@ -147,18 +135,13 @@ class UserModel extends BaseModel {
       if (user_id) {
         this.find(user_id).then((user) => {
           if (bcrypt.compareSync(current_password, user["password"])) {
-            return this.edit(
-              { password: bcrypt.hashSync(password, 8) },
-              user_id
-            ).then((ret) => {
+            return this.edit({ password: bcrypt.hashSync(password, 8) }, user_id).then((ret) => {
               if (ret.success) {
-                this.updateMoodleUser(user_id, { password: password }).then(
-                  (updated) =>
-                    resolve({
-                      success: true,
-                      message:
-                        "Your password has been updated! Please use new password to login!",
-                    })
+                this.updateMoodleUser(user_id, { password: password }).then((updated) =>
+                  resolve({
+                    success: true,
+                    message: "Your password has been updated! Please use new password to login!",
+                  })
                 );
               } else {
                 resolve({
@@ -208,9 +191,7 @@ class UserModel extends BaseModel {
             .assignUserRole({
               userid: mid,
               roleid: parseInt(
-                parseInt(data.role_id) === parseInt(process.env.TRAINER_ROLE)
-                  ? process.env.MOODLE_TEACHER_ROLE
-                  : process.env.MOODLE_STUDENT_ROLE
+                parseInt(data.role_id) === parseInt(process.env.TRAINER_ROLE) ? process.env.MOODLE_TEACHER_ROLE : process.env.MOODLE_STUDENT_ROLE
               ),
             })
             .then(() => super.edit({ moodle_id: mid }, data.id))
@@ -226,9 +207,7 @@ class UserModel extends BaseModel {
     const mobj = new MoodleAPI();
     return this.find(user_id).then((user) => {
       if (!_.isNull(user["moodle_id"]) && user["moodle_id"] > 0) {
-        return mobj
-          .updateUser({ ...data, id: user["moodle_id"] })
-          .then(() => true);
+        return mobj.updateUser({ ...data, id: user["moodle_id"] }).then(() => true);
       } else {
         return false;
       }
@@ -242,79 +221,70 @@ class UserModel extends BaseModel {
     // data.rbac = "[]";
     data.active = 1;
 
-    return (
-      this.checkUnique("email", data.email)
-        .then(() => this.checkUnique('mobile',data.mobile))
-        .then(() => new RoleModel().find(data.role))
-        .then((rec) => {
-          roleName = rec.title;
-          data["role_id"] = rec.id;
-          data = _.omit(data, ["role"]);
-        })
-        .then(() => super.add(data))
-        .then((res) => {
-          if (res.success) {
-            const finalEmail = () => {
-              return Emailer.sendEmail({
-                to: data.email,
-                subject: `WELCOME ${roleName}`,
-                html: this.newUserEmail({
-                  ...data,
-                  origpass: origpass,
-                  role: roleName,
-                }),
-              }).then((res1) => {
-                return res;
-              });
-            };
-
-            return this.createMoodleUser({
-              ...data,
-              username: data.email,
-              password: origpass,
-              id: res.insertId,
-            }).then(() => {
-              if (
-                parseInt(data.role_id) === parseInt(process.env.TRAINER_ROLE)
-              ) {
-                return new TModel.TrainerAbout()
-                  .add({
-                    ..._.pick(data, ["firstname", "middlename", "lastname"]),
-                    user_id: res.insertId,
-                  })
-                  .then(finalEmail);
-              } else {
-                return new SModel.StudentAbout()
-                  .add({
-                    ..._.pick(data, ["firstname", "middlename", "lastname"]),
-                    user_id: res.insertId,
-                  })
-                .then(finalEmail);
-              }
-            });
-          } else {
-            return res;
-          }
-        })
-    );
-  }
-
-  checkUnique(fld, val, id = 0) {
-    return this.db
-      .run(`SELECT id FROM ${this.table} WHERE ${fld}=? AND ${this.pk}<>?`, [
-        val,
-        id,
-      ])
+    return this.checkUnique("email", data.email)
+      .then(() => this.checkUnique("mobile", data.mobile))
+      .then(() => new RoleModel().find(data.role))
+      .then((rec) => {
+        roleName = rec.title;
+        data["role_id"] = rec.id;
+        data = _.omit(data, ["role"]);
+      })
+      .then(() => super.add(data))
       .then((res) => {
-        if (_.get(res, "length", 0) > 0) {
-          throw { message: `This is a duplicate entry for ${fld} ${val} Aborting..` };
+        if (res.success) {
+          const finalEmail = () => {
+            return Emailer.sendEmail({
+              to: data.email,
+              subject: `WELCOME ${roleName}`,
+              html: this.newUserEmail({
+                ...data,
+                origpass: origpass,
+                role: roleName,
+              }),
+            }).then((res1) => {
+              return res;
+            });
+          };
+
+          return this.createMoodleUser({
+            ...data,
+            username: data.email,
+            password: origpass,
+            id: res.insertId,
+          }).then(() => {
+            if (parseInt(data.role_id) === parseInt(process.env.TRAINER_ROLE)) {
+              return new TModel.TrainerAbout()
+                .add({
+                  ..._.pick(data, ["firstname", "middlename", "lastname"]),
+                  user_id: res.insertId,
+                })
+                .then(finalEmail);
+            } else {
+              return new SModel.StudentAbout()
+                .add({
+                  ..._.pick(data, ["firstname", "middlename", "lastname"]),
+                  user_id: res.insertId,
+                })
+                .then(finalEmail);
+            }
+          });
+        } else {
+          return res;
         }
-        return true;
       });
   }
 
+  checkUnique(fld, val, id = 0) {
+    return this.db.run(`SELECT id FROM ${this.table} WHERE ${fld}=? AND ${this.pk}<>?`, [val, id]).then((res) => {
+      if (_.get(res, "length", 0) > 0) {
+        throw { message: `This is a duplicate entry for ${fld} ${val} Aborting..` };
+      }
+      return true;
+    });
+  }
+
   newUserEmail(data) {
-    const trainerUrl = 'https://dr-susan-davis.kstverse.com/login';
+    const trainerUrl = "https://dr-susan-davis.kstverse.com/login";
     let html = `<p>Hi ${data.firstname} (${data.role}),</p>
     <p>Welcome to ${process.env.APP_NAME}.</p>
     <p>You can use the following credentials to <a href="${trainerUrl}">login to your student area.</a></p>
@@ -353,16 +323,10 @@ class UserModel extends BaseModel {
   markfav({ user_id, trainer_id, fav }) {
     return new Promise((resolve, reject) => {
       this.db
-        .run(`DELETE FROM favorites WHERE user_id=? AND trainer_id=?`, [
-          user_id,
-          trainer_id,
-        ])
+        .run(`DELETE FROM favorites WHERE user_id=? AND trainer_id=?`, [user_id, trainer_id])
         .then(() => {
           if (parseInt(fav) === 1) {
-            return this.db.run(
-              `INSERT INTO favorites (user_id,trainer_id) VALUES (?,?)`,
-              [user_id, trainer_id]
-            );
+            return this.db.run(`INSERT INTO favorites (user_id,trainer_id) VALUES (?,?)`, [user_id, trainer_id]);
           }
         })
         .then(() => resolve({ success: true }))
