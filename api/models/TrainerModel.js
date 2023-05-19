@@ -674,7 +674,7 @@ class TrainerSearch extends TrainerBase {
         return new TrainerEvents()
           .list({
             ...whereParamsEvents,
-            sortBy: "updated_at",
+            sortBy: "created_at",
             sortDir: "DESC",
           })
           .then((events) => {
