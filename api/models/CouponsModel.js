@@ -5,14 +5,27 @@ class CouponsModel extends BaseModel {
   table = "trainer_coupons";
   pageLimit = 10;
 
-  add(data) {
-    data.course_ids = _.isArray(data.course_ids) ? data.course_ids.map((c) => parseInt(c)).join(",") : data.course_ids;
-    return super.add(data);
+  prepareCouponData(pdata) {
+    let data = {
+      ...pdata,
+      course_ids: null,
+      usage_limit: !_.isEmpty(pdata.usage_limit) ? pdata.usage_limit : null,
+      expiry_date: !_.isEmpty(pdata.expiry_date) ? pdata.expiry_date : null,
+    };
+
+    if (!_.isEmpty(pdata.course_ids)) {
+      data.course_ids = _.isArray(pdata.course_ids) ? pdata.course_ids.map((c) => parseInt(c)).join(",") : pdata.course_ids;
+    }
+
+    return data;
   }
 
-  edit(data, pkval = "") {
-    data.course_ids = _.isArray(data.course_ids) ? data.course_ids.map((c) => parseInt(c)).join(",") : data.course_ids;
-    return super.edit(data, pkval);
+  add(data) {
+    return super.add(this.prepareCouponData(pdata));
+  }
+
+  edit(pdata, pkval = "") {
+    return super.edit(this.prepareCouponData(pdata), pkval);
   }
 
   getAllCoupons(trainer_id) {
