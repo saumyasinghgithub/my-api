@@ -14,7 +14,7 @@ class CartModel extends BaseModel {
   }
 
   getCartData({ user_id }) {
-    let sql = `SELECT c.slug, c.name, c.course_image, ca.* FROM cart ca
+    let sql = `SELECT c.slug, c.user_id as trainer_id, c.name, c.course_image, ca.* FROM cart ca
     INNER JOIN courses c ON ca.course_id = c.id  
     WHERE ca.user_id = ? AND ca.status=? 
     ORDER BY ca.id DESC`;
@@ -72,17 +72,25 @@ class CartModel extends BaseModel {
     let disAmount = 0;
     let cartTotalPrice = parseInt(_.sum(cartData.map((d) => d.price)));
 
-    const courseDiscountAmount = (cid, price) => {
+    const cartHasMultiTrainerCourse = () => {
+      return _.uniq(_.map(cartData, (d) => d.trainer_id)).length > 1;
+    };
+
+    const courseDiscountAmount = (cid, tid, price) => {
       let disAmount = 0;
 
-      if (coupon.course_ids.split(",").includes(cid.toString())) {
+      if (
+        coupon &&
+        ((!_.isEmpty(coupon.course_ids) && coupon.course_ids.split(",").includes(cid.toString())) ||
+          (_.isEmpty(coupon.course_ids) && cartHasMultiTrainerCourse() && coupon.trainer_id === tid))
+      ) {
         disAmount = coupon.coupon_type === 1 ? (price * coupon.discount_value) / 100 : price > coupon.discount_value ? coupon.discount_value : price;
       }
       return disAmount;
     };
 
     if (coupon) {
-      if (_.isEmpty(coupon.course_ids)) {
+      if (_.isEmpty(coupon.course_ids) && !cartHasMultiTrainerCourse()) {
         disAmount =
           coupon.coupon_type === 1
             ? (cartTotalPrice * coupon.discount_value) / 100
@@ -91,7 +99,7 @@ class CartModel extends BaseModel {
             : cartTotalPrice;
       } else {
         disAmount = _.reduce(
-          cartData.map((cData) => courseDiscountAmount(cData.course_id, cData.price)),
+          cartData.map((cData) => courseDiscountAmount(cData.course_id, cData.trainer_id, cData.price)),
           (sum, n) => sum + n,
           0
         );
