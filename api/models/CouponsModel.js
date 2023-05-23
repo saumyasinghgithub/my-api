@@ -21,7 +21,7 @@ class CouponsModel extends BaseModel {
   }
 
   add(data) {
-    return super.add(this.prepareCouponData(pdata));
+    return super.add(this.prepareCouponData(data));
   }
 
   edit(pdata, pkval = "") {
