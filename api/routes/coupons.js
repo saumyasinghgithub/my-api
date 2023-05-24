@@ -32,7 +32,7 @@ module.exports = () => {
         .then((res) => {
           if (res.success && res.data.length === 1) {
             if (
-              !_.isEmpty(res.data[0].expiry_date) &&
+              !_.isNull(res.data[0].expiry_date) &&
               res.data[0].expiry_date !== "0000-00-00" &&
               moment(res.data[0].expiry_date).isBefore(moment())
             ) {
