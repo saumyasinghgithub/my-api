@@ -8,18 +8,26 @@ class SettingsModel extends BaseModel {
   table = "settings";
   updated_at = true;
 
-  getsiteData({ trainer_id }) {
-    let ret = { type: "default" };
+  getsiteData({ trainer_id, trainer_self }) {
+    let ret = { type: "trainer" },
+      trainersetting = {},
+      sitesetting = {};
     return this.db.run(`SELECT settings.* FROM settings WHERE settings.trainer_id = ? OR id=1`, [trainer_id]).then((data) => {
-      data.map((d) => {
-        if (d.id === 1) {
-          ret["type"] = "default";
-          ret["data"] = { ...d };
-        } else {
-          ret["type"] = "trainer";
-          ret["data"] = { ...d };
-        }
-      });
+      if (data.length === 1) {
+        ret["type"] = "default";
+        sitesetting = { ...data[0] };
+        data.push({});
+      } else {
+        trainersetting = { ..._.filter(data, (d) => d.id !== 1)[0] };
+        sitesetting = { ..._.filter(data, (d) => d.id === 1)[0] };
+      }
+
+      if (trainer_self) {
+        ret["data"] = { ...trainersetting };
+      } else {
+        ret["data"] = { ...sitesetting, ..._.omitBy(trainersetting, (v) => _.isNull(v) || _.isEmpty(v)) };
+      }
+
       return { success: true, data: { ...ret } };
     });
   }

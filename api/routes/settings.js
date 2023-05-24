@@ -5,10 +5,10 @@ const SettingsModel = require("../models/SettingsModel");
 
 module.exports = () => {
   router.get("/", function (req, res) {
-    routeWrapper(req, res, true, (token) => new SettingsModel().getsiteData({ trainer_id: token.data.id }));
+    routeWrapper(req, res, true, (token) => new SettingsModel().getsiteData({ trainer_id: token.data.id, trainer_self: true }));
   });
   router.get("/trainer/:trainer_id", function (req, res) {
-    routeWrapper(req, res, false, () => new SettingsModel().getsiteData({ trainer_id: req.params.trainer_id }));
+    routeWrapper(req, res, false, () => new SettingsModel().getsiteData({ trainer_id: req.params.trainer_id, trainer_self: false }));
   });
   router.post("/site-settings", function (req, res) {
     routeWrapper(req, res, false, () => new SettingsModel().siteData(req.body));
