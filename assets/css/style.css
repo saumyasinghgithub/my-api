@@ -7407,3 +7407,8 @@ select.form-control {
     width: 100% !important;
     text-align:left;
 }
+
+.sitelogo{
+    max-height: 40px;
+    max-width: 88px;
+}
