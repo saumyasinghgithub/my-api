@@ -75,7 +75,7 @@ class PaymentModel extends BaseModel {
       .list({ fields: "user_id", whereStr: `id IN (${courseids.join(",")})` })
       .then((res) => {
         let trainerids = _.uniq(_.flatMapDeep(_.map(res.data, (d) => d.user_id)));
-        return new SettingsModel().getsiteData({ trainer_id: trainerids.length === 1 ? trainerids[0] : 0 });
+        return new SettingsModel().getsiteData({ trainer_id: trainerids.length === 1 ? trainerids[0] : 0, trainer_self: false });
       })
       .then((res) => res.data.data);
   }
@@ -156,7 +156,7 @@ class PaymentModel extends BaseModel {
     new UserModel().find(orderData.user_id).then((udata) => {
       return Emailer.sendEmail({
         to: udata.email,
-        cc: _.get(sitesetting, "contact_email", process.env.DEFAULT_EMAIL_TO),
+        cc: _.uniq([process.env.DEFAULT_EMAIL_TO, _.get(sitesetting, "contact_email", process.env.DEFAULT_EMAIL_TO)]).join(","),
         subject: `${_.get(sitesetting, "company_name", process.env.APP_NAME)} Order Confirmation Email  `,
         html: this.paymentEmail({ ...orderData, ...udata }, sitesetting),
       });
