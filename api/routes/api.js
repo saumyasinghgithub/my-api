@@ -10,6 +10,7 @@ const {canAccess, routeWrapper} = require('./apiutils');
 module.exports = function() {
 
   router.get('/genapikey',function(req,res){    
+    console.log(process.env.JWTSECRET);
     res.send(bcrypt.hashSync(process.env.JWTSECRET, 8));
   });
 
